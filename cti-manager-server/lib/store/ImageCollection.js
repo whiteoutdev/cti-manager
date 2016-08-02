@@ -100,8 +100,8 @@ var ImageCollection = function () {
         key: 'downloadImage',
         value: function downloadImage(objectIDHex) {
             return _DBConnectionService2.default.getDB().then(function (db) {
-                var oid = ObjectID.createFromHexString(objectIDHex);
-                var bucket = new GridFSBucket(db);
+                var oid = ObjectID.createFromHexString(objectIDHex),
+                    bucket = new GridFSBucket(db);
                 return bucket.find({ _id: oid }).toArray().then(function (arr) {
                     if (arr.length) {
                         var _ret = function () {
@@ -120,6 +120,29 @@ var ImageCollection = function () {
 
                         if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
                     }
+                });
+            });
+        }
+    }, {
+        key: 'getImage',
+        value: function getImage(objectIDHex) {
+            return _DBConnectionService2.default.getDB().then(function (db) {
+                var oid = ObjectID.createFromHexString(objectIDHex),
+                    bucket = new GridFSBucket(db);
+                return bucket.find({ _id: oid }).toArray().then(function (arr) {
+                    if (arr.length) {
+                        return arr[0];
+                    }
+                });
+            });
+        }
+    }, {
+        key: 'getImages',
+        value: function getImages(skip, limit) {
+            return _DBConnectionService2.default.getDB().then(function (db) {
+                var bucket = new GridFSBucket(db);
+                return bucket.find({}).skip(skip || 0).limit(limit || 0).sort({ uploadDate: -1 }).toArray().then(function (docs) {
+                    return docs;
                 });
             });
         }

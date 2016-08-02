@@ -6,8 +6,11 @@
   "scripts": {
     "build": "rm -rf lib && babel src -d lib",
     "serve": "node index | bunyan",
+    "serve-dev": "node index --dev | bunyan",
     "db": "node lib/scripts/rebuildDatabase | bunyan",
-    "dev": "npm run build && npm run db && npm run serve",
+    "db-dev": "node lib/scripts/rebuildDatabase --dev | bunyan",
+    "dev": "npm run build && npm run db-dev && npm run serve-dev",
+    "prod": "npm run build && npm run serve-dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -20,7 +23,8 @@
     "lodash": "^4.14.1",
     "mongodb": "^2.2.4",
     "multer": "^1.1.0",
-    "stream-to-string": "^1.1.0"
+    "stream-to-string": "^1.1.0",
+    "yargs": "^4.8.1"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",

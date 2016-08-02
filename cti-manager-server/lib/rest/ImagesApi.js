@@ -58,21 +58,16 @@ var ImagesApi = function (_RestApi) {
             });
 
             app.get('/images', function (req, res) {
-                var query = req.query;
-                var tags = query.tags,
-                    limit = query.limit;
-                if (tags) {
-                    tags = tags.split(',');
-                }
-                if (limit) {
-                    limit = Number(limit);
-                }
-                _ImageCollection2.default.findImages(tags, limit).then(function (docs) {
+                _logger2.default.debug('Image metadata requested');
+                var query = req.query,
+                    skip = Number(query.skip),
+                    limit = Number(query.limit);
+                _ImageCollection2.default.getImages(skip, limit).then(function (docs) {
                     res.status(200).send(docs);
                 });
             });
 
-            app.get('/images/:imageIDHex', function (req, res) {
+            app.get('/images/:imageIDHex/download', function (req, res) {
                 var imageIDHex = req.params.imageIDHex;
                 _logger2.default.debug('Image Download requested for image ID: ' + imageIDHex);
                 _ImageCollection2.default.downloadImage(imageIDHex).then(function (imageInfo) {
@@ -86,6 +81,14 @@ var ImagesApi = function (_RestApi) {
                             _logger2.default.debug('Deleted temporary file: ' + imageInfo.path);
                         });
                     });
+                });
+            });
+
+            app.get('/images/:imageIDHex', function (req, res) {
+                var imageIDHex = req.params.imageIDHex;
+                _logger2.default.debug('Image metadata requested for image ID: ' + imageIDHex);
+                _ImageCollection2.default.getImage(imageIDHex).then(function (imageMetadata) {
+                    res.status(200).send(imageMetadata);
                 });
             });
         }

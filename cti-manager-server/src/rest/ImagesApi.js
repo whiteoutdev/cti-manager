@@ -16,21 +16,16 @@ export default class ImagesApi extends RestApi {
         });
 
         app.get('/images', (req, res) => {
-            const query = req.query;
-            let tags  = query.tags,
-                limit = query.limit;
-            if (tags) {
-                tags = tags.split(',');
-            }
-            if (limit) {
-                limit = Number(limit);
-            }
-            ImageCollection.findImages(tags, limit).then((docs) => {
+            logger.debug(`Image metadata requested`);
+            const query = req.query,
+                  skip  = Number(query.skip),
+                  limit = Number(query.limit);
+            ImageCollection.getImages(skip, limit).then((docs) => {
                 res.status(200).send(docs);
             });
         });
 
-        app.get('/images/:imageIDHex', (req, res) => {
+        app.get('/images/:imageIDHex/download', (req, res) => {
             const imageIDHex = req.params.imageIDHex;
             logger.debug(`Image Download requested for image ID: ${imageIDHex}`);
             ImageCollection.downloadImage(imageIDHex).then((imageInfo) => {
@@ -44,6 +39,14 @@ export default class ImagesApi extends RestApi {
                         logger.debug(`Deleted temporary file: ${imageInfo.path}`);
                     });
                 });
+            });
+        });
+
+        app.get('/images/:imageIDHex', (req, res) => {
+            const imageIDHex = req.params.imageIDHex;
+            logger.debug(`Image metadata requested for image ID: ${imageIDHex}`);
+            ImageCollection.getImage(imageIDHex).then((imageMetadata) => {
+                res.status(200).send(imageMetadata);
             });
         });
     }

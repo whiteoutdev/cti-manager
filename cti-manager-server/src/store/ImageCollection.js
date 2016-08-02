@@ -57,8 +57,8 @@ export default class ImageCollection {
 
     static downloadImage(objectIDHex) {
         return DBConnectionService.getDB().then((db) => {
-            const oid = ObjectID.createFromHexString(objectIDHex);
-            const bucket = new GridFSBucket(db);
+            const oid    = ObjectID.createFromHexString(objectIDHex),
+                  bucket = new GridFSBucket(db);
             return bucket.find({_id: oid}).toArray().then((arr) => {
                 if (arr.length) {
                     const doc         = arr[0],
@@ -75,6 +75,32 @@ export default class ImageCollection {
                     });
                 }
             });
+        });
+    }
+
+    static getImage(objectIDHex) {
+        return DBConnectionService.getDB().then((db) => {
+            const oid    = ObjectID.createFromHexString(objectIDHex),
+                  bucket = new GridFSBucket(db);
+            return bucket.find({_id: oid}).toArray().then((arr) => {
+                if (arr.length) {
+                    return arr[0];
+                }
+            });
+        });
+    }
+
+    static getImages(skip, limit) {
+        return DBConnectionService.getDB().then((db) => {
+            const bucket = new GridFSBucket(db);
+            return bucket.find({})
+                .skip(skip || 0)
+                .limit(limit || 0)
+                .sort({uploadDate: -1})
+                .toArray()
+                .then((docs) => {
+                    return docs;
+                });
         });
     }
 
