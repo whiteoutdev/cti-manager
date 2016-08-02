@@ -31,5 +31,6 @@ exports.default = {
         port: 27017,
         name: dev ? 'cti-dev' : 'cti'
     },
-    tmpDir: 'tmp'
+    tmpDir: 'tmp',
+    thumbnailSize: 150
 };

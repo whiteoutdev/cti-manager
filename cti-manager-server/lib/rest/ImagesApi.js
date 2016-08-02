@@ -50,6 +50,8 @@ var ImagesApi = function (_RestApi) {
     _createClass(ImagesApi, [{
         key: 'configure',
         value: function configure(app) {
+            var _this2 = this;
+
             app.post('/images', _upload2.default.array('images'), function (req, res, next) {
                 _logger2.default.debug('Image upload request received for ' + req.files.length + ' images');
                 _ImageCollection2.default.addImages(req.files).then(function () {
@@ -67,28 +69,49 @@ var ImagesApi = function (_RestApi) {
                 });
             });
 
-            app.get('/images/:imageIDHex/download', function (req, res) {
-                var imageIDHex = req.params.imageIDHex;
-                _logger2.default.debug('Image Download requested for image ID: ' + imageIDHex);
-                _ImageCollection2.default.downloadImage(imageIDHex).then(function (imageInfo) {
-                    res.sendFile(imageInfo.path, {
-                        root: _path2.default.resolve(__dirname, '../..')
-                    }, function (err) {
-                        if (err) {
-                            res.sendStatus(500);
-                        }
-                        (0, _del2.default)([imageInfo.path]).then(function () {
-                            _logger2.default.debug('Deleted temporary file: ' + imageInfo.path);
-                        });
-                    });
-                });
-            });
-
             app.get('/images/:imageIDHex', function (req, res) {
                 var imageIDHex = req.params.imageIDHex;
                 _logger2.default.debug('Image metadata requested for image ID: ' + imageIDHex);
                 _ImageCollection2.default.getImage(imageIDHex).then(function (imageMetadata) {
                     res.status(200).send(imageMetadata);
+                });
+            });
+
+            app.get('/images/:imageIDHex/download', function (req, res) {
+                var imageIDHex = req.params.imageIDHex;
+                _logger2.default.debug('Image download requested for image ID: ' + imageIDHex);
+                _ImageCollection2.default.downloadImage(imageIDHex).then(function (fileInfo) {
+                    _this2.downloadFromFileInfo(res, fileInfo);
+                });
+            });
+
+            app.get('/images/:imageIDHex/thumbnail', function (req, res) {
+                var imageIDHex = req.params.imageIDHex;
+                _logger2.default.debug('Image thumbnail requested for image ID: ' + imageIDHex);
+                _ImageCollection2.default.getThumbnail(imageIDHex).then(function (thumbnail) {
+                    res.status(200).send(thumbnail);
+                });
+            });
+
+            app.get('/images/:imageIDHex/thumbnail/download', function (req, res) {
+                var imageIDHex = req.params.imageIDHex;
+                _logger2.default.debug('Image thumbnail download requested for image ID: ' + imageIDHex);
+                _ImageCollection2.default.downloadThumbnail(imageIDHex).then(function (fileInfo) {
+                    _this2.downloadFromFileInfo(res, fileInfo);
+                });
+            });
+        }
+    }, {
+        key: 'downloadFromFileInfo',
+        value: function downloadFromFileInfo(res, fileInfo) {
+            res.sendFile(fileInfo.path, {
+                root: _path2.default.resolve(__dirname, '../..')
+            }, function (err) {
+                if (err) {
+                    res.sendStatus(500);
+                }
+                (0, _del2.default)([fileInfo.path]).then(function () {
+                    _logger2.default.debug('Deleted temporary file: ' + fileInfo.path);
                 });
             });
         }

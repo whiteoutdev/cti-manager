@@ -25,28 +25,48 @@ export default class ImagesApi extends RestApi {
             });
         });
 
-        app.get('/images/:imageIDHex/download', (req, res) => {
-            const imageIDHex = req.params.imageIDHex;
-            logger.debug(`Image Download requested for image ID: ${imageIDHex}`);
-            ImageCollection.downloadImage(imageIDHex).then((imageInfo) => {
-                res.sendFile(imageInfo.path, {
-                    root: path.resolve(__dirname, '../..')
-                }, (err) => {
-                    if (err) {
-                        res.sendStatus(500);
-                    }
-                    del([imageInfo.path]).then(() => {
-                        logger.debug(`Deleted temporary file: ${imageInfo.path}`);
-                    });
-                });
-            });
-        });
-
         app.get('/images/:imageIDHex', (req, res) => {
             const imageIDHex = req.params.imageIDHex;
             logger.debug(`Image metadata requested for image ID: ${imageIDHex}`);
             ImageCollection.getImage(imageIDHex).then((imageMetadata) => {
                 res.status(200).send(imageMetadata);
+            });
+        });
+
+        app.get('/images/:imageIDHex/download', (req, res) => {
+            const imageIDHex = req.params.imageIDHex;
+            logger.debug(`Image download requested for image ID: ${imageIDHex}`);
+            ImageCollection.downloadImage(imageIDHex).then((fileInfo) => {
+                this.downloadFromFileInfo(res, fileInfo);
+            });
+        });
+
+        app.get('/images/:imageIDHex/thumbnail', (req, res) => {
+            const imageIDHex = req.params.imageIDHex;
+            logger.debug(`Image thumbnail requested for image ID: ${imageIDHex}`);
+            ImageCollection.getThumbnail(imageIDHex).then((thumbnail) => {
+                res.status(200).send(thumbnail);
+            });
+        });
+
+        app.get('/images/:imageIDHex/thumbnail/download', (req, res) => {
+            const imageIDHex = req.params.imageIDHex;
+            logger.debug(`Image thumbnail download requested for image ID: ${imageIDHex}`);
+            ImageCollection.downloadThumbnail(imageIDHex).then((fileInfo) => {
+                this.downloadFromFileInfo(res, fileInfo);
+            });
+        });
+    }
+
+    downloadFromFileInfo(res, fileInfo) {
+        res.sendFile(fileInfo.path, {
+            root: path.resolve(__dirname, '../..')
+        }, (err) => {
+            if (err) {
+                res.sendStatus(500);
+            }
+            del([fileInfo.path]).then(() => {
+                logger.debug(`Deleted temporary file: ${fileInfo.path}`);
             });
         });
     }

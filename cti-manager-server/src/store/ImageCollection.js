@@ -1,15 +1,19 @@
 import fs from 'fs';
 import MongoDB from 'mongodb';
 import del from 'del';
+import lwip from 'lwip';
 
 import appConfig from '../config/app.config';
 import logger from '../util/logger';
 import DBConnectionService from './DBConnectionService';
 import HashService from '../util/HashService';
-import Image from '../model/Image';
+import FileType from '../model/gridfs/FileType';
+import Image from '../model/gridfs/Image';
+import Thumbnail from '../model/gridfs/Thumbnail';
 
-const ObjectID = MongoDB.ObjectID;
-const GridFSBucket = MongoDB.GridFSBucket;
+const ObjectID      = MongoDB.ObjectID,
+      GridFSBucket  = MongoDB.GridFSBucket,
+      thumbnailSize = appConfig.thumbnailSize;
 
 export default class ImageCollection {
     static addImages(files) {
@@ -18,9 +22,11 @@ export default class ImageCollection {
             const promises = files.map((file) => {
                 return new Promise((resolve, reject) => {
                     HashService.getHash(file.path).then((hash) => {
-                        const image = new Image(file, hash);
-                        this.createGridStore(db, file, image).then(() => {
-                            resolve();
+                        this.createThumbnail(db, file, hash).then((thumbnailID) => {
+                            const image = new Image(file, hash, thumbnailID);
+                            this.storeFile(db, image, file.path).then(() => {
+                                resolve();
+                            });
                         });
                     });
                 });
@@ -33,23 +39,49 @@ export default class ImageCollection {
         });
     }
 
-    static createGridStore(db, file, image) {
+    static createThumbnail(db, file, hash) {
+        const fileType       = file.originalname.match(/\.((?:\w|\d)+)$/)[1],
+              thumbnailName  = `${hash}-thumb.${fileType}`,
+              thumbnailModel = new Thumbnail(thumbnailName),
+              thumbnailPath  = `${appConfig.tmpDir}/${thumbnailName}`;
+        return new Promise((resolve, reject) => {
+            lwip.open(file.path, fileType, (err, image) => {
+                if (err) {
+                    reject(err);
+                }
+                const scale = Math.min(thumbnailSize / image.width(), thumbnailSize / image.height());
+                image.batch()
+                    .scale(scale)
+                    .writeFile(thumbnailPath, (err) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        this.storeFile(db, thumbnailModel, thumbnailPath).then((thumbnailID) => {
+                            resolve(thumbnailID);
+                        });
+                    });
+            });
+        });
+    }
+
+    static storeFile(db, file, path) {
         const options = {
-                  metadata: image
+                  metadata: file
               },
               bucket  = new GridFSBucket(db);
 
         return new Promise((resolve, reject) => {
-            fs.createReadStream(file.path)
-                .pipe(bucket.openUploadStream(image.name, options))
-                .on('error', (error) => {
-                    reject(error);
+            const uploadStream = bucket.openUploadStream(file.name, options);
+            fs.createReadStream(path)
+                .pipe(uploadStream)
+                .on('error', (err) => {
+                    reject(err);
                 })
                 .on('finish', () => {
-                    logger.debug(`${file.path} stored to database as ${image.name}`);
-                    del([file.path]).then(() => {
-                        logger.debug(`Temporary file deleted: ${file.path}`);
-                        resolve();
+                    logger.debug(`${path} stored to database as ${file.name}`);
+                    del([path]).then(() => {
+                        logger.debug(`Temporary file deleted: ${path}`);
+                        resolve(uploadStream.id);
                     });
                 });
         });
@@ -78,9 +110,9 @@ export default class ImageCollection {
         });
     }
 
-    static getImage(objectIDHex) {
+    static getImage(imageIDHex) {
         return DBConnectionService.getDB().then((db) => {
-            const oid    = ObjectID.createFromHexString(objectIDHex),
+            const oid    = ObjectID.createFromHexString(imageIDHex),
                   bucket = new GridFSBucket(db);
             return bucket.find({_id: oid}).toArray().then((arr) => {
                 if (arr.length) {
@@ -93,7 +125,7 @@ export default class ImageCollection {
     static getImages(skip, limit) {
         return DBConnectionService.getDB().then((db) => {
             const bucket = new GridFSBucket(db);
-            return bucket.find({})
+            return bucket.find({'metadata.fileType': FileType.IMAGE})
                 .skip(skip || 0)
                 .limit(limit || 0)
                 .sort({uploadDate: -1})
@@ -101,6 +133,18 @@ export default class ImageCollection {
                 .then((docs) => {
                     return docs;
                 });
+        });
+    }
+
+    static getThumbnail(imageIDHex) {
+        return this.getImage(imageIDHex).then((image) => {
+            return this.getImage(image.metadata.thumbnailID.toHexString());
+        });
+    }
+
+    static downloadThumbnail(imageIDHex) {
+        return this.getImage(imageIDHex).then((image) => {
+            return this.downloadImage(image.metadata.thumbnailID.toHexString());
         });
     }
 

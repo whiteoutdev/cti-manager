@@ -11,13 +11,14 @@ if (dev) {
 
 export default {
     dev,
-    api   : {
+    api           : {
         port: 3333
     },
-    db    : {
+    db            : {
         host: 'localhost',
         port: 27017,
         name: dev ? 'cti-dev' : 'cti'
     },
-    tmpDir: 'tmp'
+    tmpDir        : 'tmp',
+    thumbnailSize: 150
 };
