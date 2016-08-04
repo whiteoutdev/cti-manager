@@ -8,6 +8,14 @@ var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
 
+var _cors = require('cors');
+
+var _cors2 = _interopRequireDefault(_cors);
+
+var _bodyParser = require('body-parser');
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
 var _app = require('./config/app.config');
 
 var _app2 = _interopRequireDefault(_app);
@@ -32,6 +40,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 });
 
 var app = (0, _express2.default)();
+
+app.use((0, _cors2.default)());
+
+app.use(_bodyParser2.default.urlencoded({ extended: false }));
+app.use(_bodyParser2.default.json());
 
 _RestConfig2.default.configure(app);
 

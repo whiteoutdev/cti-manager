@@ -1,1 +1,7 @@
 @import 'scss/reset';
+@import 'scss/colours';
+@import 'scss/typography';
+
+* {
+    box-sizing: border-box;
+}

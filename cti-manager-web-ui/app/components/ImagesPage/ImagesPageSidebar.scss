@@ -1,0 +1,22 @@
+@import '../../scss/colours';
+
+.ImagesPageSidebar {
+    width: 16%;
+    min-width: 240px;
+    padding: 2rem 1rem;
+
+    .sidebar-section {
+        border: 1px solid $font-dark-decoration;
+        padding: 1rem;
+        margin-bottom: 1em;
+
+        &.search-section {
+            display: flex;
+            flex-flow: row nowrap;
+
+            input {
+                flex: 1;
+            }
+        }
+    }
+}

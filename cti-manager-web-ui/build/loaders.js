@@ -1,12 +1,16 @@
 const loaders = [
     {
-        test   : /\.s?css$/,
+        test: /\.s?css$/,
         loaders: ['style', 'css', 'sass']
     },
     {
-        test   : /\.jsx?$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader : 'babel'
+        loader: 'babel'
+    },
+    {
+        test: /\.(png|jpg|jpeg|svg|eot|ttf|woff|woff2)$/,
+        loader: 'url?limit=8192'
     }
 ];
 

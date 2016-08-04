@@ -22,8 +22,11 @@ export default class ImageCollection {
             const promises = files.map((file) => {
                 return new Promise((resolve, reject) => {
                     HashService.getHash(file.path).then((hash) => {
-                        this.createThumbnail(db, file, hash).then((thumbnailID) => {
-                            const image = new Image(file, hash, thumbnailID);
+                        this.createThumbnail(db, file, hash).then((info) => {
+                            const thumbnailID = info.thumbnailID,
+                                  width       = info.width,
+                                  height      = info.height,
+                                  image       = new Image(file, hash, thumbnailID, width, height);
                             this.storeFile(db, image, file.path).then(() => {
                                 resolve();
                             });
@@ -49,7 +52,9 @@ export default class ImageCollection {
                 if (err) {
                     reject(err);
                 }
-                const scale = Math.min(thumbnailSize / image.width(), thumbnailSize / image.height());
+                const originalWidth  = image.width(),
+                      originalHeight = image.height(),
+                      scale          = Math.min(thumbnailSize / originalWidth, thumbnailSize / originalHeight);
                 image.batch()
                     .scale(scale)
                     .writeFile(thumbnailPath, (err) => {
@@ -57,7 +62,11 @@ export default class ImageCollection {
                             reject(err);
                         }
                         this.storeFile(db, thumbnailModel, thumbnailPath).then((thumbnailID) => {
-                            resolve(thumbnailID);
+                            resolve({
+                                thumbnailID,
+                                width: originalWidth,
+                                height: originalHeight
+                            });
                         });
                     });
             });
@@ -93,18 +102,15 @@ export default class ImageCollection {
                   bucket = new GridFSBucket(db);
             return bucket.find({_id: oid}).toArray().then((arr) => {
                 if (arr.length) {
-                    const doc         = arr[0],
-                          tmpLocation = `${appConfig.tmpDir}/${doc.metadata.name}`;
-                    return new Promise((resolve, reject) => {
-                        bucket.openDownloadStream(oid)
-                            .pipe(fs.createWriteStream(tmpLocation))
-                            .on('error', (err) => {
-                                reject(err);
-                            })
+                    return {
+                        doc: arr[0],
+                        stream: bucket.openDownloadStream(oid)
                             .on('finish', () => {
-                                resolve({path: tmpLocation, fileData: doc});
-                            });
-                    });
+                                db.close();
+                            })
+                    };
+                } else {
+                    db.close();
                 }
             });
         });
@@ -115,6 +121,7 @@ export default class ImageCollection {
             const oid    = ObjectID.createFromHexString(imageIDHex),
                   bucket = new GridFSBucket(db);
             return bucket.find({_id: oid}).toArray().then((arr) => {
+                db.close();
                 if (arr.length) {
                     return arr[0];
                 }
@@ -122,16 +129,26 @@ export default class ImageCollection {
         });
     }
 
-    static getImages(skip, limit) {
+    static getImages(tags, skip, limit) {
         return DBConnectionService.getDB().then((db) => {
-            const bucket = new GridFSBucket(db);
-            return bucket.find({'metadata.fileType': FileType.IMAGE})
-                .skip(skip || 0)
-                .limit(limit || 0)
-                .sort({uploadDate: -1})
-                .toArray()
-                .then((docs) => {
-                    return docs;
+            const bucket = new GridFSBucket(db),
+                  query  = {'metadata.fileType': FileType.IMAGE};
+            if (tags && tags.length) {
+                query['metadata.tags'] = {
+                    $all: tags
+                }
+            }
+            const cursor = bucket.find(query);
+            return cursor.count()
+                .then((count) => {
+                    return cursor.skip(skip || 0)
+                        .limit(limit || 0)
+                        .sort({uploadDate: -1})
+                        .toArray()
+                        .then((images) => {
+                            db.close();
+                            return {images, count};
+                        });
                 });
         });
     }
@@ -145,6 +162,22 @@ export default class ImageCollection {
     static downloadThumbnail(imageIDHex) {
         return this.getImage(imageIDHex).then((image) => {
             return this.downloadImage(image.metadata.thumbnailID.toHexString());
+        });
+    }
+
+    static setTags(imageIDHex, tags) {
+        return DBConnectionService.getDB().then((db) => {
+            const oid = ObjectID.createFromHexString(imageIDHex);
+            return db.collection(appConfig.gridfs.filesCollection).update({
+                _id: oid
+            }, {
+                $set: {
+                    'metadata.tags': tags
+                }
+            }).then((data) => {
+                db.close();
+                return data;
+            });
         });
     }
 

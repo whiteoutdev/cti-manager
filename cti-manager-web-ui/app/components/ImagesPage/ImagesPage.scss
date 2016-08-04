@@ -1,0 +1,18 @@
+@import 'ImagesPageSidebar';
+
+.ImagesPage {
+
+    .page-content {
+        display: flex;
+        flex-flow: row nowrap;
+
+        .ImagesPageSidebar {
+            flex-shrink: 0;
+        }
+
+        .ImagesPageThumbnailGallery {
+            flex: 1;
+        }
+    }
+
+}

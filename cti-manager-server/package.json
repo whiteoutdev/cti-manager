@@ -16,8 +16,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "bunyan": "^1.8.1",
     "co": "^4.6.0",
+    "cors": "^2.7.1",
     "del": "^2.2.1",
     "express": "^4.14.0",
     "lodash": "^4.14.1",

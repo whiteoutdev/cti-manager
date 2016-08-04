@@ -31,6 +31,9 @@ exports.default = {
         port: 27017,
         name: dev ? 'cti-dev' : 'cti'
     },
+    gridfs: {
+        filesCollection: 'fs.files'
+    },
     tmpDir: 'tmp',
-    thumbnailSize: 150
+    thumbnailSize: 180
 };

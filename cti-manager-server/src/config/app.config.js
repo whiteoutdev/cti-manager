@@ -11,14 +11,17 @@ if (dev) {
 
 export default {
     dev,
-    api           : {
+    api: {
         port: 3333
     },
-    db            : {
+    db: {
         host: 'localhost',
         port: 27017,
         name: dev ? 'cti-dev' : 'cti'
     },
-    tmpDir        : 'tmp',
-    thumbnailSize: 150
+    gridfs: {
+        filesCollection: 'fs.files'
+    },
+    tmpDir: 'tmp',
+    thumbnailSize: 180
 };

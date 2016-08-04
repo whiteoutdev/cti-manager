@@ -29,21 +29,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Image = function (_AbstractFile) {
     _inherits(Image, _AbstractFile);
 
-    function Image(file, hash, thumbnailID) {
+    function Image(file, hash, thumbnailID, width, height) {
         _classCallCheck(this, Image);
 
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Image).call(this, _FileType2.default.IMAGE, hash));
 
-        _this.createFromUpload(file, hash, thumbnailID);
+        _this.createFromUpload(file, hash, thumbnailID, width, height);
         return _this;
     }
 
     _createClass(Image, [{
         key: 'createFromUpload',
-        value: function createFromUpload(file, hash, thumbnailID) {
+        value: function createFromUpload(file, hash, thumbnailID, width, height) {
             this.mimeType = file.mimetype;
             this.hash = hash;
             this.thumbnailID = thumbnailID;
+            this.width = width;
+            this.height = height;
             var extension = _MimeService2.default.getFileExtension(this.mimeType);
             if (extension) {
                 this.name += '.' + extension;

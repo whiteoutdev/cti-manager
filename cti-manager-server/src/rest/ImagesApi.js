@@ -17,11 +17,13 @@ export default class ImagesApi extends RestApi {
 
         app.get('/images', (req, res) => {
             logger.debug(`Image metadata requested`);
-            const query = req.query,
-                  skip  = Number(query.skip),
-                  limit = Number(query.limit);
-            ImageCollection.getImages(skip, limit).then((docs) => {
-                res.status(200).send(docs);
+            const query      = req.query,
+                  tagsString = query.tags,
+                  skip       = Number(query.skip),
+                  limit      = Number(query.limit),
+                  tags       = tagsString ? tagsString.split(',') : null;
+            ImageCollection.getImages(tags, skip, limit).then((info) => {
+                res.status(200).send(info);
             });
         });
 
@@ -36,8 +38,8 @@ export default class ImagesApi extends RestApi {
         app.get('/images/:imageIDHex/download', (req, res) => {
             const imageIDHex = req.params.imageIDHex;
             logger.debug(`Image download requested for image ID: ${imageIDHex}`);
-            ImageCollection.downloadImage(imageIDHex).then((fileInfo) => {
-                this.downloadFromFileInfo(res, fileInfo);
+            ImageCollection.downloadImage(imageIDHex).then((data) => {
+                this.downloadFromFileInfo(res, data);
             });
         });
 
@@ -52,22 +54,36 @@ export default class ImagesApi extends RestApi {
         app.get('/images/:imageIDHex/thumbnail/download', (req, res) => {
             const imageIDHex = req.params.imageIDHex;
             logger.debug(`Image thumbnail download requested for image ID: ${imageIDHex}`);
-            ImageCollection.downloadThumbnail(imageIDHex).then((fileInfo) => {
-                this.downloadFromFileInfo(res, fileInfo);
+            ImageCollection.downloadThumbnail(imageIDHex).then((data) => {
+                this.downloadFromFileInfo(res, data);
+            });
+        });
+
+        app.post('/images/:imageIDHex/tags', (req, res) => {
+            const imageIDHex = req.params.imageIDHex,
+                  tags       = req.body.tags;
+            logger.debug(`Image tags update requested for image ID: ${imageIDHex}`);
+            ImageCollection.setTags(imageIDHex, tags).then((data) => {
+                const result = data.result,
+                      status = result.nModified ? 200 : 404;
+                if (result.nModified) {
+                    logger.debug(`Tags updated for ${result.nModified} image${result.nModified > 1 ? 's' : ''}`);
+                } else {
+                    logger.warn(`No image found with ID ${imageIDHex}`);
+                }
+                res.sendStatus(status);
+            }).catch((err) => {
+                logger.error(err);
+                res.sendStatus(500);
             });
         });
     }
 
-    downloadFromFileInfo(res, fileInfo) {
-        res.sendFile(fileInfo.path, {
-            root: path.resolve(__dirname, '../..')
-        }, (err) => {
-            if (err) {
-                res.sendStatus(500);
-            }
-            del([fileInfo.path]).then(() => {
-                logger.debug(`Deleted temporary file: ${fileInfo.path}`);
-            });
+    downloadFromFileInfo(res, data) {
+        const mimeType = data.doc.metadata.mimeType;
+        res.set({
+            'Content-Type': mimeType
         });
+        data.stream.pipe(res);
     }
 }

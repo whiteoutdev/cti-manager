@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _fs = require('fs');
@@ -75,8 +73,11 @@ var ImageCollection = function () {
                 var promises = files.map(function (file) {
                     return new Promise(function (resolve, reject) {
                         _HashService2.default.getHash(file.path).then(function (hash) {
-                            _this.createThumbnail(db, file, hash).then(function (thumbnailID) {
-                                var image = new _Image2.default(file, hash, thumbnailID);
+                            _this.createThumbnail(db, file, hash).then(function (info) {
+                                var thumbnailID = info.thumbnailID,
+                                    width = info.width,
+                                    height = info.height,
+                                    image = new _Image2.default(file, hash, thumbnailID, width, height);
                                 _this.storeFile(db, image, file.path).then(function () {
                                     resolve();
                                 });
@@ -105,13 +106,19 @@ var ImageCollection = function () {
                     if (err) {
                         reject(err);
                     }
-                    var scale = Math.min(thumbnailSize / image.width(), thumbnailSize / image.height());
+                    var originalWidth = image.width(),
+                        originalHeight = image.height(),
+                        scale = Math.min(thumbnailSize / originalWidth, thumbnailSize / originalHeight);
                     image.batch().scale(scale).writeFile(thumbnailPath, function (err) {
                         if (err) {
                             reject(err);
                         }
                         _this2.storeFile(db, thumbnailModel, thumbnailPath).then(function (thumbnailID) {
-                            resolve(thumbnailID);
+                            resolve({
+                                thumbnailID: thumbnailID,
+                                width: originalWidth,
+                                height: originalHeight
+                            });
                         });
                     });
                 });
@@ -146,21 +153,14 @@ var ImageCollection = function () {
                     bucket = new GridFSBucket(db);
                 return bucket.find({ _id: oid }).toArray().then(function (arr) {
                     if (arr.length) {
-                        var _ret = function () {
-                            var doc = arr[0],
-                                tmpLocation = _app2.default.tmpDir + '/' + doc.metadata.name;
-                            return {
-                                v: new Promise(function (resolve, reject) {
-                                    bucket.openDownloadStream(oid).pipe(_fs2.default.createWriteStream(tmpLocation)).on('error', function (err) {
-                                        reject(err);
-                                    }).on('finish', function () {
-                                        resolve({ path: tmpLocation, fileData: doc });
-                                    });
-                                })
-                            };
-                        }();
-
-                        if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+                        return {
+                            doc: arr[0],
+                            stream: bucket.openDownloadStream(oid).on('finish', function () {
+                                db.close();
+                            })
+                        };
+                    } else {
+                        db.close();
                     }
                 });
             });
@@ -172,6 +172,7 @@ var ImageCollection = function () {
                 var oid = ObjectID.createFromHexString(imageIDHex),
                     bucket = new GridFSBucket(db);
                 return bucket.find({ _id: oid }).toArray().then(function (arr) {
+                    db.close();
                     if (arr.length) {
                         return arr[0];
                     }
@@ -180,11 +181,21 @@ var ImageCollection = function () {
         }
     }, {
         key: 'getImages',
-        value: function getImages(skip, limit) {
+        value: function getImages(tags, skip, limit) {
             return _DBConnectionService2.default.getDB().then(function (db) {
-                var bucket = new GridFSBucket(db);
-                return bucket.find({ 'metadata.fileType': _FileType2.default.IMAGE }).skip(skip || 0).limit(limit || 0).sort({ uploadDate: -1 }).toArray().then(function (docs) {
-                    return docs;
+                var bucket = new GridFSBucket(db),
+                    query = { 'metadata.fileType': _FileType2.default.IMAGE };
+                if (tags && tags.length) {
+                    query['metadata.tags'] = {
+                        $all: tags
+                    };
+                }
+                var cursor = bucket.find(query);
+                return cursor.count().then(function (count) {
+                    return cursor.skip(skip || 0).limit(limit || 0).sort({ uploadDate: -1 }).toArray().then(function (images) {
+                        db.close();
+                        return { images: images, count: count };
+                    });
                 });
             });
         }
@@ -204,6 +215,23 @@ var ImageCollection = function () {
 
             return this.getImage(imageIDHex).then(function (image) {
                 return _this4.downloadImage(image.metadata.thumbnailID.toHexString());
+            });
+        }
+    }, {
+        key: 'setTags',
+        value: function setTags(imageIDHex, tags) {
+            return _DBConnectionService2.default.getDB().then(function (db) {
+                var oid = ObjectID.createFromHexString(imageIDHex);
+                return db.collection(_app2.default.gridfs.filesCollection).update({
+                    _id: oid
+                }, {
+                    $set: {
+                        'metadata.tags': tags
+                    }
+                }).then(function (data) {
+                    db.close();
+                    return data;
+                });
             });
         }
     }, {

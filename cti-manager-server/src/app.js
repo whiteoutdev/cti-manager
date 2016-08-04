@@ -1,5 +1,7 @@
 import del from 'del';
 import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 import appConfig from './config/app.config';
 import logger from './util/logger';
@@ -15,6 +17,11 @@ del([`${appConfig.tmpDir}/**`, `!${appConfig.tmpDir}`]).then((paths) => {
 });
 
 const app = express();
+
+app.use(cors());
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 RestConfig.configure(app);
 
