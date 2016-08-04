@@ -4,15 +4,16 @@ import plugins from './plugins';
 
 export default {
     context: config.app.path,
-    entry  : [
+    entry: [
         './index.jsx'
     ],
-    output : {
-        path    : config.dist.path,
+    output: {
+        path: config.dist.path,
         filename: 'cti-manager.js'
     },
-    module : {
+    module: {
         loaders
     },
-    plugins
+    plugins,
+    devtool: 'inline-source-map'
 };

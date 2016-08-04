@@ -1,4 +1,4 @@
-@import 'ImagesPageSidebar';
+@import '../ImageSidebar/ImageSidebar';
 
 .ImagesPage {
 
@@ -6,7 +6,7 @@
         display: flex;
         flex-flow: row nowrap;
 
-        .ImagesPageSidebar {
+        .ImageSidebar {
             flex-shrink: 0;
         }
 

@@ -5,6 +5,7 @@ import {Router, Route, IndexRoute} from 'react-router';
 import App from './components/App/App.jsx';
 import LandingPage from './components/LandingPage/LandingPage.jsx';
 import ImagesPage from './components/ImagesPage/ImagesPage.jsx';
+import ImagePage from './components/ImagePage/ImagePage.jsx';
 
 import history from './services/history';
 
@@ -15,9 +16,8 @@ const routes = (
     <Router history={history}>
         <Route path="/" component={App}>
             <IndexRoute component={LandingPage}/>
-            <Route path="/images" component={ImagesPage}>
-                <Route path="/images/:imageID"/>
-            </Route>
+            <Route path="/images" component={ImagesPage}/>
+            <Route path="/images/:imageID" component={ImagePage}/>
         </Route>
     </Router>
 );

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
-import Sidebar from './ImagesPageSidebar.jsx';
+import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
 import Gallery from './ImagesPageThumbnailGallery.jsx';
 
 import appConfig from '../../config/app.config';
@@ -16,6 +16,7 @@ export default class ImagesPage extends React.Component {
     constructor() {
         super();
         this.state = {
+            images: [],
             thumbnailIds: null,
             skip: 0,
             limit: defaultLimit,
@@ -28,10 +29,10 @@ export default class ImagesPage extends React.Component {
               skip  = Number(query.skip) || 0,
               limit = Number(query.limit) || defaultLimit;
         ImagesApi.getImages(tags, skip, limit).then((data) => {
-            console.log(data);
-            const thumbnailIds = data.images.map(image => image._id),
+            const images       = data.images,
+                  thumbnailIds = data.images.map(image => image._id),
                   count        = data.count;
-            this.setState({thumbnailIds, skip, limit, count});
+            this.setState({images, thumbnailIds, skip, limit, count});
         });
     }
 
@@ -51,7 +52,7 @@ export default class ImagesPage extends React.Component {
         return (
             <div className="ImagesPage">
                 <NavbarredPage>
-                    <Sidebar onSearch={this.handleSearch.bind(this)}/>
+                    <ImageSidebar images={this.state.images} onSearch={this.handleSearch.bind(this)}/>
                     <Gallery ids={this.state.thumbnailIds}
                              skip={this.state.skip}
                              limit={this.state.limit}

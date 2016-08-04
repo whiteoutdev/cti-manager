@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router';
 
 import appConfig from '../../config/app.config';
 
@@ -14,9 +15,9 @@ export default class ImagesPageThumbnailGallery extends React.Component {
             return this.props.ids.map((id) => {
                 return (
                     <li key={id} className="thumbnail-list-item">
-                        <a href={`${appConfig.api.path}/images/${id}/download`}>
+                        <Link to={`/images/${id}`}>
                             <img src={`${appConfig.api.path}/images/${id}/thumbnail/download`} alt={id}/>
-                        </a>
+                        </Link>
                     </li>
                 );
             });
@@ -24,7 +25,6 @@ export default class ImagesPageThumbnailGallery extends React.Component {
     }
 
     render() {
-        console.log(this.props);
         return (
             <div className="ImagesPageThumbnailGallery">
                 <ul className="thumbnail-list">
