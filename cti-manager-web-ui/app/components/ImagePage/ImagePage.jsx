@@ -46,7 +46,7 @@ export default class ImagePage extends React.Component {
         return (
             <div className="ImagePage">
                 <NavbarredPage>
-                    <ImageSidebar images={this.state.image ? [this.state.image] : []}
+                    <ImageSidebar images={this.state.image ? [this.state.image] : []} uploadDisabled
                                   onSearch={this.handleSearch.bind(this)}/>
                     <div className="image-section">
                         {this.renderImage()}

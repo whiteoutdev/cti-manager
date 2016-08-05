@@ -33,4 +33,9 @@ export default class ImagesApi {
                 return res.data;
             });
     }
+
+    static uploadFiles(formData) {
+        const url = `${apiPath}/images`;
+        return http.post(url, formData);
+    }
 };

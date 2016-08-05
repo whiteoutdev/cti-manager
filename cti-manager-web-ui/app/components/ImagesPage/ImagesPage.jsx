@@ -52,7 +52,9 @@ export default class ImagesPage extends React.Component {
         return (
             <div className="ImagesPage">
                 <NavbarredPage>
-                    <ImageSidebar images={this.state.images} onSearch={this.handleSearch.bind(this)}/>
+                    <ImageSidebar images={this.state.images}
+                                  onSearch={this.handleSearch.bind(this)}
+                                  onUploadComplete={() => {this.runQueryFromProps(this.props)}}/>
                     <Gallery ids={this.state.thumbnailIds}
                              skip={this.state.skip}
                              limit={this.state.limit}

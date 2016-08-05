@@ -1,4 +1,5 @@
 @import '../../scss/_colours';
+@import '../../scss/mixins';
 
 .ImageSidebar {
     width: 16%;
@@ -16,6 +17,39 @@
 
             input {
                 flex: 1;
+            }
+        }
+
+        &.upload-section {
+
+            .upload-form {
+                position: relative;
+
+                .upload-spinner {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: none;
+                    background-color: rgba($white, .9);
+
+                    .uploading {
+                        @include absolute-center;
+
+                        .Spinner {
+                            margin-right: .5em;
+                        }
+                    }
+                }
+
+                &.upload-pending {
+
+                    .upload-spinner {
+                        display: block;
+                    }
+
+                }
             }
         }
     }
