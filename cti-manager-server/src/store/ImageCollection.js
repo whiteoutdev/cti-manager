@@ -35,7 +35,7 @@ export default class ImageCollection {
                 });
             });
 
-            Promise.all(promises).then(() => {
+            return Promise.all(promises).then(() => {
                 logger.info(`${promises.length} images written to database`);
                 db.close();
             });

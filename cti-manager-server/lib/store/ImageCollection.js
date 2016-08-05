@@ -86,7 +86,7 @@ var ImageCollection = function () {
                     });
                 });
 
-                Promise.all(promises).then(function () {
+                return Promise.all(promises).then(function () {
                     _logger2.default.info(promises.length + ' images written to database');
                     db.close();
                 });
