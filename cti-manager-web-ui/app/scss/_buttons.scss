@@ -1,0 +1,28 @@
+@import 'constants';
+@import 'colours';
+
+button {
+    background-color: $brand-primary;
+    border: none;
+    color: $font-light-primary;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 .5em;
+    line-height: $form-control-height;
+    transition: all 150ms linear;
+
+    &:focus, &:hover {
+        background-color: darken($brand-primary, 7.5);
+    }
+
+    &:active {
+        background-color: darken($brand-primary, 15);
+        transition: none;
+    }
+
+    i {
+        font-size: $form-control-height * .66;
+        vertical-align: middle;
+    }
+}

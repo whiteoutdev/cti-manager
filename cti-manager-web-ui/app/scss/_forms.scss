@@ -1,0 +1,16 @@
+@import 'constants';
+@import 'colours';
+
+input[type='search'], input[type='text'] {
+    font-size: 1em;
+    line-height: $form-control-height;
+    padding: 0 .5em;
+    border: 1px solid $font-dark-decoration;
+    width: 100%;
+    color: $font-dark-primary;
+
+    &:focus {
+        outline: none;
+        border: 1px solid lighten($brand-primary, 30);
+    }
+}

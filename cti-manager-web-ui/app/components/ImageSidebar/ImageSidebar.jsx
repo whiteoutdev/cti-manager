@@ -1,5 +1,6 @@
 import React from 'react';
 import uuid from 'uuid';
+import {HotKeys} from 'react-hotkeys';
 
 import Spinner from '../Spinner/Spinner.jsx';
 
@@ -46,24 +47,64 @@ export default class ImageSidebar extends React.Component {
         })
     }
 
+    renderSearchSection() {
+        return (
+            <HotKeys handlers={{enter: this.fireSearch.bind(this)}}>
+                <div className="sidebar-section search-section">
+                    <div className="section-header">
+                        <h2>Search</h2>
+                    </div>
+                    <div className="section-body">
+                        <div className="search-form">
+                            <input id={`${this.id}-search-input`} ref="searchInput" type="text"/>
+                            <button className="search-button" onClick={this.fireSearch.bind(this)}>
+                                <i className="material-icons">search</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </HotKeys>
+        );
+    }
+
     renderUploadSection() {
         if (!this.props.uploadDisabled) {
             return (
                 <div className="sidebar-section upload-section">
-                    <h2>Upload</h2>
-                    <div className={`upload-form ${this.state.uploadPending ? 'upload-pending' : ''}`}>
-                        <input ref="fileInput" type="file" multiple/>
-                        <button onClick={this.uploadImages.bind(this)}>Upload</button>
-                        <div className="upload-spinner">
+                    <div className="section-header">
+                        <h2>Upload</h2>
+                    </div>
+                    <div className="section-body">
+                        <div className={`upload-form ${this.state.uploadPending ? 'upload-pending' : ''}`}>
+                            <input ref="fileInput" type="file" multiple/>
+                            <button onClick={this.uploadImages.bind(this)}>Upload</button>
+                            <div className="upload-spinner">
                             <span className="uploading">
                                 <Spinner/>
                                 Uploading...
                             </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             );
         }
+    }
+
+    renderTagsSection() {
+        return (
+            <div className="sidebar-section tags-section">
+                <div className="section-header">
+                    <h2>Tags</h2>
+                    {this.props.tagsEditable ? <i className="material-icons">edit</i> : null}
+                </div>
+                <div className="section-body">
+                    <ul className="tags-list">
+                        {this.renderTagsList()}
+                    </ul>
+                </div>
+            </div>
+        );
     }
 
     renderTagsList() {
@@ -98,16 +139,9 @@ export default class ImageSidebar extends React.Component {
     render() {
         return (
             <div className="ImageSidebar">
-                <div className="sidebar-section search-section">
-                    <input id={`${this.id}-search-input`} ref="searchInput" type="search"/>
-                    <button className="search-button" onClick={this.fireSearch.bind(this)}>Go</button>
-                </div>
+                {this.renderSearchSection()}
                 {this.renderUploadSection()}
-                <div className="sidebar-section tags-section">
-                    <ul className="tags-list">
-                        {this.renderTagsList()}
-                    </ul>
-                </div>
+                {this.renderTagsSection()}
             </div>
         );
     }
