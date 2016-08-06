@@ -9,6 +9,7 @@ import ImagePage from './components/ImagePage/ImagePage.jsx';
 
 import history from './services/history';
 
+import 'material-design-icons/iconfont/material-icons.css';
 import 'roboto-fontface';
 import './index.scss';
 

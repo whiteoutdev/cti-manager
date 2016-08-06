@@ -29,6 +29,10 @@ export default class ImageSidebar extends React.Component {
         }
     }
 
+    canUpload() {
+        return !this.refs.fileInput || !this.refs.fileInput.files.length;
+    }
+
     uploadImages() {
         const files = this.refs.fileInput.files;
         const formData = new FormData();
@@ -56,8 +60,8 @@ export default class ImageSidebar extends React.Component {
                     </div>
                     <div className="section-body">
                         <div className="search-form">
-                            <input id={`${this.id}-search-input`} ref="searchInput" type="text"/>
-                            <button className="search-button" onClick={this.fireSearch.bind(this)}>
+                            <input id={`${this.id}-search-input`} className="accent" ref="searchInput" type="text"/>
+                            <button className="search-button accent" onClick={this.fireSearch.bind(this)}>
                                 <i className="material-icons">search</i>
                             </button>
                         </div>
@@ -69,6 +73,10 @@ export default class ImageSidebar extends React.Component {
 
     renderUploadSection() {
         if (!this.props.uploadDisabled) {
+            let uploadText = 'Choose a file...';
+            if (this.refs.fileInput && this.refs.fileInput.files.length) {
+                uploadText = `${this.refs.fileInput.files.length} files selected`;
+            }
             return (
                 <div className="sidebar-section upload-section">
                     <div className="section-header">
@@ -76,8 +84,23 @@ export default class ImageSidebar extends React.Component {
                     </div>
                     <div className="section-body">
                         <div className={`upload-form ${this.state.uploadPending ? 'upload-pending' : ''}`}>
-                            <input ref="fileInput" type="file" multiple/>
-                            <button onClick={this.uploadImages.bind(this)}>Upload</button>
+                            <div className="input-container">
+                                <input id={`${this.id}-upload-input`}
+                                       ref="fileInput"
+                                       className="upload-input"
+                                       type="file"
+                                       multiple
+                                       onChange={() => {this.forceUpdate()}}/>
+                                <label htmlFor={`${this.id}-upload-input`} className="button upload-input-label">
+                                    <i className="material-icons">file_upload</i>
+                                    {uploadText}
+                                </label>
+                            </div>
+                            <button className="upload-button accent"
+                                    onClick={this.uploadImages.bind(this)}
+                                    disabled={this.canUpload()}>
+                                Upload
+                            </button>
                             <div className="upload-spinner">
                             <span className="uploading">
                                 <Spinner/>

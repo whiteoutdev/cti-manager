@@ -13,4 +13,10 @@ input[type='search'], input[type='text'] {
         outline: none;
         border: 1px solid lighten($brand-primary, 30);
     }
+
+    &.accent {
+        &:focus {
+            border: 1px solid $brand-accent;
+        }
+    }
 }

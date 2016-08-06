@@ -50,6 +50,7 @@ $sidebar-section-gutter: 1rem;
             .search-form {
                 display: flex;
                 flex-flow: row nowrap;
+                font-size: 1em;
 
                 input {
                     flex: 1;
@@ -62,6 +63,40 @@ $sidebar-section-gutter: 1rem;
 
             .upload-form {
                 position: relative;
+
+                .input-container {
+                    .upload-input {
+                        width: 0;
+                        height: 0;
+                        opacity: 0;
+                        overflow: hidden;
+                        position: absolute;
+                        z-index: -1;
+                    }
+
+                    .upload-input-label {
+                        display: block;
+                        width: 100%;
+                        padding: .5em 0;
+                        text-align: center;
+                        font-size: 1em;
+                        background-color: transparent;
+                        color: $brand-accent;
+                        border: 3px solid $brand-accent;
+                        font-weight: 500;
+
+                        i {
+                            margin-right: .25em;
+                        }
+                    }
+                }
+
+                .upload-button {
+                    width: 100%;
+                    padding: .5em 0;
+                    font-size: 1em;
+                    margin-top: 1em;
+                }
 
                 .upload-spinner {
                     position: absolute;
