@@ -175,8 +175,16 @@ export default class ImageCollection {
                     'metadata.tags': tags
                 }
             }).then((data) => {
-                db.close();
-                return data;
+                const result = data.result;
+                if (result.nModified) {
+                    logger.debug(`Tags updated for ${result.nModified} image${result.nModified > 1 ? 's' : ''}`);
+                    db.close();
+                    return this.getImage(imageIDHex);
+                } else {
+                    logger.warn(`No image found with ID ${imageIDHex}`);
+                    db.close();
+                    return null;
+                }
             });
         });
     }

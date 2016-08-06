@@ -22,6 +22,12 @@ export default class ImagePage extends React.Component {
         history.push(`/images?tags=${tags.join()}`);
     }
 
+    updateTags(tags) {
+        ImagesApi.setTags(this.props.routeParams.imageID, tags).then((image) => {
+            this.setState({image});
+        });
+    }
+
     getImage(props) {
         const imageId = props.routeParams.imageID;
         ImagesApi.getImage(imageId).then((image) => {
@@ -46,8 +52,11 @@ export default class ImagePage extends React.Component {
         return (
             <div className="ImagePage">
                 <NavbarredPage>
-                    <ImageSidebar images={this.state.image ? [this.state.image] : []} uploadDisabled
-                                  onSearch={this.handleSearch.bind(this)} tagsEditable/>
+                    <ImageSidebar images={this.state.image ? [this.state.image] : []}
+                                  uploadDisabled
+                                  onSearch={this.handleSearch.bind(this)}
+                                  tagsEditable
+                                  onTagsChange={this.updateTags.bind(this)}/>
                     <div className="image-section">
                         {this.renderImage()}
                     </div>

@@ -107,15 +107,12 @@ var ImagesApi = function (_RestApi) {
                 var imageIDHex = req.params.imageIDHex,
                     tags = req.body.tags;
                 _logger2.default.debug('Image tags update requested for image ID: ' + imageIDHex);
-                _ImageCollection2.default.setTags(imageIDHex, tags).then(function (data) {
-                    var result = data.result,
-                        status = result.nModified ? 200 : 404;
-                    if (result.nModified) {
-                        _logger2.default.debug('Tags updated for ' + result.nModified + ' image' + (result.nModified > 1 ? 's' : ''));
+                _ImageCollection2.default.setTags(imageIDHex, tags).then(function (image) {
+                    if (image) {
+                        res.status(200).send(image);
                     } else {
-                        _logger2.default.warn('No image found with ID ' + imageIDHex);
+                        res.sendStatus(404);
                     }
-                    res.sendStatus(status);
                 }).catch(function (err) {
                     _logger2.default.error(err);
                     res.sendStatus(500);

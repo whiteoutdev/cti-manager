@@ -63,15 +63,12 @@ export default class ImagesApi extends RestApi {
             const imageIDHex = req.params.imageIDHex,
                   tags       = req.body.tags;
             logger.debug(`Image tags update requested for image ID: ${imageIDHex}`);
-            ImageCollection.setTags(imageIDHex, tags).then((data) => {
-                const result = data.result,
-                      status = result.nModified ? 200 : 404;
-                if (result.nModified) {
-                    logger.debug(`Tags updated for ${result.nModified} image${result.nModified > 1 ? 's' : ''}`);
+            ImageCollection.setTags(imageIDHex, tags).then((image) => {
+                if (image) {
+                    res.status(200).send(image);
                 } else {
-                    logger.warn(`No image found with ID ${imageIDHex}`);
+                    res.sendStatus(404);
                 }
-                res.sendStatus(status);
             }).catch((err) => {
                 logger.error(err);
                 res.sendStatus(500);

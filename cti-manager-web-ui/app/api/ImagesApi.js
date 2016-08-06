@@ -38,4 +38,11 @@ export default class ImagesApi {
         const url = `${apiPath}/images`;
         return http.post(url, formData);
     }
+
+    static setTags(id, tags) {
+        const url = `${apiPath}/images/${id}/tags`;
+        return http.post(url, {tags}).then((res) => {
+            return res.data;
+        });
+    }
 };

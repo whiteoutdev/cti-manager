@@ -220,6 +220,8 @@ var ImageCollection = function () {
     }, {
         key: 'setTags',
         value: function setTags(imageIDHex, tags) {
+            var _this5 = this;
+
             return _DBConnectionService2.default.getDB().then(function (db) {
                 var oid = ObjectID.createFromHexString(imageIDHex);
                 return db.collection(_app2.default.gridfs.filesCollection).update({
@@ -229,8 +231,16 @@ var ImageCollection = function () {
                         'metadata.tags': tags
                     }
                 }).then(function (data) {
-                    db.close();
-                    return data;
+                    var result = data.result;
+                    if (result.nModified) {
+                        _logger2.default.debug('Tags updated for ' + result.nModified + ' image' + (result.nModified > 1 ? 's' : ''));
+                        db.close();
+                        return _this5.getImage(imageIDHex);
+                    } else {
+                        _logger2.default.warn('No image found with ID ' + imageIDHex);
+                        db.close();
+                        return null;
+                    }
                 });
             });
         }

@@ -3,6 +3,7 @@ import uuid from 'uuid';
 import {HotKeys} from 'react-hotkeys';
 
 import Spinner from '../Spinner/Spinner.jsx';
+import TagEditor from '../TagEditor/TagEditor.jsx';
 
 import ImagesApi from '../../api/ImagesApi';
 
@@ -11,7 +12,8 @@ export default class ImageSidebar extends React.Component {
         super();
         this.id = `ImageSidebar-${uuid.v1()}`;
         this.state = {
-            uploadPending: false
+            uploadPending: false,
+            tagEditMode: false
         };
     }
 
@@ -26,6 +28,16 @@ export default class ImageSidebar extends React.Component {
     fireUploadComplete() {
         if (typeof this.props.onUploadComplete === 'function') {
             this.props.onUploadComplete();
+        }
+    }
+
+    fireTagsChange(tags) {
+        if (typeof this.props.onTagsChange === 'function') {
+            this.setState({
+                tagEditMode: false
+            }, () => {
+                this.props.onTagsChange(tags);
+            });
         }
     }
 
@@ -49,6 +61,12 @@ export default class ImageSidebar extends React.Component {
                 });
             });
         })
+    }
+
+    handleEditTags() {
+        this.setState({
+            tagEditMode: true
+        });
     }
 
     renderSearchSection() {
@@ -115,48 +133,68 @@ export default class ImageSidebar extends React.Component {
     }
 
     renderTagsSection() {
+        let editIcon = null;
+        if (this.props.tagsEditable && !this.state.tagEditMode) {
+            editIcon = <i className="material-icons" onClick={this.handleEditTags.bind(this)}>edit</i>;
+        }
+
+        let body = null;
+        if (this.state.tagEditMode) {
+            body = <TagEditor tags={this.getTagList()} onSave={this.fireTagsChange.bind(this)}/>;
+        } else {
+            body = this.renderTagsList();
+        }
+
         return (
             <div className="sidebar-section tags-section">
                 <div className="section-header">
                     <h2>Tags</h2>
-                    {this.props.tagsEditable ? <i className="material-icons">edit</i> : null}
+                    {editIcon}
                 </div>
                 <div className="section-body">
-                    <ul className="tags-list">
-                        {this.renderTagsList()}
-                    </ul>
+                    {body}
                 </div>
             </div>
         );
     }
 
-    renderTagsList() {
+    getTagList() {
         const images = this.props.images;
 
         if (!images) {
             return null;
         }
 
-        const tagCounts  = images.reduce((previous, current) => {
-                  current.metadata.tags.forEach((tag) => {
-                      if (previous[tag]) {
-                          previous[tag] = previous[tag] + 1;
-                      } else {
-                          previous[tag] = 1;
-                      }
-                  });
-                  return previous;
-              }, {}),
-              sortedTags = Object.keys(tagCounts).sort((t1, t2) => {
-                  const c1 = tagCounts[t1],
-                        c2 = tagCounts[t2];
-                  return c1 > c2 ? -1 : c1 < c2 ? 1 : 0;
-              });
-        return sortedTags.map((tag) => {
-            return (
-                <li key={tag} className="tags-list-item">{tag}</li>
-            );
+        const tagCounts = images.reduce((previous, current) => {
+            current.metadata.tags.forEach((tag) => {
+                if (previous[tag]) {
+                    previous[tag] = previous[tag] + 1;
+                } else {
+                    previous[tag] = 1;
+                }
+            });
+            return previous;
+        }, {});
+        return Object.keys(tagCounts).sort((t1, t2) => {
+            const c1 = tagCounts[t1],
+                  c2 = tagCounts[t2];
+            return c1 > c2 ? -1 : c1 < c2 ? 1 : t1 < t2 ? -1 : t1 > t2 ? 1 : 0;
         });
+    }
+
+    renderTagsList() {
+        const sortedTags   = this.getTagList(),
+              tagListItems = sortedTags.map((tag) => {
+                  return (
+                      <li key={tag} className="tags-list-item">{tag}</li>
+                  );
+              });
+
+        return (
+            <ul className="tags-list">
+                {tagListItems}
+            </ul>
+        );
     }
 
     render() {
