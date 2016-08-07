@@ -64,6 +64,13 @@ var ImageCollection = function () {
     }
 
     _createClass(ImageCollection, null, [{
+        key: 'init',
+        value: function init() {
+            return _DBConnectionService2.default.getDB().then(function (db) {
+                return db.collection(_app2.default.db.filesCollection).createIndex({ 'metadata.tags': 1 });
+            });
+        }
+    }, {
         key: 'addImages',
         value: function addImages(files) {
             var _this = this;
@@ -217,7 +224,7 @@ var ImageCollection = function () {
 
             return _DBConnectionService2.default.getDB().then(function (db) {
                 var oid = ObjectID.createFromHexString(imageIDHex);
-                return db.collection(_app2.default.gridfs.filesCollection).update({
+                return db.collection(_app2.default.db.filesCollection).update({
                     _id: oid
                 }, {
                     $set: {
@@ -249,7 +256,7 @@ var ImageCollection = function () {
                 if (limit) {
                     pipeline.push({ $sample: { size: limit } });
                 }
-                var cursor = db.collection('fs.files').aggregate(pipeline, { cursor: { batchSize: 1 } });
+                var cursor = db.collection(_app2.default.db.filesCollection).aggregate(pipeline, { cursor: { batchSize: 1 } });
                 return cursor.toArray().then(function (documents) {
                     return documents;
                 });

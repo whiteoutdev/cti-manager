@@ -5,7 +5,6 @@ import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
 import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
 
 import appConfig from '../../config/app.config';
-import history from '../../services/history';
 import ImagesApi from '../../api/ImagesApi';
 
 import './ImagePage.scss';
@@ -16,10 +15,6 @@ export default class ImagePage extends React.Component {
         this.state = {
             image: null
         };
-    }
-
-    handleSearch(tags) {
-        history.push(`/images?tags=${tags.join()}`);
     }
 
     updateTags(tags) {
@@ -54,7 +49,6 @@ export default class ImagePage extends React.Component {
                 <NavbarredPage>
                     <ImageSidebar images={this.state.image ? [this.state.image] : []}
                                   uploadDisabled
-                                  onSearch={this.handleSearch.bind(this)}
                                   tagsEditable
                                   onTagsChange={this.updateTags.bind(this)}/>
                     <div className="image-section">

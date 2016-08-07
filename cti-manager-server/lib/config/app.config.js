@@ -29,10 +29,9 @@ exports.default = {
     db: {
         host: 'localhost',
         port: 27017,
-        name: dev ? 'cti-dev' : 'cti'
-    },
-    gridfs: {
-        filesCollection: 'fs.files'
+        name: dev ? 'cti-dev' : 'cti',
+        filesCollection: 'fs.files',
+        tagsCollection: 'tags'
     },
     tmpDir: 'tmp',
     thumbnailSize: 180

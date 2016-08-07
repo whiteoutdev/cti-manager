@@ -5,7 +5,6 @@ import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
 import Gallery from './ImagesPageThumbnailGallery.jsx';
 
 import appConfig from '../../config/app.config';
-import history from '../../services/history';
 import ImagesApi from '../../api/ImagesApi';
 
 import './ImagesPage.scss';
@@ -24,10 +23,16 @@ export default class ImagesPage extends React.Component {
         };
     }
 
-    runQueryFromProps(query) {
-        const tags  = query.tags ? query.tags.split(',') : null,
-              skip  = Number(query.skip) || 0,
-              limit = Number(query.limit) || defaultLimit;
+    runQueryFromProps(location) {
+        const query  = location.query,
+              search = location.search,
+              skip   = Number(query.skip) || 0,
+              limit  = Number(query.limit) || defaultLimit;
+        let tags = null;
+        if (query.tags) {
+            const tagsString = search.match(/tags=([^&]+)/)[1];
+            tags = tagsString.split(',');
+        }
         ImagesApi.getImages(tags, skip, limit).then((data) => {
             const images       = data.images,
                   thumbnailIds = data.images.map(image => image._id),
@@ -36,16 +41,12 @@ export default class ImagesPage extends React.Component {
         });
     }
 
-    handleSearch(tags) {
-        history.push(`/images?tags=${tags.join()}&limit=${defaultLimit}`);
-    }
-
     componentDidMount() {
-        this.runQueryFromProps(this.props.location.query);
+        this.runQueryFromProps(this.props.location);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.runQueryFromProps(nextProps.location.query);
+        this.runQueryFromProps(nextProps.location);
     }
 
     render() {
@@ -53,8 +54,7 @@ export default class ImagesPage extends React.Component {
             <div className="ImagesPage">
                 <NavbarredPage>
                     <ImageSidebar images={this.state.images}
-                                  onSearch={this.handleSearch.bind(this)}
-                                  onUploadComplete={() => {this.runQueryFromProps(this.props)}}/>
+                                  onUploadComplete={() => {this.runQueryFromProps(this.props.location)}}/>
                     <Gallery ids={this.state.thumbnailIds}
                              skip={this.state.skip}
                              limit={this.state.limit}

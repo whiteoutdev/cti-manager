@@ -16,6 +16,12 @@ const ObjectID      = MongoDB.ObjectID,
       thumbnailSize = appConfig.thumbnailSize;
 
 export default class ImageCollection {
+    static init() {
+        return DBConnectionService.getDB().then((db) => {
+            return db.collection(appConfig.db.filesCollection).createIndex({'metadata.tags': 1});
+        });
+    }
+
     static addImages(files) {
         logger.info(`${files.length} images received for ingest`);
         return DBConnectionService.getDB().then((db) => {
@@ -160,7 +166,7 @@ export default class ImageCollection {
     static setTags(imageIDHex, tags) {
         return DBConnectionService.getDB().then((db) => {
             const oid = ObjectID.createFromHexString(imageIDHex);
-            return db.collection(appConfig.gridfs.filesCollection).update({
+            return db.collection(appConfig.db.filesCollection).update({
                 _id: oid
             }, {
                 $set: {
@@ -193,7 +199,8 @@ export default class ImageCollection {
             if (limit) {
                 pipeline.push({$sample: {size: limit}});
             }
-            const cursor = db.collection('fs.files').aggregate(pipeline, {cursor: {batchSize: 1}});
+            const cursor = db.collection(appConfig.db.filesCollection)
+                .aggregate(pipeline, {cursor: {batchSize: 1}});
             return cursor.toArray().then((documents) => {
                 return documents;
             });

@@ -1,7 +1,9 @@
 import ImagesApi from './ImagesApi';
+import TagsApi from './TagsApi';
 
 const apis = [
-    new ImagesApi()
+    new ImagesApi(),
+    new TagsApi()
 ];
 
 export default class RestConfig {

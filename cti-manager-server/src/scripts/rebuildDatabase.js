@@ -2,6 +2,8 @@ import 'babel-polyfill';
 
 import logger from '../util/logger';
 import DBConnectionService  from '../store/DBConnectionService';
+import ImageCollection from '../store/ImageCollection';
+import TagCollection from '../store/TagCollection';
 
 DBConnectionService.getDB().then((db) => {
     db.listCollections({}).toArray().then((collections) => {
@@ -14,8 +16,14 @@ DBConnectionService.getDB().then((db) => {
         });
 
         Promise.all(dropPromises).then(() => {
-            logger.info('Database rebuilt');
-            db.close();
+            const createPromises = [
+                ImageCollection.init(),
+                TagCollection.init()
+            ];
+            Promise.all(createPromises).then(() => {
+                logger.info('Database rebuilt');
+                db.close();
+            });
         });
     });
 });

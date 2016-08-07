@@ -6,36 +6,31 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _ImagesApi = require('./ImagesApi');
+var _TagType = require('./TagType');
 
-var _ImagesApi2 = _interopRequireDefault(_ImagesApi);
-
-var _TagsApi = require('./TagsApi');
-
-var _TagsApi2 = _interopRequireDefault(_TagsApi);
+var _TagType2 = _interopRequireDefault(_TagType);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var apis = [new _ImagesApi2.default(), new _TagsApi2.default()];
+var Tag = function () {
+    function Tag(name, type) {
+        _classCallCheck(this, Tag);
 
-var RestConfig = function () {
-    function RestConfig() {
-        _classCallCheck(this, RestConfig);
+        this._id = Tag.encode(name);
+        this.type = type || _TagType2.default.GENERAL;
+        this.derivedTags = [];
     }
 
-    _createClass(RestConfig, null, [{
-        key: 'configure',
-        value: function configure(app) {
-            apis.forEach(function (api) {
-                api.configure(app);
-            });
+    _createClass(Tag, null, [{
+        key: 'encode',
+        value: function encode(name) {
+            return name.replace(/ /g, '_');
         }
     }]);
 
-    return RestConfig;
+    return Tag;
 }();
 
-exports.default = RestConfig;
-;
+exports.default = Tag;

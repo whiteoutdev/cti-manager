@@ -7,8 +7,8 @@
     "build": "rm -rf lib && babel src -d lib",
     "serve": "node index | bunyan",
     "serve-dev": "node index --dev | bunyan",
-    "db": "node lib/scripts/rebuildDatabase | bunyan",
-    "db-dev": "node lib/scripts/rebuildDatabase --dev | bunyan",
+    "db": "npm run build && node lib/scripts/rebuildDatabase | bunyan",
+    "db-dev": "npm run build && node lib/scripts/rebuildDatabase --dev | bunyan",
     "dev": "npm run build && npm run db-dev && npm run serve-dev",
     "prod": "npm run build && npm run serve-dev",
     "test": "echo \"Error: no test specified\" && exit 1"

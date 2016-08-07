@@ -1,10 +1,8 @@
-import path from 'path';
-import del from 'del';
-
 import logger from '../util/logger';
 import RestApi from './RestApi'
 import upload from './upload';
 import ImageCollection from '../store/ImageCollection';
+import TagCollection from '../store/TagCollection';
 
 export default class ImagesApi extends RestApi {
     configure(app) {
@@ -17,11 +15,16 @@ export default class ImagesApi extends RestApi {
 
         app.get('/images', (req, res) => {
             logger.debug(`Image metadata requested`);
-            const query      = req.query,
-                  tagsString = query.tags,
-                  skip       = Number(query.skip),
-                  limit      = Number(query.limit),
-                  tags       = tagsString ? tagsString.split(',') : null;
+            const query = req.query,
+                  skip  = Number(query.skip),
+                  limit = Number(query.limit);
+            let tags = null;
+            if (query.tags) {
+                const tagsString = req.url.match(/tags=([^&]+)/)[1];
+                tags = tagsString.split(',').map((encodedTag) => {
+                    return decodeURIComponent(encodedTag);
+                });
+            }
             ImageCollection.getImages(tags, skip, limit).then((info) => {
                 res.status(200).send(info);
             });
@@ -31,7 +34,11 @@ export default class ImagesApi extends RestApi {
             const imageIDHex = req.params.imageIDHex;
             logger.debug(`Image metadata requested for image ID: ${imageIDHex}`);
             ImageCollection.getImage(imageIDHex).then((imageMetadata) => {
-                res.status(200).send(imageMetadata);
+                if (imageMetadata) {
+                    res.status(200).send(imageMetadata);
+                } else {
+                    res.sendStatus(404);
+                }
             });
         });
 
@@ -63,7 +70,11 @@ export default class ImagesApi extends RestApi {
             const imageIDHex = req.params.imageIDHex,
                   tags       = req.body.tags;
             logger.debug(`Image tags update requested for image ID: ${imageIDHex}`);
-            ImageCollection.setTags(imageIDHex, tags).then((image) => {
+            Promise.all([
+                ImageCollection.setTags(imageIDHex, tags),
+                TagCollection.createTags(tags)
+            ]).then((results) => {
+                const image = results[0];
                 if (image) {
                     res.status(200).send(image);
                 } else {

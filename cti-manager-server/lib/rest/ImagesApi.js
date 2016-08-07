@@ -6,14 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _path = require('path');
-
-var _path2 = _interopRequireDefault(_path);
-
-var _del = require('del');
-
-var _del2 = _interopRequireDefault(_del);
-
 var _logger = require('../util/logger');
 
 var _logger2 = _interopRequireDefault(_logger);
@@ -29,6 +21,10 @@ var _upload2 = _interopRequireDefault(_upload);
 var _ImageCollection = require('../store/ImageCollection');
 
 var _ImageCollection2 = _interopRequireDefault(_ImageCollection);
+
+var _TagCollection = require('../store/TagCollection');
+
+var _TagCollection2 = _interopRequireDefault(_TagCollection);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -62,10 +58,15 @@ var ImagesApi = function (_RestApi) {
             app.get('/images', function (req, res) {
                 _logger2.default.debug('Image metadata requested');
                 var query = req.query,
-                    tagsString = query.tags,
                     skip = Number(query.skip),
-                    limit = Number(query.limit),
-                    tags = tagsString ? tagsString.split(',') : null;
+                    limit = Number(query.limit);
+                var tags = null;
+                if (query.tags) {
+                    var tagsString = req.url.match(/tags=([^&]+)/)[1];
+                    tags = tagsString.split(',').map(function (encodedTag) {
+                        return decodeURIComponent(encodedTag);
+                    });
+                }
                 _ImageCollection2.default.getImages(tags, skip, limit).then(function (info) {
                     res.status(200).send(info);
                 });
@@ -75,7 +76,11 @@ var ImagesApi = function (_RestApi) {
                 var imageIDHex = req.params.imageIDHex;
                 _logger2.default.debug('Image metadata requested for image ID: ' + imageIDHex);
                 _ImageCollection2.default.getImage(imageIDHex).then(function (imageMetadata) {
-                    res.status(200).send(imageMetadata);
+                    if (imageMetadata) {
+                        res.status(200).send(imageMetadata);
+                    } else {
+                        res.sendStatus(404);
+                    }
                 });
             });
 
@@ -107,7 +112,8 @@ var ImagesApi = function (_RestApi) {
                 var imageIDHex = req.params.imageIDHex,
                     tags = req.body.tags;
                 _logger2.default.debug('Image tags update requested for image ID: ' + imageIDHex);
-                _ImageCollection2.default.setTags(imageIDHex, tags).then(function (image) {
+                Promise.all([_ImageCollection2.default.setTags(imageIDHex, tags), _TagCollection2.default.createTags(tags)]).then(function (results) {
+                    var image = results[0];
                     if (image) {
                         res.status(200).send(image);
                     } else {

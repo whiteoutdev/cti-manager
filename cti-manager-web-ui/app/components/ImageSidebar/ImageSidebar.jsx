@@ -7,6 +7,7 @@ import Spinner from '../Spinner/Spinner.jsx';
 import TagEditor from '../TagEditor/TagEditor.jsx';
 
 import appConfig from '../../config/app.config';
+import history from '../../services/history';
 import ImagesApi from '../../api/ImagesApi';
 
 export default class ImageSidebar extends React.Component {
@@ -17,14 +18,6 @@ export default class ImageSidebar extends React.Component {
             uploadPending: false,
             tagEditMode: false
         };
-    }
-
-    fireSearch() {
-        if (typeof this.props.onSearch === 'function') {
-            const searchText = this.refs.searchInput.value,
-                  tags       = searchText.split(/\s+/);
-            this.props.onSearch(tags);
-        }
     }
 
     fireUploadComplete() {
@@ -41,6 +34,15 @@ export default class ImageSidebar extends React.Component {
                 this.props.onTagsChange(tags);
             });
         }
+    }
+
+    search() {
+        const searchText = this.refs.searchInput.value,
+              tags       = searchText.split(/\s+/),
+              tagsString = tags.map((tag) => {
+                  return encodeURIComponent(tag);
+              }).join();
+        history.push(`/images?tags=${tagsString}`);
     }
 
     canUpload() {
@@ -73,7 +75,7 @@ export default class ImageSidebar extends React.Component {
 
     renderSearchSection() {
         return (
-            <HotKeys handlers={{enter: this.fireSearch.bind(this)}}>
+            <HotKeys handlers={{enter: this.search.bind(this)}}>
                 <div className="sidebar-section search-section">
                     <div className="section-header">
                         <h2>Search</h2>
@@ -81,7 +83,7 @@ export default class ImageSidebar extends React.Component {
                     <div className="section-body">
                         <div className="search-form">
                             <input id={`${this.id}-search-input`} className="accent" ref="searchInput" type="text"/>
-                            <button className="search-button accent" onClick={this.fireSearch.bind(this)}>
+                            <button className="search-button accent" onClick={this.search.bind(this)}>
                                 <i className="material-icons">search</i>
                             </button>
                         </div>
@@ -189,7 +191,7 @@ export default class ImageSidebar extends React.Component {
               tagListItems = sortedTags.map((tag) => {
                   return (
                       <li key={tag} className="tags-list-item">
-                          <Link to={`/images?tags=${tag}`}>{tag}</Link>
+                          <Link to={`/images?tags=${encodeURIComponent(tag)}`}>{tag}</Link>
                       </li>
                   );
               });
