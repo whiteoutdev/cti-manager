@@ -1,3 +1,5 @@
+@import '../../scss/colours';
+
 .Spinner {
     display: inline-block;
     position: relative;
@@ -57,16 +59,16 @@
 @keyframes color {
     100%,
     0% {
-        stroke: red;
+        stroke: $brand-accent;
     }
     40% {
-        stroke: blue;
+        stroke: $blue-grey-light;
     }
     66% {
-        stroke: green;
+        stroke: $brand-accent;
     }
     80%,
     90% {
-        stroke: yellow;
+        stroke: $blue-grey-light;
     }
 }
