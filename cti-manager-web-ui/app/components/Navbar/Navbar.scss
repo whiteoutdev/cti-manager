@@ -1,18 +1,52 @@
 @import '../../scss/constants';
 @import '../../scss/colours';
 
+$navbar-height: 3rem;
+$navbar-background: darken($brand-primary, 12.5);
+
 .Navbar {
-    background-color: darken($brand-primary, 12.5);
-    padding: .75rem $page-gutter;
-    box-shadow: 0 3px 8px 0px rgba(darken($brand-primary, 20), .75);
+    display: flex;
+    flex-flow: row nowrap;
+    background-color: $navbar-background;
+    padding: 0 $page-gutter;
+    box-shadow: 0 3px 8px 0 rgba(darken($brand-primary, 20), .75);
 
     .home-link {
         text-decoration: none;
+        margin-right: 3em;
 
         h1 {
             color: $font-light-primary;
-            font-size: 1.25em;
+            font-size: 1.25rem;
             font-weight: 500;
+            height: $navbar-height;
+            line-height: $navbar-height;
+        }
+    }
+
+    .nav-link-list {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+
+        .nav-link {
+            display: inline-block;
+            height: $navbar-height;
+            line-height: $navbar-height;
+            padding: 0 1.5em;
+            background-color: $navbar-background;
+            color: $font-light-primary;
+            text-decoration: none;
+            transition: all 150ms linear;
+
+            &:hover {
+                background-color: $brand-primary;
+            }
+
+            &:active, &.active {
+                background-color: $brand-accent;
+                transition: none;
+            }
         }
     }
 

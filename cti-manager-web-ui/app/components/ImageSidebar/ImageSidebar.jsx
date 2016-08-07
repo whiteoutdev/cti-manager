@@ -1,10 +1,12 @@
 import React from 'react';
+import {Link} from 'react-router';
 import uuid from 'uuid';
 import {HotKeys} from 'react-hotkeys';
 
 import Spinner from '../Spinner/Spinner.jsx';
 import TagEditor from '../TagEditor/TagEditor.jsx';
 
+import appConfig from '../../config/app.config';
 import ImagesApi from '../../api/ImagesApi';
 
 export default class ImageSidebar extends React.Component {
@@ -186,7 +188,9 @@ export default class ImageSidebar extends React.Component {
         const sortedTags   = this.getTagList(),
               tagListItems = sortedTags.map((tag) => {
                   return (
-                      <li key={tag} className="tags-list-item">{tag}</li>
+                      <li key={tag} className="tags-list-item">
+                          <Link to={`/images?tags=${tag}`}>{tag}</Link>
+                      </li>
                   );
               });
 
