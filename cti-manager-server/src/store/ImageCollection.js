@@ -37,7 +37,6 @@ export default class ImageCollection {
 
             return Promise.all(promises).then(() => {
                 logger.info(`${promises.length} images written to database`);
-                db.close();
             });
         });
     }
@@ -105,12 +104,7 @@ export default class ImageCollection {
                     return {
                         doc: arr[0],
                         stream: bucket.openDownloadStream(oid)
-                            .on('finish', () => {
-                                db.close();
-                            })
                     };
-                } else {
-                    db.close();
                 }
             });
         });
@@ -121,7 +115,6 @@ export default class ImageCollection {
             const oid    = ObjectID.createFromHexString(imageIDHex),
                   bucket = new GridFSBucket(db);
             return bucket.find({_id: oid}).toArray().then((arr) => {
-                db.close();
                 if (arr.length) {
                     return arr[0];
                 }
@@ -146,7 +139,6 @@ export default class ImageCollection {
                         .sort({uploadDate: -1})
                         .toArray()
                         .then((images) => {
-                            db.close();
                             return {images, count};
                         });
                 });
@@ -178,11 +170,9 @@ export default class ImageCollection {
                 const result = data.result;
                 if (result.nModified) {
                     logger.debug(`Tags updated for ${result.nModified} image${result.nModified > 1 ? 's' : ''}`);
-                    db.close();
                     return this.getImage(imageIDHex);
                 } else {
                     logger.warn(`No image found with ID ${imageIDHex}`);
-                    db.close();
                     return null;
                 }
             });
@@ -205,7 +195,6 @@ export default class ImageCollection {
             }
             const cursor = db.collection('fs.files').aggregate(pipeline, {cursor: {batchSize: 1}});
             return cursor.toArray().then((documents) => {
-                db.close();
                 return documents;
             });
         });

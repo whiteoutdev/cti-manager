@@ -28,33 +28,18 @@ var MongoClient = _mongodb2.default.MongoClient,
 var DBConnectionService = function () {
     function DBConnectionService() {
         _classCallCheck(this, DBConnectionService);
+
+        this.connectionPromise = MongoClient.connect(url);
     }
 
-    _createClass(DBConnectionService, null, [{
+    _createClass(DBConnectionService, [{
         key: 'getDB',
         value: function getDB() {
-            return (0, _co2.default)(regeneratorRuntime.mark(function _callee() {
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                    while (1) {
-                        switch (_context.prev = _context.next) {
-                            case 0:
-                                _context.next = 2;
-                                return MongoClient.connect(url);
-
-                            case 2:
-                                return _context.abrupt('return', _context.sent);
-
-                            case 3:
-                            case 'end':
-                                return _context.stop();
-                        }
-                    }
-                }, _callee, this);
-            }));
+            return this.connectionPromise;
         }
     }]);
 
     return DBConnectionService;
 }();
 
-exports.default = DBConnectionService;
+exports.default = new DBConnectionService();

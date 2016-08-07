@@ -88,7 +88,6 @@ var ImageCollection = function () {
 
                 return Promise.all(promises).then(function () {
                     _logger2.default.info(promises.length + ' images written to database');
-                    db.close();
                 });
             });
         }
@@ -155,12 +154,8 @@ var ImageCollection = function () {
                     if (arr.length) {
                         return {
                             doc: arr[0],
-                            stream: bucket.openDownloadStream(oid).on('finish', function () {
-                                db.close();
-                            })
+                            stream: bucket.openDownloadStream(oid)
                         };
-                    } else {
-                        db.close();
                     }
                 });
             });
@@ -172,7 +167,6 @@ var ImageCollection = function () {
                 var oid = ObjectID.createFromHexString(imageIDHex),
                     bucket = new GridFSBucket(db);
                 return bucket.find({ _id: oid }).toArray().then(function (arr) {
-                    db.close();
                     if (arr.length) {
                         return arr[0];
                     }
@@ -193,7 +187,6 @@ var ImageCollection = function () {
                 var cursor = bucket.find(query);
                 return cursor.count().then(function (count) {
                     return cursor.skip(skip || 0).limit(limit || 0).sort({ uploadDate: -1 }).toArray().then(function (images) {
-                        db.close();
                         return { images: images, count: count };
                     });
                 });
@@ -234,11 +227,9 @@ var ImageCollection = function () {
                     var result = data.result;
                     if (result.nModified) {
                         _logger2.default.debug('Tags updated for ' + result.nModified + ' image' + (result.nModified > 1 ? 's' : ''));
-                        db.close();
                         return _this5.getImage(imageIDHex);
                     } else {
                         _logger2.default.warn('No image found with ID ' + imageIDHex);
-                        db.close();
                         return null;
                     }
                 });
@@ -260,7 +251,6 @@ var ImageCollection = function () {
                 }
                 var cursor = db.collection('fs.files').aggregate(pipeline, { cursor: { batchSize: 1 } });
                 return cursor.toArray().then(function (documents) {
-                    db.close();
                     return documents;
                 });
             });
