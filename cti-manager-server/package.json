@@ -11,7 +11,8 @@
     "db-dev": "npm run build && node lib/scripts/rebuildDatabase --dev | bunyan",
     "dev": "npm run build && npm run db-dev && npm run serve-dev",
     "prod": "npm run build && npm run serve-dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preversion": "npm run build"
   },
   "author": "",
   "license": "ISC",
