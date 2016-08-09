@@ -1,5 +1,8 @@
+import packageJson from '../../package.json';
+
 export default {
     appName: 'CTI Manager',
+    version: packageJson.version,
     api: {
         host: 'localhost',
         port: 3333,

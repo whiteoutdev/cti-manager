@@ -11,6 +11,10 @@ const loaders = [
     {
         test: /\.(png|jpg|jpeg|svg|eot|ttf|woff|woff2)$/,
         loader: 'url?limit=8192'
+    },
+    {
+        test: /\.json$/,
+        loader: 'json'
     }
 ];
 
