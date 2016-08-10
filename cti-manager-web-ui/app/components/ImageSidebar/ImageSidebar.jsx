@@ -3,21 +3,36 @@ import {Link} from 'react-router';
 import uuid from 'uuid';
 import {HotKeys} from 'react-hotkeys';
 
+import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Spinner from '../Spinner/Spinner.jsx';
 import TagEditor from '../TagEditor/TagEditor.jsx';
+import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
 
 import appConfig from '../../config/app.config';
 import history from '../../services/history';
+import TagStore from '../../stores/TagStore';
+import TagActions from '../../actions/TagActions';
 import ImagesApi from '../../api/ImagesApi';
 
-export default class ImageSidebar extends React.Component {
-    constructor() {
-        super();
+export default class ImageSidebar extends RefluxComponent {
+    constructor(props) {
+        super(props);
         this.id = `ImageSidebar-${uuid.v1()}`;
         this.state = {
             uploadPending: false,
-            tagEditMode: false
+            tagEditMode  : false,
+            allTags      : []
         };
+        this.listenTo(TagStore, this.onTagsUpdated, (tags) => {
+            this.state.allTags = tags
+        });
+        TagActions.updateTags();
+    }
+
+    onTagsUpdated(tags) {
+        this.setState({
+            allTags: tags
+        });
     }
 
     fireUploadComplete() {
@@ -37,10 +52,10 @@ export default class ImageSidebar extends React.Component {
     }
 
     search() {
-        const searchText = this.refs.searchInput.value,
+        const searchText = this.refs.searchInput.value.trim(),
               tags       = searchText.split(/\s+/),
               tagsString = tags.map((tag) => {
-                  return encodeURIComponent(tag);
+                  return encodeURIComponent(tag.replace(/_/g, ' '));
               }).join();
         history.push(`/images?tags=${tagsString}`);
     }
@@ -75,21 +90,24 @@ export default class ImageSidebar extends React.Component {
 
     renderSearchSection() {
         return (
-            <HotKeys handlers={{enter: this.search.bind(this)}}>
-                <div className="sidebar-section search-section">
+            <div className="sidebar-section search-section">
+                <HotKeys handlers={{enter: this.search.bind(this)}}>
                     <div className="section-header">
                         <h2>Search</h2>
                     </div>
                     <div className="section-body">
                         <div className="search-form">
-                            <input id={`${this.id}-search-input`} className="accent" ref="searchInput" type="text"/>
+                            <AutocompleteInput ref="searchInput"
+                                               items={this.state.allTags.map(tag => tag._id)}
+                                               onEnter={this.search.bind(this)}/>
+                            {/*<input id={`${this.id}-search-input`} className="accent" ref="searchInput" type="text"/>*/}
                             <button className="search-button accent" onClick={this.search.bind(this)}>
                                 <i className="material-icons">search</i>
                             </button>
                         </div>
                     </div>
-                </div>
-            </HotKeys>
+                </HotKeys>
+            </div>
         );
     }
 

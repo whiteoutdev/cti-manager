@@ -6,6 +6,7 @@ import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
 
 import appConfig from '../../config/app.config';
 import ImagesApi from '../../api/ImagesApi';
+import TagActions from '../../actions/TagActions';
 
 import './ImagePage.scss';
 
@@ -19,7 +20,9 @@ export default class ImagePage extends React.Component {
 
     updateTags(tags) {
         ImagesApi.setTags(this.props.routeParams.imageID, tags).then((image) => {
-            this.setState({image});
+            this.setState({image}, () => {
+                TagActions.updateTags();
+            });
         });
     }
 

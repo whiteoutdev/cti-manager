@@ -9,6 +9,7 @@ $sidebar-section-gutter: 1rem;
     padding: 2rem 1rem;
 
     .sidebar-section {
+        position: relative;
         margin-bottom: 1em;
         background-color: $white;
 
@@ -47,6 +48,8 @@ $sidebar-section-gutter: 1rem;
         }
 
         &.search-section {
+            z-index: 5;
+
             .search-form {
                 display: flex;
                 flex-flow: row nowrap;
