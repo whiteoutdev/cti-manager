@@ -36,17 +36,21 @@ export default class AutocompleteInput extends React.Component {
         if (typeof index !== 'number') {
             index = this.state.suggestionIndex;
         }
-        const suggestion = this.state.suggestions[index % this.state.suggestions.length],
-              queries    = this.refs.input.value.split(' '),
-              lastQuery  = queries[queries.length - 1];
 
-        if (!lastQuery || !this.state.suggestions.length) {
+        if (!this.state.suggestions.length) {
             this.fireEnter();
             return;
         }
 
-        queries[queries.length - 1] = `${suggestion} `;
-        this.refs.input.value = queries.join(' ');
+        const cursorPosition      = this.refs.input.selectionStart,
+              beforeCursor        = this.refs.input.value.substring(0, cursorPosition),
+              afterCursor         = this.refs.input.value.substr(cursorPosition),
+              queriesBeforeCursor = beforeCursor.split(' ');
+
+        queriesBeforeCursor[queriesBeforeCursor.length - 1] =
+            this.state.suggestions[index % this.state.suggestions.length];
+
+        this.refs.input.value = `${queriesBeforeCursor.join(' ')}${afterCursor || ' '}`;
         this.closeSuggestions();
     }
 
@@ -80,9 +84,16 @@ export default class AutocompleteInput extends React.Component {
     }
 
     updateSuggestions() {
-        const queries = this.refs.input.value.split(' '),
-              query   = queries[queries.length - 1];
-        this.filterSuggestions(query);
+        const cursorPosition = this.refs.input.selectionStart,
+              beforeCursor   = this.refs.input.value.substring(0, cursorPosition),
+              afterCursor    = this.refs.input.value.substr(cursorPosition);
+        if (/(^\s)|^$/.test(afterCursor)) {
+            const queriesBeforeCursor = beforeCursor.split(' '),
+                  currentQuery        = queriesBeforeCursor[queriesBeforeCursor.length - 1];
+            this.filterSuggestions(currentQuery);
+        } else {
+            this.closeSuggestions();
+        }
     }
 
     filterSuggestions(query) {
@@ -91,10 +102,17 @@ export default class AutocompleteInput extends React.Component {
             return;
         }
 
-        const limit       = Number(this.props.limit) || 10,
-              suggestions = this.props.items.filter((item, index) => {
-                  return ~item.toLowerCase().indexOf(query.toLowerCase()) && index < limit;
-              });
+        query = query.toLowerCase();
+        const suggestions = [],
+              limit       = Number(this.props.limit) || 10;
+
+        for (let i = 0; i < this.props.items.length && suggestions.length < limit; i++) {
+            const item = this.props.items[i];
+            if (item.toLowerCase().indexOf(query) > -1) {
+                suggestions.push(item);
+            }
+        }
+
         this.setState({
             suggestions,
             suggestionIndex: 0
@@ -102,6 +120,7 @@ export default class AutocompleteInput extends React.Component {
     }
 
     onChange(e) {
+        console.log(this.props.items);
         if (typeof this.props.onChange === 'function') {
             this.props.onChange(e);
         }
