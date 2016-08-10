@@ -52,7 +52,9 @@ export default class ImagePage extends React.Component {
                                   tagsEditable
                                   onTagsChange={this.updateTags.bind(this)}/>
                     <div className="image-section">
-                        {this.renderImage()}
+                        <div className="image-container">
+                            {this.renderImage()}
+                        </div>
                     </div>
                 </NavbarredPage>
             </div>

@@ -179,10 +179,15 @@ export default class ImageSidebar extends React.Component {
             });
             return previous;
         }, {});
+
+        const tagLimit = Number(this.props.tagLimit) || Infinity;
+
         return Object.keys(tagCounts).sort((t1, t2) => {
             const c1 = tagCounts[t1],
                   c2 = tagCounts[t2];
             return c1 > c2 ? -1 : c1 < c2 ? 1 : t1 < t2 ? -1 : t1 > t2 ? 1 : 0;
+        }).filter((tag, index) => {
+            return index < tagLimit;
         });
     }
 
