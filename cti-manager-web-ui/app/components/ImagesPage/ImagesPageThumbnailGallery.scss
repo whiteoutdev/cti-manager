@@ -1,3 +1,5 @@
+@import '../../scss/colours';
+
 .ImagesPageThumbnailGallery {
     padding: 2rem;
 
@@ -13,6 +15,66 @@
 
         .end-padding {
             flex: 1;
+        }
+    }
+
+    .page-navigation {
+        padding: 1em 0 2.5em;
+
+        .nav-buttons {
+            display: flex;
+            flex-flow: row wrap;
+            align-content: center;
+            justify-content: center;
+
+            .nav-button {
+                margin: .25em;
+
+                &.current {
+                    background-color: $brand-primary;
+                    border: 1px solid $brand-primary;
+                    color: $white;
+                }
+
+                &.link {
+                    border: 1px solid $brand-accent;
+                    transition: all 100ms linear;
+                    height: 2.5em;
+
+                    &.button-link {
+                        a {
+                            padding: 0;
+
+                            i {
+                                position: relative;
+                                font-size: 2em;
+                                top: .1em;
+                            }
+                        }
+                    }
+
+                    &:hover {
+                        background-color: $brand-accent;
+
+                        a {
+                            color: $white;
+                        }
+                    }
+
+                    a {
+                        color: $brand-accent;
+                        text-decoration: none;
+                    }
+                }
+
+                a, span {
+                    display: block;
+                    padding: 0 .5em;
+                    font-weight: 500;
+                    line-height: 2.5em;
+                }
+
+            }
         }
     }
 }
