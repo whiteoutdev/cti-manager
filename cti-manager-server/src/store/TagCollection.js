@@ -14,7 +14,12 @@ export default class TagCollection {
                 .find({})
                 .skip(skip || 0)
                 .limit(limit || 0)
-                .toArray();
+                .toArray()
+                .then((tags) => {
+                    return tags.map((tag) => {
+                        return Tag.fromDatabase(tag).serialiseToApi();
+                    });
+                });
         });
     }
 
@@ -23,7 +28,9 @@ export default class TagCollection {
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.tagsCollection).findOne({
                 _id: tag
-            }).then(doc => doc);
+            }).then((doc) => {
+                return Tag.fromDatabase(doc).serialiseToApi();
+            });
         });
     }
 
@@ -44,7 +51,7 @@ export default class TagCollection {
                             return doc._id === tag;
                         });
                     }).map((tag) => {
-                        return new Tag(tag);
+                        return new Tag(tag).serialiseToDatabase();
                     });
                     if (tagsToInsert.length) {
                         return db.collection(appConfig.db.tagsCollection)

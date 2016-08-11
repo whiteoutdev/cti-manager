@@ -20,12 +20,18 @@ $font-light-hint: rgba($white, .5);
 $font-light-decoration: rgba($white, .12);
 
 $brand-primary: #673ab7;
-$brand-accent: #0097A7;
+$brand-accent: #0097a7;
 
 $blue-grey-light: #B0BEC5;
 $blue-grey-mid: #607D8B;
 $blue-grey-dark: #37474F;
 
-$traffic-light-red: #F44336;
-$traffic-light-yellow: #FFC107;
-$traffic-light-green: #8BC34A;
+$traffic-light-red: #f44336;
+$traffic-light-yellow: #ffc107;
+$traffic-light-green: #8bc34a;
+
+$viz-1: $brand-primary;
+$viz-2: $brand-accent;
+$viz-3: #d81b60;
+$viz-4: #fb8c00;
+$viz-5: #c0ca33;

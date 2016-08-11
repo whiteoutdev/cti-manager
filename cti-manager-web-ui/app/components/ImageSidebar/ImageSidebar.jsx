@@ -2,13 +2,13 @@ import React from 'react';
 import {Link} from 'react-router';
 import uuid from 'uuid';
 import {HotKeys} from 'react-hotkeys';
+import _ from 'lodash';
 
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Spinner from '../Spinner/Spinner.jsx';
 import TagEditor from '../TagEditor/TagEditor.jsx';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
 
-import appConfig from '../../config/app.config';
 import history from '../../services/history';
 import TagStore from '../../stores/TagStore';
 import TagActions from '../../actions/TagActions';
@@ -27,6 +27,13 @@ export default class ImageSidebar extends RefluxComponent {
             this.state.allTags = tags
         });
         TagActions.updateTags();
+    }
+
+    getTagType(tag) {
+        const tagData = _.find(this.state.allTags, (tagData) => {
+            return tagData.id === tag;
+        });
+        return tagData ? tagData.type : '';
     }
 
     onTagsUpdated(tags) {
@@ -98,9 +105,8 @@ export default class ImageSidebar extends RefluxComponent {
                     <div className="section-body">
                         <div className="search-form">
                             <AutocompleteInput ref="searchInput"
-                                               items={this.state.allTags.map(tag => tag._id)}
+                                               items={this.state.allTags.map(tag => tag.id)}
                                                onEnter={this.search.bind(this)}/>
-                            {/*<input id={`${this.id}-search-input`} className="accent" ref="searchInput" type="text"/>*/}
                             <button className="search-button accent" onClick={this.search.bind(this)}>
                                 <i className="material-icons">search</i>
                             </button>
@@ -212,9 +218,13 @@ export default class ImageSidebar extends RefluxComponent {
     renderTagsList() {
         const sortedTags   = this.getTagList(),
               tagListItems = sortedTags.map((tag) => {
+                  console.log(this.getTagType(tag));
+                  const tagType = this.getTagType(tag).toLowerCase();
                   return (
                       <li key={tag} className="tags-list-item">
-                          <Link to={`/images?tags=${encodeURIComponent(tag)}`}>{tag}</Link>
+                          <Link className={tagType} to={`/images?tags=${encodeURIComponent(tag)}`}>
+                              {tag}
+                          </Link>
                       </li>
                   );
               });

@@ -40,7 +40,11 @@ var TagCollection = function () {
         key: 'getTags',
         value: function getTags(skip, limit) {
             return _DBConnectionService2.default.getDB().then(function (db) {
-                return db.collection(_app2.default.db.tagsCollection).find({}).skip(skip || 0).limit(limit || 0).toArray();
+                return db.collection(_app2.default.db.tagsCollection).find({}).skip(skip || 0).limit(limit || 0).toArray().then(function (tags) {
+                    return tags.map(function (tag) {
+                        return _Tag2.default.fromDatabase(tag).serialiseToApi();
+                    });
+                });
             });
         }
     }, {
@@ -51,7 +55,7 @@ var TagCollection = function () {
                 return db.collection(_app2.default.db.tagsCollection).findOne({
                     _id: tag
                 }).then(function (doc) {
-                    return doc;
+                    return _Tag2.default.fromDatabase(doc).serialiseToApi();
                 });
             });
         }
@@ -73,7 +77,7 @@ var TagCollection = function () {
                             return doc._id === tag;
                         });
                     }).map(function (tag) {
-                        return new _Tag2.default(tag);
+                        return new _Tag2.default(tag).serialiseToDatabase();
                     });
                     if (tagsToInsert.length) {
                         return db.collection(_app2.default.db.tagsCollection).insertMany(tagsToInsert).then(function (result) {

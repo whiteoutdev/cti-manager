@@ -82,12 +82,12 @@ export default class ImagesPageThumbnailGallery extends React.Component {
         if (currentPage < pageCount - 1) {
             const nextPageUrl = `/images?${query ? `${query}&` : ''}skip=${(currentPage + 1) * limit}&limit=${limit}`;
             navButtons.push(
-                <li className="nav-button link button-link">
+                <li key="nextPage" className="nav-button link button-link">
                     <Link to={nextPageUrl}>
                         <i className="material-icons">chevron_right</i>
                     </Link>
                 </li>,
-                <li className="nav-button link button-link">
+                <li key="lastPage" className="nav-button link button-link">
                     <Link to={`/images?${query ? `${query}&` : ''}skip=${(pageCount - 1) * limit}&limit=${limit}`}>
                         <i className="material-icons">last_page</i>
                     </Link>
