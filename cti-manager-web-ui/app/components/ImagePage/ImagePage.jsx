@@ -14,7 +14,8 @@ export default class ImagePage extends React.Component {
     constructor() {
         super();
         this.state = {
-            image: null
+            image    : null,
+            maximized: false
         };
     }
 
@@ -33,6 +34,12 @@ export default class ImagePage extends React.Component {
         });
     }
 
+    toggleMaximize() {
+        this.setState({
+            maximized: !this.state.maximized
+        });
+    }
+
     componentDidMount() {
         this.getImage(this.props);
     }
@@ -41,7 +48,10 @@ export default class ImagePage extends React.Component {
         if (this.state.image) {
             const downloadUrl = `${appConfig.api.path}/images/${this.state.image._id}/download`;
             return (
-                <img src={downloadUrl} alt={this.state.image._id} onClick={() => {window.open(downloadUrl, '_blank')}}/>
+                <img className={this.state.maximized ? 'max' : ''}
+                     src={downloadUrl}
+                     alt={this.state.image._id}
+                     onClick={this.toggleMaximize.bind(this)}/>
             );
         }
     }

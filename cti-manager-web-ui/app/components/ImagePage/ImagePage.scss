@@ -24,6 +24,13 @@
                     max-width: 100%;
                     max-height: 100%;
                     cursor: pointer;
+
+                    &.max {
+                        position: relative;
+                        max-height: none;
+                        top: 0;
+                        transform: translateX(-50%);
+                    }
                 }
             }
         }
