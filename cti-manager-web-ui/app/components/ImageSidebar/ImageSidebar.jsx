@@ -194,7 +194,7 @@ export default class ImageSidebar extends RefluxComponent {
         }
 
         const tagCounts = images.reduce((previous, current) => {
-            current.metadata.tags.forEach((tag) => {
+            current.tags.forEach((tag) => {
                 if (previous[tag]) {
                     previous[tag] = previous[tag] + 1;
                 } else {
@@ -218,7 +218,6 @@ export default class ImageSidebar extends RefluxComponent {
     renderTagsList() {
         const sortedTags   = this.getTagList(),
               tagListItems = sortedTags.map((tag) => {
-                  console.log(this.getTagType(tag));
                   const tagType = this.getTagType(tag).toLowerCase();
                   return (
                       <li key={tag} className="tags-list-item">

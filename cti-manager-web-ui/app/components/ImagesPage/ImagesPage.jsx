@@ -40,7 +40,7 @@ export default class ImagesPage extends React.Component {
         }
         ImagesApi.getImages(tags, skip, limit).then((data) => {
             const images       = data.images,
-                  thumbnailIds = data.images.map(image => image._id),
+                  thumbnailIds = data.images.map(image => image.id),
                   count        = data.count;
             this.setState({images, thumbnailIds, skip, limit, count});
         });

@@ -46,11 +46,11 @@ export default class ImagePage extends React.Component {
 
     renderImage() {
         if (this.state.image) {
-            const downloadUrl = `${appConfig.api.path}/images/${this.state.image._id}/download`;
+            const downloadUrl = `${appConfig.api.path}/images/${this.state.image.id}/download`;
             return (
                 <img className={this.state.maximized ? 'max' : ''}
                      src={downloadUrl}
-                     alt={this.state.image._id}
+                     alt={this.state.image.id}
                      onClick={this.toggleMaximize.bind(this)}/>
             );
         }

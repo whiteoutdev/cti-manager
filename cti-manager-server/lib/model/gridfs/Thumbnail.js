@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _AbstractFile2 = require('./AbstractFile');
 
 var _AbstractFile3 = _interopRequireDefault(_AbstractFile2);
@@ -23,11 +25,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Thumbnail = function (_AbstractFile) {
     _inherits(Thumbnail, _AbstractFile);
 
-    function Thumbnail(name) {
+    function Thumbnail(name, mimeType, id) {
         _classCallCheck(this, Thumbnail);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(Thumbnail).call(this, _FileType2.default.THUMBNAIL, name));
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(Thumbnail).call(this, _FileType2.default.THUMBNAIL, name, mimeType, id));
     }
+
+    _createClass(Thumbnail, null, [{
+        key: 'fromDatabase',
+        value: function fromDatabase(doc) {
+            var md = doc.metadata;
+            return new Thumbnail(md.n, md.m, doc._id);
+        }
+    }]);
 
     return Thumbnail;
 }(_AbstractFile3.default);

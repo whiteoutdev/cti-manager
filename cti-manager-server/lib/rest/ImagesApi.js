@@ -128,7 +128,7 @@ var ImagesApi = function (_RestApi) {
     }, {
         key: 'downloadFromFileInfo',
         value: function downloadFromFileInfo(res, data) {
-            var mimeType = data.doc.metadata.mimeType;
+            var mimeType = data.doc.mimeType;
             res.set({
                 'Content-Type': mimeType
             });

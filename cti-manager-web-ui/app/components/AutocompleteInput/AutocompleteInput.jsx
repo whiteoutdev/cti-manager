@@ -120,7 +120,6 @@ export default class AutocompleteInput extends React.Component {
     }
 
     onChange(e) {
-        console.log(this.props.items);
         if (typeof this.props.onChange === 'function') {
             this.props.onChange(e);
         }
