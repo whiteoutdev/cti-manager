@@ -1,4 +1,4 @@
-import AbstractModel from './AbstractModel';
+import AbstractModel from '../AbstractModel';
 import TagType from './TagType';
 
 export default class Tag extends AbstractModel {

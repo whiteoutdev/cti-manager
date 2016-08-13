@@ -38,5 +38,10 @@ export default class TagsApi extends RestApi {
                 }
             });
         });
+
+        app.get('/tagtypes', (req, res) => {
+            logger.debug('Tag types requested');
+            res.status(200).send(TagCollection.getTagTypeNames());
+        });
     }
 }

@@ -72,6 +72,11 @@ var TagsApi = function (_RestApi) {
                     }
                 });
             });
+
+            app.get('/tagtypes', function (req, res) {
+                _logger2.default.debug('Tag types requested');
+                res.status(200).send(_TagCollection2.default.getTagTypeNames());
+            });
         }
     }]);
 

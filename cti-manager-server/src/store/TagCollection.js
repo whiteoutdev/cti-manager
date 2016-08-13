@@ -1,7 +1,10 @@
+import _ from 'lodash';
+
 import appConfig from '../config/app.config';
 import logger from '../util/logger';
 import DBConnectionService from './DBConnectionService';
-import Tag from '../model/Tag';
+import Tag from '../model/tag/Tag';
+import TagType from '../model/tag/TagType';
 
 export default class TagCollection {
     static init() {
@@ -31,6 +34,14 @@ export default class TagCollection {
             }).then((doc) => {
                 return Tag.fromDatabase(doc).serialiseToApi();
             });
+        });
+    }
+
+    static getTagTypeNames() {
+        return _.filter(TagType, (type) => {
+            return type instanceof TagType;
+        }).map((type) => {
+            return type.name;
         });
     }
 

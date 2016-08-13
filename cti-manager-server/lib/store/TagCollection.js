@@ -6,6 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _app = require('../config/app.config');
 
 var _app2 = _interopRequireDefault(_app);
@@ -18,9 +22,13 @@ var _DBConnectionService = require('./DBConnectionService');
 
 var _DBConnectionService2 = _interopRequireDefault(_DBConnectionService);
 
-var _Tag = require('../model/Tag');
+var _Tag = require('../model/tag/Tag');
 
 var _Tag2 = _interopRequireDefault(_Tag);
+
+var _TagType = require('../model/tag/TagType');
+
+var _TagType2 = _interopRequireDefault(_TagType);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57,6 +65,15 @@ var TagCollection = function () {
                 }).then(function (doc) {
                     return _Tag2.default.fromDatabase(doc).serialiseToApi();
                 });
+            });
+        }
+    }, {
+        key: 'getTagTypeNames',
+        value: function getTagTypeNames() {
+            return _lodash2.default.filter(_TagType2.default, function (type) {
+                return type instanceof _TagType2.default;
+            }).map(function (type) {
+                return type.name;
             });
         }
     }, {
