@@ -8,11 +8,16 @@ import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Spinner from '../Spinner/Spinner.jsx';
 import TagEditor from '../TagEditor/TagEditor.jsx';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
+import Panel from '../Panel/Panel.jsx';
+import PanelHeader from '../Panel/PanelHeader.jsx';
+import PanelBody from '../Panel/PanelBody.jsx';
 
 import history from '../../services/history';
 import TagStore from '../../stores/TagStore';
 import TagActions from '../../actions/TagActions';
 import ImagesApi from '../../api/ImagesApi';
+
+import './ImageSidebar.scss';
 
 export default class ImageSidebar extends RefluxComponent {
     constructor(props) {
@@ -97,12 +102,12 @@ export default class ImageSidebar extends RefluxComponent {
 
     renderSearchSection() {
         return (
-            <div className="sidebar-section search-section">
+            <Panel className="search-section">
                 <HotKeys handlers={{enter: this.search.bind(this)}}>
-                    <div className="section-header">
+                    <PanelHeader>
                         <h2>Search</h2>
-                    </div>
-                    <div className="section-body">
+                    </PanelHeader>
+                    <PanelBody>
                         <div className="search-form">
                             <AutocompleteInput ref="searchInput" tokenize
                                                items={this.state.allTags.map(tag => tag.id)}
@@ -111,9 +116,9 @@ export default class ImageSidebar extends RefluxComponent {
                                 <i className="material-icons">search</i>
                             </button>
                         </div>
-                    </div>
+                    </PanelBody>
                 </HotKeys>
-            </div>
+            </Panel>
         );
     }
 
@@ -124,11 +129,11 @@ export default class ImageSidebar extends RefluxComponent {
                 uploadText = `${this.refs.fileInput.files.length} files selected`;
             }
             return (
-                <div className="sidebar-section upload-section">
-                    <div className="section-header">
+                <Panel className="upload-section">
+                    <PanelHeader>
                         <h2>Upload</h2>
-                    </div>
-                    <div className="section-body">
+                    </PanelHeader>
+                    <PanelBody>
                         <div className={`upload-form ${this.state.uploadPending ? 'upload-pending' : ''}`}>
                             <div className="input-container">
                                 <input id={`${this.id}-upload-input`}
@@ -154,8 +159,8 @@ export default class ImageSidebar extends RefluxComponent {
                             </span>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </PanelBody>
+                </Panel>
             );
         }
     }
@@ -174,15 +179,15 @@ export default class ImageSidebar extends RefluxComponent {
         }
 
         return (
-            <div className="sidebar-section tags-section">
-                <div className="section-header">
+            <Panel className="tags-section">
+                <PanelHeader>
                     <h2>Tags</h2>
                     {editIcon}
-                </div>
-                <div className="section-body">
+                </PanelHeader>
+                <PanelBody>
                     {body}
-                </div>
-            </div>
+                </PanelBody>
+            </Panel>
         );
     }
 

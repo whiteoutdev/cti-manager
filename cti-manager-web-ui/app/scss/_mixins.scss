@@ -4,3 +4,18 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+@mixin sidebar {
+    width: 16%;
+    min-width: 240px;
+}
+
+@mixin flex-row-nowrap {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+@mixin flex-row-wrap {
+    display: flex;
+    flex-flow: row wrap;
+}

@@ -1,0 +1,45 @@
+@import '../../scss/colours';
+@import '../../scss/mixins';
+
+$panel-gutter: 1rem;
+
+.Panel {
+    position: relative;
+    background-color: $white;
+
+    .PanelHeader {
+        @include flex-row-nowrap;
+        align-items: center;
+        padding: .5rem $panel-gutter;
+        background-color: $brand-primary;
+
+        h1, h2, h3, h4, h5, h6, i {
+            font-weight: 400;
+            color: $font-light-primary;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            flex: 1;
+        }
+
+        i {
+            opacity: .75;
+            cursor: pointer;
+            transition: all 150ms linear;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        & + .PanelBody {
+            border-top: none;
+        }
+    }
+
+    .PanelBody {
+        padding: 1rem $panel-gutter;
+        border: 1px solid $font-dark-decoration;
+    }
+
+}

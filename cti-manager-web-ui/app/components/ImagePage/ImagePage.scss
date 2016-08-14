@@ -3,8 +3,7 @@
 
 .ImagePage {
     .page-content {
-        display: flex;
-        flex-flow: row nowrap;
+        @include flex-row-nowrap;
 
         .ImageSidebar {
             flex-shrink: 0;

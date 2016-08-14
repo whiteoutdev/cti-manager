@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import './AutocompleteInput.scss';
 
-const props = ['limit', 'items', 'onEnter', 'onAutocomplete'];
+const props = ['limit', 'items', 'onEnter', 'onAutocomplete', 'tokenize'];
 
 export default class AutocompleteInput extends React.Component {
     constructor() {
