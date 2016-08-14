@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import './AutocompleteInput.scss';
 
-const props = ['limit', 'items', 'onEnter'];
+const props = ['limit', 'items', 'onEnter', 'onAutocomplete'];
 
 export default class AutocompleteInput extends React.Component {
     constructor() {
@@ -28,6 +28,14 @@ export default class AutocompleteInput extends React.Component {
         this.refs.input.value = value;
     }
 
+    focus() {
+        this.refs.input.focus();
+    }
+
+    blur() {
+        this.refs.input.blur();
+    }
+
     componentDidUpdate() {
         this.refs.input.focus();
     }
@@ -42,22 +50,35 @@ export default class AutocompleteInput extends React.Component {
             return;
         }
 
-        const cursorPosition      = this.refs.input.selectionStart,
-              beforeCursor        = this.refs.input.value.substring(0, cursorPosition),
-              afterCursor         = this.refs.input.value.substr(cursorPosition),
-              queriesBeforeCursor = beforeCursor.split(' ');
+        const suggestion = this.state.suggestions[index % this.state.suggestions.length];
 
-        queriesBeforeCursor[queriesBeforeCursor.length - 1] =
-            this.state.suggestions[index % this.state.suggestions.length];
+        if (this.props.tokenize) {
 
-        this.refs.input.value = `${queriesBeforeCursor.join(' ')}${afterCursor || ' '}`;
-        this.closeSuggestions();
+            const cursorPosition      = this.refs.input.selectionStart,
+                  beforeCursor        = this.refs.input.value.substring(0, cursorPosition),
+                  afterCursor         = this.refs.input.value.substr(cursorPosition),
+                  queriesBeforeCursor = beforeCursor.split(' ');
+
+            queriesBeforeCursor[queriesBeforeCursor.length - 1] = suggestion;
+
+            this.refs.input.value = `${queriesBeforeCursor.join(' ')}${afterCursor || ' '}`;
+        } else {
+            this.refs.input.value = suggestion;
+        }
+
+        this.closeSuggestions().then(() => {
+            this.fireAutocomplete(suggestion);
+        });
     }
 
     closeSuggestions() {
-        this.setState({
-            suggestions    : [],
-            suggestionIndex: 0
+        return new Promise((resolve) => {
+            this.setState({
+                suggestions    : [],
+                suggestionIndex: 0
+            }, () => {
+                resolve();
+            });
         });
     }
 
@@ -77,6 +98,12 @@ export default class AutocompleteInput extends React.Component {
         });
     }
 
+    fireAutocomplete(item) {
+        if (typeof this.props.onAutocomplete === 'function') {
+            this.props.onAutocomplete(item);
+        }
+    }
+
     fireEnter() {
         if (typeof this.props.onEnter === 'function') {
             this.props.onEnter(this.refs.input.value);
@@ -84,15 +111,19 @@ export default class AutocompleteInput extends React.Component {
     }
 
     updateSuggestions() {
-        const cursorPosition = this.refs.input.selectionStart,
-              beforeCursor   = this.refs.input.value.substring(0, cursorPosition),
-              afterCursor    = this.refs.input.value.substr(cursorPosition);
-        if (/(^\s)|^$/.test(afterCursor)) {
-            const queriesBeforeCursor = beforeCursor.split(' '),
-                  currentQuery        = queriesBeforeCursor[queriesBeforeCursor.length - 1];
-            this.filterSuggestions(currentQuery);
+        if (this.props.tokenize) {
+            const cursorPosition = this.refs.input.selectionStart,
+                  beforeCursor   = this.refs.input.value.substring(0, cursorPosition),
+                  afterCursor    = this.refs.input.value.substr(cursorPosition);
+            if (/(^\s)|^$/.test(afterCursor)) {
+                const queriesBeforeCursor = beforeCursor.split(' '),
+                      currentQuery        = queriesBeforeCursor[queriesBeforeCursor.length - 1];
+                this.filterSuggestions(currentQuery);
+            } else {
+                this.closeSuggestions();
+            }
         } else {
-            this.closeSuggestions();
+            this.filterSuggestions(this.refs.input.value);
         }
     }
 

@@ -104,7 +104,7 @@ export default class ImageSidebar extends RefluxComponent {
                     </div>
                     <div className="section-body">
                         <div className="search-form">
-                            <AutocompleteInput ref="searchInput"
+                            <AutocompleteInput ref="searchInput" tokenize
                                                items={this.state.allTags.map(tag => tag.id)}
                                                onEnter={this.search.bind(this)}/>
                             <button className="search-button accent" onClick={this.search.bind(this)}>
