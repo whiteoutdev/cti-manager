@@ -11,10 +11,17 @@ export default class TagCollection {
         return TagCollection.createTags(['tagme']);
     }
 
-    static getTags(skip, limit) {
+    static getTags(query, skip, limit) {
+        const dbQuery = {};
+        if (query) {
+            dbQuery._id = {
+                $regex: new RegExp(query)
+            };
+        }
+
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.tagsCollection)
-                .find({})
+                .find(dbQuery)
                 .skip(skip || 0)
                 .limit(limit || 0)
                 .toArray()

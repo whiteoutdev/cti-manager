@@ -2,9 +2,9 @@
 @import 'colours';
 
 button, .button {
-    background-color: $brand-primary;
+    background-color: inherit;
+    color: $font-dark-secondary;
     border: none;
-    color: $font-light-primary;
     font-weight: 500;
     cursor: pointer;
     padding: 0 .5em;
@@ -12,11 +12,11 @@ button, .button {
     transition: all 150ms linear;
 
     &:focus, &:hover {
-        background-color: darken($brand-primary, 7.5);
+        background-color: rgba($black, .1);
     }
 
     &:active {
-        background-color: darken($brand-primary, 15);
+        background-color: rgba($black, .25);
         transition: none;
     }
 
@@ -26,14 +26,32 @@ button, .button {
     }
 
     &[disabled] {
-        background-color: desaturate($brand-primary, 30);
+        background-color: rgba($black, .1);
         opacity: .5;
         cursor: default;
         pointer-events: none;
     }
 
+    &.primary {
+        background-color: $brand-primary;
+        color: $font-light-primary;
+
+        &:focus, &:hover {
+            background-color: darken($brand-primary, 7.5);
+        }
+
+        &:active {
+            background-color: darken($brand-primary, 15);
+        }
+
+        &[disabled] {
+            background-color: desaturate($brand-primary, 30);
+        }
+    }
+
     &.accent {
         background-color: $brand-accent;
+        color: $font-light-primary;
 
         &:focus, &:hover {
             background-color: darken($brand-accent, 7.5);

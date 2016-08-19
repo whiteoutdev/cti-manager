@@ -1,0 +1,7 @@
+@import '../../scss/mixins';
+
+.TagsPage {
+    .page-content {
+        @include flex-row-nowrap;
+    }
+}

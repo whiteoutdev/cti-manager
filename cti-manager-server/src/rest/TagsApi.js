@@ -5,10 +5,11 @@ import TagCollection from '../store/TagCollection';
 export default class TagsApi extends RestApi {
     configure(app) {
         app.get('/tags', (req, res) => {
-            const query = req.query,
-                  skip  = Number(query.skip),
-                  limit = Number(query.limit);
-            TagCollection.getTags(skip, limit).then((tags) => {
+            const query  = req.query,
+                  search = query.query,
+                  skip   = Number(query.skip),
+                  limit  = Number(query.limit);
+            TagCollection.getTags(search, skip, limit).then((tags) => {
                 res.status(200).send(tags);
             });
         });

@@ -1,0 +1,61 @@
+@import '../../scss/colours';
+@import '../../scss/mixins';
+
+@mixin tag-list-item-color($color) {
+    color: $color;
+    transition: all 100ms linear;
+
+    &:hover {
+        background-color: rgba($color, .1);
+    }
+
+    &.selected {
+        background-color: $color;
+        color: $font-light-primary;
+        border-color: $color;
+    }
+}
+
+@mixin tag-list-item($type, $color) {
+    &.#{$type} {
+        @include tag-list-item-color($color);
+    }
+}
+
+.TagsSidebar {
+    @include sidebar;
+    padding: 2rem 1rem;
+
+    .Panel {
+        margin-bottom: 1rem;
+
+        .PanelHeader {
+            h2 {
+                font-size: 1.125em;
+            }
+        }
+
+        .search-panel-body {
+            .search-container {
+                @include flex-row-nowrap;
+
+                input {
+                    border-right: 0;
+                }
+            }
+        }
+
+        .search-results-list {
+            .search-result-item {
+                padding-top: 1em;
+                padding-bottom: .75em;
+                cursor: pointer;
+
+                @include tag-list-item-color($viz-1);
+                @include tag-list-item('copyright', $viz-2);
+                @include tag-list-item('artist', $viz-3);
+                @include tag-list-item('character', $viz-4);
+            }
+        }
+    }
+}

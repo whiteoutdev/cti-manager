@@ -2,6 +2,16 @@
 @import '../../scss/mixins';
 
 $panel-gutter: 1rem;
+$panel-border-style: 1px solid $font-dark-decoration;
+
+@mixin panel-part-border {
+    border-left: $panel-border-style;
+    border-right: $panel-border-style;
+
+    &:last-child {
+        border-bottom: $panel-border-style;
+    }
+}
 
 .Panel {
     position: relative;
@@ -38,8 +48,43 @@ $panel-gutter: 1rem;
     }
 
     .PanelBody {
+        @include panel-part-border;
         padding: 1rem $panel-gutter;
-        border: 1px solid $font-dark-decoration;
+    }
+
+    .PanelList {
+        .PanelListItem {
+            @include panel-part-border;
+            padding: 0 $panel-gutter;
+        }
+    }
+
+    .PanelButtons {
+        @include flex-row-nowrap;
+
+        .PanelButton {
+            flex: 1;
+            height: 2.5em;
+
+            border-bottom: $panel-border-style;
+            border-top: $panel-border-style;
+
+            &:first-child {
+                border-left: $panel-border-style;
+            }
+
+            &:last-child {
+                border-right: $panel-border-style;
+            }
+
+            &.primary {
+                border-color: $brand-primary;
+            }
+
+            &.accent {
+                border-color: $brand-accent;
+            }
+        }
     }
 
 }

@@ -46,9 +46,16 @@ var TagCollection = function () {
         }
     }, {
         key: 'getTags',
-        value: function getTags(skip, limit) {
+        value: function getTags(query, skip, limit) {
+            var dbQuery = {};
+            if (query) {
+                dbQuery._id = {
+                    $regex: new RegExp(query)
+                };
+            }
+
             return _DBConnectionService2.default.getDB().then(function (db) {
-                return db.collection(_app2.default.db.tagsCollection).find({}).skip(skip || 0).limit(limit || 0).toArray().then(function (tags) {
+                return db.collection(_app2.default.db.tagsCollection).find(dbQuery).skip(skip || 0).limit(limit || 0).toArray().then(function (tags) {
                     return tags.map(function (tag) {
                         return _Tag2.default.fromDatabase(tag).serialiseToApi();
                     });
