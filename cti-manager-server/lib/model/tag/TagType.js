@@ -29,6 +29,13 @@ var TagType = function () {
                 return tagType.code === code;
             });
         }
+    }, {
+        key: 'fromName',
+        value: function fromName(name) {
+            return _lodash2.default.find(TagType, function (tagType) {
+                return tagType.name === name;
+            });
+        }
     }]);
 
     return TagType;

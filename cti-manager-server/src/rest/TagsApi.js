@@ -40,6 +40,16 @@ export default class TagsApi extends RestApi {
             });
         });
 
+        app.post('/tags/:tag', (req, res) => {
+            const tagId   = decodeURIComponent(req.params.tag),
+                  tagData = req.body;
+            logger.debug(`Update of tag ${tagId} requested`);
+            tagData.id = tagId;
+            TagCollection.updateTag(tagData).then(() => {
+                res.sendStatus(200);
+            });
+        });
+
         app.get('/tagtypes', (req, res) => {
             logger.debug('Tag types requested');
             res.status(200).send(TagCollection.getTagTypeNames());

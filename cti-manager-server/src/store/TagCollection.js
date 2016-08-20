@@ -85,4 +85,16 @@ export default class TagCollection {
                 });
         })
     }
+
+    static updateTag(tagData) {
+        const tag   = Tag.fromApi(tagData),
+              query = {_id: tag.id},
+              doc   = tag.serialiseToDatabase();
+
+        return DBConnectionService.getDB().then((db) => {
+            return db.collection(appConfig.db.tagsCollection)
+                .updateOne(query, doc)
+                .then(writeResult => writeResult.result);
+        });
+    }
 }

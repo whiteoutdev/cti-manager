@@ -11,6 +11,12 @@ class TagType {
             return tagType.code === code;
         });
     }
+
+    static fromName(name) {
+        return _.find(TagType, (tagType) => {
+            return tagType.name === name;
+        });
+    }
 }
 
 _.extend(TagType, {

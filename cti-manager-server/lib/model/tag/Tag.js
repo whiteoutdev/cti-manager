@@ -60,6 +60,11 @@ var Tag = function (_AbstractModel) {
             return new Tag(doc._id, _TagType2.default.fromCode(doc.t), doc.d);
         }
     }, {
+        key: 'fromApi',
+        value: function fromApi(tagData) {
+            return new Tag(tagData.id, _TagType2.default.fromName(tagData.type), tagData.derivedTags);
+        }
+    }, {
         key: 'encode',
         value: function encode(name) {
             return name.replace(/ /g, '_');

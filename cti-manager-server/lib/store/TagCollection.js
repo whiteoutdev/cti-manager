@@ -115,6 +115,19 @@ var TagCollection = function () {
                 });
             });
         }
+    }, {
+        key: 'updateTag',
+        value: function updateTag(tagData) {
+            var tag = _Tag2.default.fromApi(tagData),
+                query = { _id: tag.id },
+                doc = tag.serialiseToDatabase();
+
+            return _DBConnectionService2.default.getDB().then(function (db) {
+                return db.collection(_app2.default.db.tagsCollection).updateOne(query, doc).then(function (writeResult) {
+                    return writeResult.result;
+                });
+            });
+        }
     }]);
 
     return TagCollection;

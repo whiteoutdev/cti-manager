@@ -29,6 +29,10 @@ export default class Tag extends AbstractModel {
         };
     }
 
+    static fromApi(tagData) {
+        return new Tag(tagData.id, TagType.fromName(tagData.type), tagData.derivedTags);
+    }
+
     static encode(name) {
         return name.replace(/ /g, '_');
     }
