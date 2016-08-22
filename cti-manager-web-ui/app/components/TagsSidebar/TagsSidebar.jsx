@@ -2,6 +2,7 @@ import React from 'react';
 import {HotKeys} from 'react-hotkeys';
 import escapeRegex from 'escape-string-regexp';
 
+import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Panel from '../Panel/Panel.jsx';
 import PanelHeader from '../Panel/PanelHeader.jsx';
 import PanelBody from '../Panel/PanelBody.jsx';
@@ -10,11 +11,13 @@ import PanelButton from '../Panel/PanelButton.jsx';
 import PanelList from '../Panel/PanelList.jsx';
 import PanelListItem from '../Panel/PanelListItem.jsx';
 
+import TagService from '../../services/TagService';
 import TagsApi from '../../api/TagsApi';
+import TagStore from '../../stores/TagStore';
 
 import './TagsSidebar.scss';
 
-export default class TagsSidebar extends React.Component {
+export default class TagsSidebar extends RefluxComponent {
     constructor() {
         super();
         this.state = {
@@ -22,6 +25,14 @@ export default class TagsSidebar extends React.Component {
             regexMode    : false,
             selectedTag  : null
         };
+        this.listenTo(TagStore, this.updateAllTags, (data) => {
+            this.state.allTags = data.tags;
+            this.state.tagIndex = data.tagIndex;
+        });
+    }
+
+    updateAllTags(allTags, tagIndex) {
+        this.setState({allTags, tagIndex});
     }
 
     setRegexMode(regexMode) {
@@ -51,6 +62,16 @@ export default class TagsSidebar extends React.Component {
         TagsApi.getTags(regexQuery).then((tags) => {
             this.setState({searchResults: tags});
         });
+    }
+
+    fireTagSelect() {
+        if (typeof this.props.onTagSelect === 'function') {
+            this.props.onTagSelect(this.state.selectedTag);
+        }
+    }
+
+    selectTag(tag) {
+        this.setState({selectedTag: tag}, this.fireTagSelect);
     }
 
     renderSearchPanel() {
@@ -83,12 +104,12 @@ export default class TagsSidebar extends React.Component {
 
     renderTagList(results) {
         return results.map((result) => {
-            const selected = result.id === this.state.selectedTag;
-            console.log(result);
+            const tag      = this.state.tagIndex[result.id] || result,
+                  selected = this.state.selectedTag ? tag.id === this.state.selectedTag.id : false;
             return (
-                <PanelListItem key={result.id} onClick={() => {this.setState({selectedTag: result.id})}}
-                               className={`search-result-item ${result.type} ${selected ? 'selected' : ''}`}>
-                    {result.id.replace('_', ' ')}
+                <PanelListItem key={tag.id} onClick={() => {this.selectTag(tag)}}
+                               className={`search-result-item ${tag.type} ${selected ? 'selected' : ''}`}>
+                    {TagService.toDisplayName(tag.id)}
                 </PanelListItem>
             );
         });

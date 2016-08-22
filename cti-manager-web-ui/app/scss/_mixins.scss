@@ -1,3 +1,5 @@
+@import 'colours';
+
 @mixin absolute-center {
     position: absolute;
     top: 50%;
@@ -18,4 +20,40 @@
 @mixin flex-row-wrap {
     display: flex;
     flex-flow: row wrap;
+}
+
+@mixin tag-type-color {
+    @each $tag-type, $color in $tag-type-colors {
+        &.#{$tag-type} {
+            color: $color;
+        }
+    }
+}
+
+@mixin tag-type-background-hover {
+    @each $tag-type, $color in $tag-type-colors {
+        &.#{$tag-type}:hover {
+            background-color: rgba($color, .1);
+        }
+    }
+}
+
+@mixin tag-type-selectable {
+    @include tag-type-color;
+    transition: all 100ms linear;
+    cursor: pointer;
+
+    @each $tag-type, $color in $tag-type-colors {
+        &.#{$tag-type} {
+            &:hover {
+                background-color: rgba($color, .1);
+            }
+
+            &.selected {
+                background-color: $color;
+                color: $font-light-primary;
+                border-color: $color;
+            }
+        }
+    }
 }

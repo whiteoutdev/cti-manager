@@ -11,8 +11,11 @@ import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
 import Panel from '../Panel/Panel.jsx';
 import PanelHeader from '../Panel/PanelHeader.jsx';
 import PanelBody from '../Panel/PanelBody.jsx';
+import PanelList from '../Panel/PanelList.jsx';
+import PanelListItem from '../Panel/PanelListItem.jsx';
 
 import history from '../../services/history';
+import TagService from '../../services/TagService';
 import TagStore from '../../stores/TagStore';
 import TagActions from '../../actions/TagActions';
 import ImagesApi from '../../api/ImagesApi';
@@ -28,15 +31,15 @@ export default class ImageSidebar extends RefluxComponent {
             tagEditMode  : false,
             allTags      : []
         };
-        this.listenTo(TagStore, this.onTagsUpdated, (tags) => {
-            this.state.allTags = tags
+        this.listenTo(TagStore, this.onTagsUpdated, (data) => {
+            this.state.allTags = data.tags
         });
         TagActions.updateTags();
     }
 
     getTagType(tag) {
         const tagData = _.find(this.state.allTags, (tagData) => {
-            return tagData.id === tag;
+            return tagData.id === TagService.toTagId(tag);
         });
         return tagData ? tagData.type : '';
     }
@@ -67,7 +70,7 @@ export default class ImageSidebar extends RefluxComponent {
         const searchText = this.refs.searchInput.value.trim(),
               tags       = searchText.split(/\s+/),
               tagsString = tags.map((tag) => {
-                  return encodeURIComponent(tag.replace(/_/g, ' '));
+                  return encodeURIComponent(TagService.toDisplayName(tag));
               }).join();
         history.push(`/images?tags=${tagsString}`);
     }
@@ -107,6 +110,7 @@ export default class ImageSidebar extends RefluxComponent {
                     <PanelHeader>
                         <h2>Search</h2>
                     </PanelHeader>
+
                     <PanelBody>
                         <div className="search-form">
                             <AutocompleteInput ref="searchInput" tokenize
@@ -173,7 +177,11 @@ export default class ImageSidebar extends RefluxComponent {
 
         let body = null;
         if (this.state.tagEditMode) {
-            body = <TagEditor tags={this.getTagList()} onSave={this.fireTagsChange.bind(this)}/>;
+            body = (
+                <PanelBody>
+                    <TagEditor tags={this.getTagList()} onSave={this.fireTagsChange.bind(this)}/>
+                </PanelBody>
+            );
         } else {
             body = this.renderTagsList();
         }
@@ -184,9 +192,7 @@ export default class ImageSidebar extends RefluxComponent {
                     <h2>Tags</h2>
                     {editIcon}
                 </PanelHeader>
-                <PanelBody>
-                    {body}
-                </PanelBody>
+                {body}
             </Panel>
         );
     }
@@ -225,18 +231,21 @@ export default class ImageSidebar extends RefluxComponent {
               tagListItems = sortedTags.map((tag) => {
                   const tagType = this.getTagType(tag).toLowerCase();
                   return (
-                      <li key={tag} className="tags-list-item">
-                          <Link className={tagType} to={`/images?tags=${encodeURIComponent(tag)}`}>
+                      <PanelListItem key={tag} className={`tags-list-item ${tagType}`}>
+                          <Link className={`tag-name ${tagType}`} to={`/images?tags=${encodeURIComponent(tag)}`}>
                               {tag}
                           </Link>
-                      </li>
+                          <Link className={tagType} to={`/tags/${tag}`}>
+                              <i className="tag-icon material-icons">edit</i>
+                          </Link>
+                      </PanelListItem>
                   );
               });
 
         return (
-            <ul className="tags-list">
+            <PanelList className="tags-list">
                 {tagListItems}
-            </ul>
+            </PanelList>
         );
     }
 

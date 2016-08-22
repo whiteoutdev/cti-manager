@@ -35,3 +35,10 @@ $viz-2: $brand-accent;
 $viz-3: #d81b60;
 $viz-4: #fb8c00;
 $viz-5: #c0ca33;
+
+$tag-type-colors: (
+        'general' $viz-1,
+        'copyright' $viz-2,
+        'artist' $viz-3,
+        'character' $viz-4
+);

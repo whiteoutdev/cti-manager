@@ -21,6 +21,7 @@ const routes = (
             <Route path="/images" component={ImagesPage}/>
             <Route path="/images/:imageID" component={ImagePage}/>
             <Route path="/tags" component={TagsPage}/>
+            <Route path="/tags/:tagID" component={TagsPage}/>
         </Route>
     </Router>
 );

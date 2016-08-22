@@ -4,6 +4,7 @@ import _ from 'lodash';
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
 
+import TagService from '../../services/TagService';
 import TagStore from '../../stores/TagStore';
 import TagActions from '../../actions/TagActions';
 
@@ -17,15 +18,15 @@ export default class TagEditor extends RefluxComponent {
             deletedTags: [],
             allTags    : []
         };
-        this.listenTo(TagStore, this.updateTags, (tags) => {
-            this.state.allTags = tags.map(tag => tag.id.replace(/_/g, ' '));
+        this.listenTo(TagStore, this.updateTags, (data) => {
+            this.state.allTags = data.tags.map(tag => TagService.toDisplayName(tag.id));
         });
         TagActions.updateTags();
     }
 
     updateTags(tags) {
         this.setState({
-            allTags: tags.map(tag => tag.id.replace(/_/g, ' '))
+            allTags: tags.map(tag => TagService.toDisplayName(tag.id))
         });
     }
 

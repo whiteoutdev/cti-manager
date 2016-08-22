@@ -1,7 +1,97 @@
+@import '../../scss/colours';
 @import '../../scss/mixins';
 
 .TagsPage {
     .page-content {
         @include flex-row-nowrap;
+    }
+
+    .tag-details-section {
+        flex: 1;
+        padding: 2rem 1rem;
+
+        .tag-details-card {
+            background-color: $white;
+            padding: 1rem;
+            box-shadow: 1px 1px 8px 1px rgba($black, .25);
+
+            h2 {
+                font-size: 1.25em;
+                font-weight: 500;
+            }
+
+            .tag-fact {
+                @include flex-row-nowrap;
+                align-items: flex-start;
+                margin-bottom: 2em;
+
+                .left-col {
+                    width: 8.33%;
+                    min-width: 12em;
+                }
+
+                .right-col {
+                    flex: 1;
+                }
+            }
+
+            .tag-type-list {
+                @include flex-row-wrap;
+
+                .tag-type {
+                    margin-right: .5em;
+
+                    .tag-type-button {
+                        @include tag-type-selectable;
+                        padding: .5em 1em;
+                        background-color: rgba($black, .05);
+                    }
+                }
+            }
+
+            .derived-tags-section {
+                .tag-search-section {
+                    @include flex-row-nowrap;
+
+                    input {
+                        border-right: 0;
+                    }
+                }
+
+                .derived-tag-list {
+                    @include flex-row-nowrap;
+                    padding-top: 1em;
+                    justify-content: space-between;
+
+                    &:after {
+                        content: '';
+                        flex: 1;
+                    }
+
+                    .derived-tag {
+                        color: $font-dark-secondary;
+                        @include tag-type-color;
+                        margin-right: 1em;
+                        background-color: rgba($black, .05);
+                        padding: .5em .5em .375em 1em;
+
+                        .delete-icon {
+                            position: relative;
+                            top: -.125em;
+                            font-size: 1em;
+                            margin-left: .5em;
+                            vertical-align: middle;
+                            opacity: .5;
+                            cursor: pointer;
+                            transition: all 100ms linear;
+
+                            &:hover {
+                                opacity: 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
