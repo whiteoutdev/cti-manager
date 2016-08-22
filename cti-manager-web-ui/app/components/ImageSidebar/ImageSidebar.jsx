@@ -70,7 +70,7 @@ export default class ImageSidebar extends RefluxComponent {
         const searchText = this.refs.searchInput.value.trim(),
               tags       = searchText.split(/\s+/),
               tagsString = tags.map((tag) => {
-                  return encodeURIComponent(TagService.toDisplayName(tag));
+                  return encodeURIComponent(tag);
               }).join();
         history.push(`/images?tags=${tagsString}`);
     }
