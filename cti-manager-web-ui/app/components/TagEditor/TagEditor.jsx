@@ -33,7 +33,7 @@ export default class TagEditor extends RefluxComponent {
     fireSave() {
         const newTags = _.difference(this.state.tags.slice(), this.state.deletedTags);
         if (typeof this.props.onSave === 'function') {
-            this.props.onSave(newTags);
+            this.props.onSave(newTags.map(newTag => TagService.toTagId(newTag)));
         }
     }
 
@@ -139,7 +139,7 @@ export default class TagEditor extends RefluxComponent {
         const tagListItems = tags.map((tag) => {
             return (
                 <li key={tag} className="tag-editor-list-item">
-                    <span className={`tag ${this.calculateTagClass(tag)}`}>{tag}</span>
+                    <span className={`tag ${this.calculateTagClass(tag)}`}>{TagService.toDisplayName(tag)}</span>
                     {this.renderTagButton(tag)}
                 </li>
             );

@@ -22,6 +22,10 @@ var _lwip = require('lwip');
 
 var _lwip2 = _interopRequireDefault(_lwip);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _app = require('../config/app.config');
 
 var _app2 = _interopRequireDefault(_app);
@@ -33,6 +37,10 @@ var _logger2 = _interopRequireDefault(_logger);
 var _DBConnectionService = require('./DBConnectionService');
 
 var _DBConnectionService2 = _interopRequireDefault(_DBConnectionService);
+
+var _TagCollection = require('./TagCollection');
+
+var _TagCollection2 = _interopRequireDefault(_TagCollection);
 
 var _HashService = require('../util/HashService');
 
@@ -194,22 +202,43 @@ var ImageCollection = function () {
         key: 'getImages',
         value: function getImages(tags, skip, limit) {
             return _DBConnectionService2.default.getDB().then(function (db) {
-                var bucket = new GridFSBucket(db),
-                    query = { 'metadata.t': _FileType2.default.IMAGE.code };
+                var bucket = new GridFSBucket(db);
+                var baseQuery = { 'metadata.t': _FileType2.default.IMAGE.code },
+                    queryPromise = null;
+
                 if (tags && tags.length) {
-                    query['metadata.ta'] = {
-                        $all: tags
-                    };
+                    var queryPromises = tags.map(function (tag) {
+                        return _TagCollection2.default.getDerivingTags(tag).then(function (derivingTags) {
+                            var tagIds = derivingTags.map(function (derivingTag) {
+                                return derivingTag.id;
+                            });
+                            tagIds.unshift(tag);
+                            return {
+                                $or: tagIds.map(function (tagId) {
+                                    return { 'metadata.ta': tagId };
+                                })
+                            };
+                        });
+                    });
+
+                    queryPromise = Promise.all(queryPromises).then(function (queries) {
+                        return _lodash2.default.extend(baseQuery, { $and: queries });
+                    });
+                } else {
+                    queryPromise = Promise.resolve(baseQuery);
                 }
-                var cursor = bucket.find(query);
-                return cursor.count().then(function (count) {
-                    return cursor.skip(skip || 0).limit(limit || 0).sort({ uploadDate: -1 }).toArray().then(function (images) {
-                        return {
-                            images: images.map(function (image) {
-                                return _Image2.default.fromDatabase(image).serialiseToApi();
-                            }),
-                            count: count
-                        };
+
+                return queryPromise.then(function (query) {
+                    var cursor = bucket.find(query);
+                    return cursor.count().then(function (count) {
+                        return cursor.skip(skip || 0).limit(limit || 0).sort({ uploadDate: -1 }).toArray().then(function (images) {
+                            return {
+                                images: images.map(function (image) {
+                                    return _Image2.default.fromDatabase(image).serialiseToApi();
+                                }),
+                                count: count
+                            };
+                        });
                     });
                 });
             });

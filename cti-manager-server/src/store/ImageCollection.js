@@ -2,10 +2,12 @@ import fs from 'fs';
 import MongoDB from 'mongodb';
 import del from 'del';
 import lwip from 'lwip';
+import _ from 'lodash';
 
 import appConfig from '../config/app.config';
 import logger from '../util/logger';
 import DBConnectionService from './DBConnectionService';
+import TagCollection from './TagCollection';
 import HashService from '../util/HashService';
 import FileType from '../model/gridfs/FileType';
 import Image from '../model/gridfs/Image';
@@ -138,29 +140,50 @@ export default class ImageCollection {
 
     static getImages(tags, skip, limit) {
         return DBConnectionService.getDB().then((db) => {
-            const bucket = new GridFSBucket(db),
-                  query  = {'metadata.t': FileType.IMAGE.code};
+            const bucket = new GridFSBucket(db);
+            let baseQuery    = {'metadata.t': FileType.IMAGE.code},
+                queryPromise = null;
+
             if (tags && tags.length) {
-                query['metadata.ta'] = {
-                    $all: tags
-                }
-            }
-            const cursor = bucket.find(query);
-            return cursor.count()
-                .then((count) => {
-                    return cursor.skip(skip || 0)
-                        .limit(limit || 0)
-                        .sort({uploadDate: -1})
-                        .toArray()
-                        .then((images) => {
+                const queryPromises = tags.map((tag) => {
+                    return TagCollection.getDerivingTags(tag)
+                        .then((derivingTags) => {
+                            const tagIds = derivingTags.map(derivingTag => derivingTag.id);
+                            tagIds.unshift(tag);
                             return {
-                                images: images.map((image) => {
-                                    return Image.fromDatabase(image).serialiseToApi();
-                                }),
-                                count
+                                $or: tagIds.map((tagId) => {
+                                    return {'metadata.ta': tagId};
+                                })
                             };
                         });
                 });
+
+                queryPromise = Promise.all(queryPromises)
+                    .then((queries) => {
+                        return _.extend(baseQuery, {$and: queries});
+                    });
+            } else {
+                queryPromise = Promise.resolve(baseQuery);
+            }
+
+            return queryPromise.then((query) => {
+                const cursor = bucket.find(query);
+                return cursor.count()
+                    .then((count) => {
+                        return cursor.skip(skip || 0)
+                            .limit(limit || 0)
+                            .sort({uploadDate: -1})
+                            .toArray()
+                            .then((images) => {
+                                return {
+                                    images: images.map((image) => {
+                                        return Image.fromDatabase(image).serialiseToApi();
+                                    }),
+                                    count
+                                };
+                            });
+                    })
+            });
         });
     }
 

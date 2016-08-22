@@ -39,6 +39,9 @@ export default class TagCollection {
             return db.collection(appConfig.db.tagsCollection).findOne({
                 _id: tag
             }).then((doc) => {
+                if (!doc) {
+                    return null;
+                }
                 return Tag.fromDatabase(doc).serialiseToApi();
             });
         });
@@ -95,6 +98,19 @@ export default class TagCollection {
             return db.collection(appConfig.db.tagsCollection)
                 .updateOne(query, doc)
                 .then(writeResult => writeResult.result);
+        });
+    }
+
+    static getDerivingTags(tagId) {
+        return DBConnectionService.getDB().then((db) => {
+            return db.collection(appConfig.db.tagsCollection)
+                .find({d: tagId})
+                .toArray()
+                .then((docs) => {
+                    return docs.map((doc) => {
+                        return Tag.fromDatabase(doc).serialiseToApi();
+                    });
+                });
         });
     }
 }

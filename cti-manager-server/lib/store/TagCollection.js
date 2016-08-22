@@ -70,6 +70,9 @@ var TagCollection = function () {
                 return db.collection(_app2.default.db.tagsCollection).findOne({
                     _id: tag
                 }).then(function (doc) {
+                    if (!doc) {
+                        return null;
+                    }
                     return _Tag2.default.fromDatabase(doc).serialiseToApi();
                 });
             });
@@ -125,6 +128,17 @@ var TagCollection = function () {
             return _DBConnectionService2.default.getDB().then(function (db) {
                 return db.collection(_app2.default.db.tagsCollection).updateOne(query, doc).then(function (writeResult) {
                     return writeResult.result;
+                });
+            });
+        }
+    }, {
+        key: 'getDerivingTags',
+        value: function getDerivingTags(tagId) {
+            return _DBConnectionService2.default.getDB().then(function (db) {
+                return db.collection(_app2.default.db.tagsCollection).find({ d: tagId }).toArray().then(function (docs) {
+                    return docs.map(function (doc) {
+                        return _Tag2.default.fromDatabase(doc).serialiseToApi();
+                    });
                 });
             });
         }
