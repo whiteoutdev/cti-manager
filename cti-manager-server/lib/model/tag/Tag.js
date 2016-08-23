@@ -32,7 +32,9 @@ var Tag = function (_AbstractModel) {
 
         _this.id = Tag.encode(name);
         _this.type = type || _TagType2.default.GENERAL;
-        _this.derivedTags = derivedTags || [];
+        _this.derivedTags = (derivedTags || []).filter(function (tag) {
+            return tag;
+        });
         return _this;
     }
 

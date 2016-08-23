@@ -6,7 +6,7 @@ export default class Tag extends AbstractModel {
         super();
         this.id = Tag.encode(name);
         this.type = type || TagType.GENERAL;
-        this.derivedTags = derivedTags || [];
+        this.derivedTags = (derivedTags || []).filter(tag => tag);
     }
 
     serialiseToDatabase() {

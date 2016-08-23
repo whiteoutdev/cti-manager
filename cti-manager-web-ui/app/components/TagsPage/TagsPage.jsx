@@ -69,10 +69,15 @@ export default class TagsPage extends RefluxComponent {
     }
 
     addDerivedTagAndClear(derivedTag) {
+        if (!derivedTag) {
+            return;
+        }
+
         const tag = this.state.tag;
         if (!~tag.derivedTags.indexOf(derivedTag)) {
             tag.derivedTags.push(derivedTag);
         }
+
         this.refs.tagInput.value = '';
         TagsApi.updateTag(tag.id, tag);
     }
