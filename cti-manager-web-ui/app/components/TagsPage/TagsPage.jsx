@@ -1,4 +1,5 @@
 import React from 'react';
+import {HotKeys} from 'react-hotkeys';
 
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
@@ -14,7 +15,7 @@ import TagTypeStore from '../../stores/TagTypeStore';
 import './TagsPage.scss';
 
 export default class TagsPage extends RefluxComponent {
-    constructor(props) {
+    constructor() {
         super();
         this.state = {
             tag: null
@@ -47,6 +48,12 @@ export default class TagsPage extends RefluxComponent {
         TagActions.updateTagTypes();
         if (this.props.routeParams.tagID) {
             this.loadTag(this.props.routeParams.tagID);
+        }
+    }
+
+    componentDidUpdate() {
+        if (this.refs.pixivIdInput) {
+            this.refs.pixivIdInput.select();
         }
     }
 
@@ -94,6 +101,19 @@ export default class TagsPage extends RefluxComponent {
             tag.derivedTags.splice(index, 1);
             TagsApi.updateTag(tag.id, tag);
         }
+    }
+
+    toggleEditPixivId() {
+        this.setState({
+            editPixivId: !this.state.editPixivId
+        });
+    }
+
+    setPixivId() {
+        const tag = this.state.tag;
+        tag.metadata.pixivId = Number(this.refs.pixivIdInput.value);
+        TagsApi.updateTag(tag.id, tag);
+        this.toggleEditPixivId();
     }
 
     renderTagNameSection(tag) {
@@ -173,6 +193,55 @@ export default class TagsPage extends RefluxComponent {
         );
     }
 
+    renderPixivIdSection(tag) {
+        if (tag.type !== 'artist') {
+            return null;
+        }
+        const pixivId = tag.metadata.pixivId;
+
+        let pixivLinkDisplay = null;
+
+        if (this.state.editPixivId) {
+            pixivLinkDisplay = (
+                <HotKeys className="pixiv-id-form" handlers={{enter: this.setPixivId.bind(this)}}>
+                    <input type="text"
+                           ref="pixivIdInput"
+                           defaultValue={pixivId}
+                           onBlur={this.toggleEditPixivId.bind(this)}/>
+                    <button className="accent" onClick={this.setPixivId.bind(this)}>
+                        <i className="material-icons">done</i>
+                    </button>
+                </HotKeys>
+            );
+        } else if (pixivId) {
+            const pixivUrl = pixivId ? `http://www.pixiv.net/member.php?id=${pixivId}` : null;
+            pixivLinkDisplay = (
+                <div className="pixiv-id-display">
+                    <a href={pixivUrl}>{pixivId}</a>
+                    <i className="material-icons pixiv-id-edit" onClick={this.toggleEditPixivId.bind(this)}>edit</i>
+                </div>
+            );
+        } else {
+            pixivLinkDisplay = (
+                <div className="pixiv-id-display">
+                    <span className="no-pixiv-id">None</span>
+                    <i className="material-icons pixiv-id-edit" onClick={this.toggleEditPixivId.bind(this)}>edit</i>
+                </div>
+            )
+        }
+
+        return (
+            <div className="tag-fact pixiv-id-section">
+                <div className="left-col">
+                    Pixiv ID:
+                </div>
+                <div className="right-col">
+                    {pixivLinkDisplay}
+                </div>
+            </div>
+        );
+    }
+
     renderTagDetails() {
         const tag = this.state.tag;
         if (!tag) {
@@ -185,6 +254,7 @@ export default class TagsPage extends RefluxComponent {
                     {this.renderTagNameSection(tag)}
                     {this.renderTagTypeSection(tag)}
                     {this.renderDerivedTagsSection(tag)}
+                    {this.renderPixivIdSection(tag)}
                 </div>
             </div>
         );
