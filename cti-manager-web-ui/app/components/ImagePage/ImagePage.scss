@@ -1,0 +1,23 @@
+.ImagePage {
+    .page-content {
+        display: flex;
+        flex-flow: row nowrap;
+
+        .ImageSidebar {
+            flex-shrink: 0;
+        }
+
+        .image-section {
+            position: relative;
+            flex: 1;
+            padding: 2rem;
+            text-align: center;
+
+            img {
+                display: inline-block;
+                max-width: 100%;
+                cursor: pointer;
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+.NavbarredPage {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100vh;
+
+    .page-content {
+        flex: 1;
+        overflow: auto;
+    }
+}

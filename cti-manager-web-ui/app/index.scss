@@ -1,0 +1,17 @@
+@import 'scss/reset';
+@import 'scss/colours';
+@import 'scss/typography';
+@import 'scss/forms';
+@import 'scss/buttons';
+
+html, body {
+    background-color: $off-white;
+}
+
+* {
+    box-sizing: border-box;
+
+    &:focus {
+        outline: none;
+    }
+}

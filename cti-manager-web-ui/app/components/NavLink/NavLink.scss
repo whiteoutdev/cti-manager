@@ -1,0 +1,7 @@
+@import '../../scss/colours';
+
+.NavLink {
+    &.active {
+        background-color: $brand-accent;
+    }
+}

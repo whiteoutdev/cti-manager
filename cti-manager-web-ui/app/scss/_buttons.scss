@@ -1,0 +1,50 @@
+@import 'constants';
+@import 'colours';
+
+button, .button {
+    background-color: $brand-primary;
+    border: none;
+    color: $font-light-primary;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0 .5em;
+    line-height: $form-control-height;
+    transition: all 150ms linear;
+
+    &:focus, &:hover {
+        background-color: darken($brand-primary, 7.5);
+    }
+
+    &:active {
+        background-color: darken($brand-primary, 15);
+        transition: none;
+    }
+
+    i {
+        font-size: $form-control-height * .66;
+        vertical-align: middle;
+    }
+
+    &[disabled] {
+        background-color: desaturate($brand-primary, 30);
+        opacity: .5;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    &.accent {
+        background-color: $brand-accent;
+
+        &:focus, &:hover {
+            background-color: darken($brand-accent, 7.5);
+        }
+
+        &:active {
+            background-color: darken($brand-accent, 15);
+        }
+
+        &[disabled] {
+            background-color: desaturate($brand-accent, 30);
+        }
+    }
+}

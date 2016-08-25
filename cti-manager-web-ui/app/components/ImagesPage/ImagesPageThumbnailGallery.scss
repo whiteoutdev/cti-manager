@@ -1,0 +1,18 @@
+.ImagesPageThumbnailGallery {
+    padding: 2rem;
+
+    .thumbnail-list {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+
+        .thumbnail-list-item {
+            padding: 1rem;
+        }
+
+        .end-padding {
+            flex: 1;
+        }
+    }
+}
