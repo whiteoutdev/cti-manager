@@ -9,6 +9,7 @@ $sidebar-section-gutter: 1rem;
     padding: 2rem 1rem;
 
     .sidebar-section {
+        position: relative;
         margin-bottom: 1em;
         background-color: $white;
 
@@ -47,6 +48,8 @@ $sidebar-section-gutter: 1rem;
         }
 
         &.search-section {
+            z-index: 5;
+
             .search-form {
                 display: flex;
                 flex-flow: row nowrap;
@@ -117,18 +120,37 @@ $sidebar-section-gutter: 1rem;
                 }
 
                 &.upload-pending {
-
                     .upload-spinner {
                         display: block;
                     }
-
                 }
             }
         }
 
         &.tags-section {
-            .section-header {
+            .section-body {
+                .tags-list {
+                    .tags-list-item {
+                        line-height: 1.4em;
 
+                        a {
+                            color: $viz-1;
+                            text-decoration: none;
+
+                            &.copyright {
+                                color: $viz-2;
+                            }
+
+                            &.artist {
+                                color: $viz-3;
+                            }
+
+                            &.character {
+                                color: $viz-4;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -6,6 +6,7 @@ import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
 
 import appConfig from '../../config/app.config';
 import ImagesApi from '../../api/ImagesApi';
+import TagActions from '../../actions/TagActions';
 
 import './ImagePage.scss';
 
@@ -13,13 +14,16 @@ export default class ImagePage extends React.Component {
     constructor() {
         super();
         this.state = {
-            image: null
+            image    : null,
+            maximized: false
         };
     }
 
     updateTags(tags) {
         ImagesApi.setTags(this.props.routeParams.imageID, tags).then((image) => {
-            this.setState({image});
+            this.setState({image}, () => {
+                TagActions.updateTags();
+            });
         });
     }
 
@@ -27,6 +31,12 @@ export default class ImagePage extends React.Component {
         const imageId = props.routeParams.imageID;
         ImagesApi.getImage(imageId).then((image) => {
             this.setState({image});
+        });
+    }
+
+    toggleMaximize() {
+        this.setState({
+            maximized: !this.state.maximized
         });
     }
 
@@ -38,7 +48,10 @@ export default class ImagePage extends React.Component {
         if (this.state.image) {
             const downloadUrl = `${appConfig.api.path}/images/${this.state.image._id}/download`;
             return (
-                <img src={downloadUrl} alt={this.state.image._id} onClick={() => {window.open(downloadUrl, '_blank')}}/>
+                <img className={this.state.maximized ? 'max' : ''}
+                     src={downloadUrl}
+                     alt={this.state.image._id}
+                     onClick={this.toggleMaximize.bind(this)}/>
             );
         }
     }
@@ -52,7 +65,9 @@ export default class ImagePage extends React.Component {
                                   tagsEditable
                                   onTagsChange={this.updateTags.bind(this)}/>
                     <div className="image-section">
-                        {this.renderImage()}
+                        <div className="image-container">
+                            {this.renderImage()}
+                        </div>
                     </div>
                 </NavbarredPage>
             </div>

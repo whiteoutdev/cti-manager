@@ -15,12 +15,17 @@ export default class ImagesPage extends React.Component {
     constructor() {
         super();
         this.state = {
-            images: [],
+            images      : [],
             thumbnailIds: null,
-            skip: 0,
-            limit: defaultLimit,
-            count: 0
+            skip        : 0,
+            limit       : defaultLimit,
+            count       : 0
         };
+    }
+
+    getTagsQuery() {
+        const match = this.props.location.search.match(/tags=([^&]+)/);
+        return match ? match[0] : '';
     }
 
     runQueryFromProps(location) {
@@ -53,12 +58,13 @@ export default class ImagesPage extends React.Component {
         return (
             <div className="ImagesPage">
                 <NavbarredPage>
-                    <ImageSidebar images={this.state.images}
+                    <ImageSidebar images={this.state.images} tagLimit="30"
                                   onUploadComplete={() => {this.runQueryFromProps(this.props.location)}}/>
                     <Gallery ids={this.state.thumbnailIds}
                              skip={this.state.skip}
                              limit={this.state.limit}
-                             count={this.state.count}/>
+                             count={this.state.count}
+                             query={this.getTagsQuery()}/>
                 </NavbarredPage>
             </div>
         );
