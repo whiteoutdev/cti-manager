@@ -170,6 +170,11 @@ export default class ImageSidebar extends RefluxComponent {
     }
 
     renderTagsSection() {
+        const tagList = this.getTagList();
+        if ((!tagList || !tagList.length) && !this.props.tagsEditable) {
+            return;
+        }
+
         let editIcon = null;
         if (this.props.tagsEditable && !this.state.tagEditMode) {
             editIcon = <i className="material-icons" onClick={this.handleEditTags.bind(this)}>edit</i>;
@@ -179,11 +184,11 @@ export default class ImageSidebar extends RefluxComponent {
         if (this.state.tagEditMode) {
             body = (
                 <PanelBody>
-                    <TagEditor tags={this.getTagList()} onSave={this.fireTagsChange.bind(this)}/>
+                    <TagEditor tags={tagList} onSave={this.fireTagsChange.bind(this)}/>
                 </PanelBody>
             );
         } else {
-            body = this.renderTagsList();
+            body = this.renderTagsList(tagList);
         }
 
         return (
@@ -226,21 +231,20 @@ export default class ImageSidebar extends RefluxComponent {
         });
     }
 
-    renderTagsList() {
-        const sortedTags   = this.getTagList(),
-              tagListItems = sortedTags.map((tag) => {
-                  const tagType = this.getTagType(tag).toLowerCase();
-                  return (
-                      <PanelListItem key={tag} className={`tags-list-item ${tagType}`}>
-                          <Link className={`tag-name ${tagType}`} to={`/images?tags=${encodeURIComponent(tag)}`}>
-                              {TagService.toDisplayName(tag)}
-                          </Link>
-                          <Link className={tagType} to={`/tags/${tag}`}>
-                              <i className="tag-icon material-icons">edit</i>
-                          </Link>
-                      </PanelListItem>
-                  );
-              });
+    renderTagsList(tagList) {
+        const tagListItems = tagList.map((tag) => {
+            const tagType = this.getTagType(tag).toLowerCase();
+            return (
+                <PanelListItem key={tag} className={`tags-list-item ${tagType}`}>
+                    <Link className={`tag-name ${tagType}`} to={`/images?tags=${encodeURIComponent(tag)}`}>
+                        {TagService.toDisplayName(tag)}
+                    </Link>
+                    <Link className={tagType} to={`/tags/${tag}`}>
+                        <i className="tag-icon material-icons">edit</i>
+                    </Link>
+                </PanelListItem>
+            );
+        });
 
         return (
             <PanelList className="tags-list">
