@@ -4,6 +4,6 @@ export default class TagService {
     }
 
     static toDisplayName(tagId) {
-        return typeof tagId === 'string' ? tagId.replace('_', ' ') : tagId;
+        return typeof tagId === 'string' ? tagId.replace(/_/g, ' ') : tagId;
     }
 }
