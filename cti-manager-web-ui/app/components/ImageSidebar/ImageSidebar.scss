@@ -1,58 +1,24 @@
 @import '../../scss/_colours';
 @import '../../scss/mixins';
 
-$sidebar-section-gutter: 1rem;
-
 .ImageSidebar {
-    width: 16%;
-    min-width: 240px;
+    @include sidebar;
     padding: 2rem 1rem;
 
-    .sidebar-section {
-        position: relative;
+    .Panel {
         margin-bottom: 1em;
-        background-color: $white;
 
-        .section-header {
-            display: flex;
-            flex-flow: row nowrap;
-            align-items: center;
-            padding: .5rem $sidebar-section-gutter;
-            background-color: $brand-primary;
-
+        .PanelHeader {
             h2, i {
-                font-weight: 400;
                 font-size: 1.125em;
-                color: $font-light-primary;
             }
-
-            h2 {
-                flex: 1;
-            }
-
-            i {
-                opacity: .75;
-                cursor: pointer;
-                transition: all 200ms linear;
-
-                &:hover {
-                    opacity: 1;
-                }
-            }
-        }
-
-        .section-body {
-            padding: 1rem $sidebar-section-gutter;
-            border: 1px solid $font-dark-decoration;
-            border-top: none;
         }
 
         &.search-section {
             z-index: 5;
 
             .search-form {
-                display: flex;
-                flex-flow: row nowrap;
+                @include flex-row-nowrap;
                 font-size: 1em;
 
                 input {
@@ -128,26 +94,40 @@ $sidebar-section-gutter: 1rem;
         }
 
         &.tags-section {
-            .section-body {
-                .tags-list {
-                    .tags-list-item {
-                        line-height: 1.4em;
+            .tags-list {
+                .tags-list-item {
+                    @include flex-row-nowrap;
+                    @include tag-type-background-hover;
+                    padding-top: .5em;
+                    padding-bottom: .375em;
+                    line-height: 1.4em;
 
-                        a {
-                            color: $viz-1;
-                            text-decoration: none;
+                    a {
+                        @include tag-type-color;
+                        text-decoration: none;
+                        vertical-align: middle;
 
-                            &.copyright {
-                                color: $viz-2;
+                        &.tag-name {
+                            flex: 1;
+                        }
+
+                        .tag-icon {
+                            position: relative;
+                            top: -.125em;
+                            font-size: 1em;
+                            opacity: 0;
+                            vertical-align: middle;
+                            transition: all 100ms linear;
+
+                            &:hover {
+                                opacity: 1;
                             }
+                        }
+                    }
 
-                            &.artist {
-                                color: $viz-3;
-                            }
-
-                            &.character {
-                                color: $viz-4;
-                            }
+                    &:hover {
+                        .tag-icon {
+                            opacity: .5;
                         }
                     }
                 }

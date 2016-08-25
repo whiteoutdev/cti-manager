@@ -1,12 +1,12 @@
 @import '../../scss/constants';
 @import '../../scss/colours';
+@import '../../scss/mixins';
 
 $navbar-height: 3rem;
 $navbar-background: darken($brand-primary, 12.5);
 
 .Navbar {
-    display: flex;
-    flex-flow: row nowrap;
+    @include flex-row-nowrap;
     background-color: $navbar-background;
     padding: 0 $page-gutter;
     box-shadow: 0 3px 8px 0 rgba(darken($brand-primary, 20), .75);
@@ -25,8 +25,7 @@ $navbar-background: darken($brand-primary, 12.5);
     }
 
     .nav-link-list {
-        display: flex;
-        flex-flow: row wrap;
+        @include flex-row-wrap;
         align-items: center;
 
         .nav-link {

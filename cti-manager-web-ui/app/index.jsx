@@ -6,6 +6,7 @@ import App from './components/App/App.jsx';
 import LandingPage from './components/LandingPage/LandingPage.jsx';
 import ImagesPage from './components/ImagesPage/ImagesPage.jsx';
 import ImagePage from './components/ImagePage/ImagePage.jsx';
+import TagsPage from './components/TagsPage/TagsPage.jsx';
 
 import history from './services/history';
 
@@ -19,6 +20,8 @@ const routes = (
             <IndexRoute component={LandingPage}/>
             <Route path="/images" component={ImagesPage}/>
             <Route path="/images/:imageID" component={ImagePage}/>
+            <Route path="/tags" component={TagsPage}/>
+            <Route path="/tags/:tagID" component={TagsPage}/>
         </Route>
     </Router>
 );

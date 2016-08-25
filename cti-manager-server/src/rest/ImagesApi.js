@@ -88,7 +88,7 @@ export default class ImagesApi extends RestApi {
     }
 
     downloadFromFileInfo(res, data) {
-        const mimeType = data.doc.metadata.mimeType;
+        const mimeType = data.doc.mimeType;
         res.set({
             'Content-Type': mimeType
         });

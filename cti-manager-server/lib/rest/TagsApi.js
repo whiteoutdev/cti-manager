@@ -40,9 +40,10 @@ var TagsApi = function (_RestApi) {
         value: function configure(app) {
             app.get('/tags', function (req, res) {
                 var query = req.query,
+                    search = query.query,
                     skip = Number(query.skip),
                     limit = Number(query.limit);
-                _TagCollection2.default.getTags(skip, limit).then(function (tags) {
+                _TagCollection2.default.getTags(search, skip, limit).then(function (tags) {
                     res.status(200).send(tags);
                 });
             });
@@ -71,6 +72,21 @@ var TagsApi = function (_RestApi) {
                         res.sendStatus(200);
                     }
                 });
+            });
+
+            app.post('/tags/:tag', function (req, res) {
+                var tagId = decodeURIComponent(req.params.tag),
+                    tagData = req.body;
+                _logger2.default.debug('Update of tag ' + tagId + ' requested');
+                tagData.id = tagId;
+                _TagCollection2.default.updateTag(tagData).then(function () {
+                    res.sendStatus(200);
+                });
+            });
+
+            app.get('/tagtypes', function (req, res) {
+                _logger2.default.debug('Tag types requested');
+                res.status(200).send(_TagCollection2.default.getTagTypeNames());
             });
         }
     }]);

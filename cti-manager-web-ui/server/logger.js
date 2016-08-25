@@ -1,3 +1,5 @@
 const bunyan = require('bunyan');
 
-module.exports = bunyan.createLogger({name: 'cti-manager-ui-server'});
+module.exports = bunyan.createLogger({
+    name: 'cti-manager-ui-server'
+});

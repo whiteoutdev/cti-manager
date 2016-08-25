@@ -1,9 +1,9 @@
 @import '../../scss/colours';
+@import '../../scss/mixins';
 
 .TagEditor {
     .add-tag-section {
-        display: flex;
-        flex-flow: row nowrap;
+        @include flex-row-nowrap;
         margin-bottom: 1em;
 
         input {
@@ -13,8 +13,7 @@
 
     .tag-editor-list {
         .tag-editor-list-item {
-            display: flex;
-            flex-flow: row nowrap;
+            @include flex-row-nowrap;
             padding: .25em 0;
 
             .tag {

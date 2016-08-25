@@ -6,6 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _app = require('../config/app.config');
 
 var _app2 = _interopRequireDefault(_app);
@@ -18,9 +22,13 @@ var _DBConnectionService = require('./DBConnectionService');
 
 var _DBConnectionService2 = _interopRequireDefault(_DBConnectionService);
 
-var _Tag = require('../model/Tag');
+var _Tag = require('../model/tag/Tag');
 
 var _Tag2 = _interopRequireDefault(_Tag);
+
+var _TagType = require('../model/tag/TagType');
+
+var _TagType2 = _interopRequireDefault(_TagType);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38,9 +46,16 @@ var TagCollection = function () {
         }
     }, {
         key: 'getTags',
-        value: function getTags(skip, limit) {
+        value: function getTags(query, skip, limit) {
+            var dbQuery = {};
+            if (query) {
+                dbQuery._id = {
+                    $regex: new RegExp(query)
+                };
+            }
+
             return _DBConnectionService2.default.getDB().then(function (db) {
-                return db.collection(_app2.default.db.tagsCollection).find({}).skip(skip || 0).limit(limit || 0).toArray().then(function (tags) {
+                return db.collection(_app2.default.db.tagsCollection).find(dbQuery).skip(skip || 0).limit(limit || 0).toArray().then(function (tags) {
                     return tags.map(function (tag) {
                         return _Tag2.default.fromDatabase(tag).serialiseToApi();
                     });
@@ -55,8 +70,20 @@ var TagCollection = function () {
                 return db.collection(_app2.default.db.tagsCollection).findOne({
                     _id: tag
                 }).then(function (doc) {
+                    if (!doc) {
+                        return null;
+                    }
                     return _Tag2.default.fromDatabase(doc).serialiseToApi();
                 });
+            });
+        }
+    }, {
+        key: 'getTagTypeNames',
+        value: function getTagTypeNames() {
+            return _lodash2.default.filter(_TagType2.default, function (type) {
+                return type instanceof _TagType2.default;
+            }).map(function (type) {
+                return type.name;
             });
         }
     }, {
@@ -88,6 +115,30 @@ var TagCollection = function () {
                         });
                     }
                     return null;
+                });
+            });
+        }
+    }, {
+        key: 'updateTag',
+        value: function updateTag(tagData) {
+            var tag = _Tag2.default.fromApi(tagData),
+                query = { _id: tag.id },
+                doc = tag.serialiseToDatabase();
+
+            return _DBConnectionService2.default.getDB().then(function (db) {
+                return db.collection(_app2.default.db.tagsCollection).updateOne(query, doc).then(function (writeResult) {
+                    return writeResult.result;
+                });
+            });
+        }
+    }, {
+        key: 'getDerivingTags',
+        value: function getDerivingTags(tagId) {
+            return _DBConnectionService2.default.getDB().then(function (db) {
+                return db.collection(_app2.default.db.tagsCollection).find({ d: tagId }).toArray().then(function (docs) {
+                    return docs.map(function (doc) {
+                        return _Tag2.default.fromDatabase(doc).serialiseToApi();
+                    });
                 });
             });
         }

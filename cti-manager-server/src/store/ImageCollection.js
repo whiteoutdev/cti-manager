@@ -2,10 +2,12 @@ import fs from 'fs';
 import MongoDB from 'mongodb';
 import del from 'del';
 import lwip from 'lwip';
+import _ from 'lodash';
 
 import appConfig from '../config/app.config';
 import logger from '../util/logger';
 import DBConnectionService from './DBConnectionService';
+import TagCollection from './TagCollection';
 import HashService from '../util/HashService';
 import FileType from '../model/gridfs/FileType';
 import Image from '../model/gridfs/Image';
@@ -18,7 +20,7 @@ const ObjectID      = MongoDB.ObjectID,
 export default class ImageCollection {
     static init() {
         return DBConnectionService.getDB().then((db) => {
-            return db.collection(appConfig.db.filesCollection).createIndex({'metadata.tags': 1});
+            return db.collection(appConfig.db.filesCollection).createIndex({'metadata.ta': 1});
         });
     }
 
@@ -32,7 +34,7 @@ export default class ImageCollection {
                             const thumbnailID = info.thumbnailID,
                                   width       = info.width,
                                   height      = info.height,
-                                  image       = new Image(file, hash, thumbnailID, width, height);
+                                  image       = new Image(file.mimetype, hash, thumbnailID, width, height);
                             this.storeFile(db, image, file.path).then(() => {
                                 resolve();
                             });
@@ -50,7 +52,7 @@ export default class ImageCollection {
     static createThumbnail(db, file, hash) {
         const fileType       = file.originalname.match(/\.((?:\w|\d)+)$/)[1],
               thumbnailName  = `${hash}-thumb.${fileType}`,
-              thumbnailModel = new Thumbnail(thumbnailName),
+              thumbnailModel = new Thumbnail(thumbnailName, file.mimetype),
               thumbnailPath  = `${appConfig.tmpDir}/${thumbnailName}`;
         return new Promise((resolve, reject) => {
             lwip.open(file.path, fileType, (err, image) => {
@@ -69,7 +71,7 @@ export default class ImageCollection {
                         this.storeFile(db, thumbnailModel, thumbnailPath).then((thumbnailID) => {
                             resolve({
                                 thumbnailID,
-                                width: originalWidth,
+                                width : originalWidth,
                                 height: originalHeight
                             });
                         });
@@ -80,7 +82,7 @@ export default class ImageCollection {
 
     static storeFile(db, file, path) {
         const options = {
-                  metadata: file
+                  metadata: file.serialiseToDatabase()
               },
               bucket  = new GridFSBucket(db);
 
@@ -101,14 +103,14 @@ export default class ImageCollection {
         });
     }
 
-    static downloadImage(objectIDHex) {
+    static downloadFile(fileIDHex, deserialise) {
         return DBConnectionService.getDB().then((db) => {
-            const oid    = ObjectID.createFromHexString(objectIDHex),
+            const oid    = ObjectID.createFromHexString(fileIDHex),
                   bucket = new GridFSBucket(db);
             return bucket.find({_id: oid}).toArray().then((arr) => {
                 if (arr.length) {
                     return {
-                        doc: arr[0],
+                        doc   : deserialise(arr[0]).serialiseToApi(),
                         stream: bucket.openDownloadStream(oid)
                     };
                 }
@@ -116,50 +118,84 @@ export default class ImageCollection {
         });
     }
 
-    static getImage(imageIDHex) {
+    static downloadImage(objectIDHex) {
+        return ImageCollection.downloadFile(objectIDHex, Image.fromDatabase);
+    }
+
+    static getFile(fileIDHex, deserialize) {
         return DBConnectionService.getDB().then((db) => {
-            const oid    = ObjectID.createFromHexString(imageIDHex),
+            const oid    = ObjectID.createFromHexString(fileIDHex),
                   bucket = new GridFSBucket(db);
             return bucket.find({_id: oid}).toArray().then((arr) => {
                 if (arr.length) {
-                    return arr[0];
+                    return deserialize(arr[0]).serialiseToApi();
                 }
             });
         });
     }
 
+    static getImage(imageIDHex) {
+        return ImageCollection.getFile(imageIDHex, Image.fromDatabase);
+    }
+
     static getImages(tags, skip, limit) {
         return DBConnectionService.getDB().then((db) => {
-            const bucket = new GridFSBucket(db),
-                  query  = {'metadata.fileType': FileType.IMAGE};
+            const bucket = new GridFSBucket(db);
+            let baseQuery    = {'metadata.t': FileType.IMAGE.code},
+                queryPromise = null;
+
             if (tags && tags.length) {
-                query['metadata.tags'] = {
-                    $all: tags
-                }
-            }
-            const cursor = bucket.find(query);
-            return cursor.count()
-                .then((count) => {
-                    return cursor.skip(skip || 0)
-                        .limit(limit || 0)
-                        .sort({uploadDate: -1})
-                        .toArray()
-                        .then((images) => {
-                            return {images, count};
+                const queryPromises = tags.map((tag) => {
+                    return TagCollection.getDerivingTags(tag)
+                        .then((derivingTags) => {
+                            const tagIds = derivingTags.map(derivingTag => derivingTag.id);
+                            tagIds.unshift(tag);
+                            return {
+                                $or: tagIds.map((tagId) => {
+                                    return {'metadata.ta': tagId};
+                                })
+                            };
                         });
                 });
+
+                queryPromise = Promise.all(queryPromises)
+                    .then((queries) => {
+                        return _.extend(baseQuery, {$and: queries});
+                    });
+            } else {
+                queryPromise = Promise.resolve(baseQuery);
+            }
+
+            return queryPromise.then((query) => {
+                const cursor = bucket.find(query);
+                return cursor.count()
+                    .then((count) => {
+                        return cursor.skip(skip || 0)
+                            .limit(limit || 0)
+                            .sort({uploadDate: -1})
+                            .toArray()
+                            .then((images) => {
+                                return {
+                                    images: images.map((image) => {
+                                        return Image.fromDatabase(image).serialiseToApi();
+                                    }),
+                                    count
+                                };
+                            });
+                    })
+            });
         });
     }
 
     static getThumbnail(imageIDHex) {
         return this.getImage(imageIDHex).then((image) => {
-            return this.getImage(image.metadata.thumbnailID.toHexString());
+            return this.getFile(image.thumbnailID.toHexString(), Thumbnail.fromDatabase);
         });
     }
 
     static downloadThumbnail(imageIDHex) {
         return this.getImage(imageIDHex).then((image) => {
-            return this.downloadImage(image.metadata.thumbnailID.toHexString());
+            return ImageCollection.downloadFile(image.thumbnailID.toHexString(), Thumbnail.fromDatabase);
         });
     }
 
@@ -170,7 +206,7 @@ export default class ImageCollection {
                 _id: oid
             }, {
                 $set: {
-                    'metadata.tags': tags
+                    'metadata.ta': tags
                 }
             }).then((data) => {
                 const result = data.result;
@@ -181,28 +217,6 @@ export default class ImageCollection {
                     logger.warn(`No image found with ID ${imageIDHex}`);
                     return null;
                 }
-            });
-        });
-    }
-
-    static findImages(tags, limit) {
-        const query = {};
-        if (tags && tags.length) {
-            query['metadata.tags'] = {
-                $all: tags
-            }
-        }
-        return DBConnectionService.getDB().then((db) => {
-            const pipeline = [
-                {$match: query}
-            ];
-            if (limit) {
-                pipeline.push({$sample: {size: limit}});
-            }
-            const cursor = db.collection(appConfig.db.filesCollection)
-                .aggregate(pipeline, {cursor: {batchSize: 1}});
-            return cursor.toArray().then((documents) => {
-                return documents;
             });
         });
     }

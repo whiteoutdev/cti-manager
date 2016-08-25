@@ -15,6 +15,7 @@
     "axios": "^0.13.1",
     "bunyan": "^1.8.1",
     "compression": "^1.6.2",
+    "escape-string-regexp": "^1.0.5",
     "express": "^4.14.0",
     "lodash": "^4.14.1",
     "material-design-icons": "^2.2.3",

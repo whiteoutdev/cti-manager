@@ -5,10 +5,11 @@ import TagCollection from '../store/TagCollection';
 export default class TagsApi extends RestApi {
     configure(app) {
         app.get('/tags', (req, res) => {
-            const query = req.query,
-                  skip  = Number(query.skip),
-                  limit = Number(query.limit);
-            TagCollection.getTags(skip, limit).then((tags) => {
+            const query  = req.query,
+                  search = query.query,
+                  skip   = Number(query.skip),
+                  limit  = Number(query.limit);
+            TagCollection.getTags(search, skip, limit).then((tags) => {
                 res.status(200).send(tags);
             });
         });
@@ -37,6 +38,21 @@ export default class TagsApi extends RestApi {
                     res.sendStatus(200);
                 }
             });
+        });
+
+        app.post('/tags/:tag', (req, res) => {
+            const tagId   = decodeURIComponent(req.params.tag),
+                  tagData = req.body;
+            logger.debug(`Update of tag ${tagId} requested`);
+            tagData.id = tagId;
+            TagCollection.updateTag(tagData).then(() => {
+                res.sendStatus(200);
+            });
+        });
+
+        app.get('/tagtypes', (req, res) => {
+            logger.debug('Tag types requested');
+            res.status(200).send(TagCollection.getTagTypeNames());
         });
     }
 }

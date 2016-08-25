@@ -8,11 +8,19 @@ import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Spinner from '../Spinner/Spinner.jsx';
 import TagEditor from '../TagEditor/TagEditor.jsx';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
+import Panel from '../Panel/Panel.jsx';
+import PanelHeader from '../Panel/PanelHeader.jsx';
+import PanelBody from '../Panel/PanelBody.jsx';
+import PanelList from '../Panel/PanelList.jsx';
+import PanelListItem from '../Panel/PanelListItem.jsx';
 
 import history from '../../services/history';
+import TagService from '../../services/TagService';
 import TagStore from '../../stores/TagStore';
 import TagActions from '../../actions/TagActions';
 import ImagesApi from '../../api/ImagesApi';
+
+import './ImageSidebar.scss';
 
 export default class ImageSidebar extends RefluxComponent {
     constructor(props) {
@@ -23,15 +31,15 @@ export default class ImageSidebar extends RefluxComponent {
             tagEditMode  : false,
             allTags      : []
         };
-        this.listenTo(TagStore, this.onTagsUpdated, (tags) => {
-            this.state.allTags = tags
+        this.listenTo(TagStore, this.onTagsUpdated, (data) => {
+            this.state.allTags = data.tags
         });
         TagActions.updateTags();
     }
 
     getTagType(tag) {
         const tagData = _.find(this.state.allTags, (tagData) => {
-            return tagData.id === tag;
+            return tagData.id === TagService.toTagId(tag);
         });
         return tagData ? tagData.type : '';
     }
@@ -62,7 +70,7 @@ export default class ImageSidebar extends RefluxComponent {
         const searchText = this.refs.searchInput.value.trim(),
               tags       = searchText.split(/\s+/),
               tagsString = tags.map((tag) => {
-                  return encodeURIComponent(tag.replace(/_/g, ' '));
+                  return encodeURIComponent(tag);
               }).join();
         history.push(`/images?tags=${tagsString}`);
     }
@@ -97,23 +105,24 @@ export default class ImageSidebar extends RefluxComponent {
 
     renderSearchSection() {
         return (
-            <div className="sidebar-section search-section">
+            <Panel className="search-section">
                 <HotKeys handlers={{enter: this.search.bind(this)}}>
-                    <div className="section-header">
+                    <PanelHeader>
                         <h2>Search</h2>
-                    </div>
-                    <div className="section-body">
+                    </PanelHeader>
+
+                    <PanelBody>
                         <div className="search-form">
-                            <AutocompleteInput ref="searchInput"
+                            <AutocompleteInput ref="searchInput" tokenize
                                                items={this.state.allTags.map(tag => tag.id)}
                                                onEnter={this.search.bind(this)}/>
                             <button className="search-button accent" onClick={this.search.bind(this)}>
                                 <i className="material-icons">search</i>
                             </button>
                         </div>
-                    </div>
+                    </PanelBody>
                 </HotKeys>
-            </div>
+            </Panel>
         );
     }
 
@@ -124,11 +133,11 @@ export default class ImageSidebar extends RefluxComponent {
                 uploadText = `${this.refs.fileInput.files.length} files selected`;
             }
             return (
-                <div className="sidebar-section upload-section">
-                    <div className="section-header">
+                <Panel className="upload-section">
+                    <PanelHeader>
                         <h2>Upload</h2>
-                    </div>
-                    <div className="section-body">
+                    </PanelHeader>
+                    <PanelBody>
                         <div className={`upload-form ${this.state.uploadPending ? 'upload-pending' : ''}`}>
                             <div className="input-container">
                                 <input id={`${this.id}-upload-input`}
@@ -154,13 +163,18 @@ export default class ImageSidebar extends RefluxComponent {
                             </span>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </PanelBody>
+                </Panel>
             );
         }
     }
 
     renderTagsSection() {
+        const tagList = this.getTagList();
+        if ((!tagList || !tagList.length) && !this.props.tagsEditable) {
+            return;
+        }
+
         let editIcon = null;
         if (this.props.tagsEditable && !this.state.tagEditMode) {
             editIcon = <i className="material-icons" onClick={this.handleEditTags.bind(this)}>edit</i>;
@@ -168,21 +182,23 @@ export default class ImageSidebar extends RefluxComponent {
 
         let body = null;
         if (this.state.tagEditMode) {
-            body = <TagEditor tags={this.getTagList()} onSave={this.fireTagsChange.bind(this)}/>;
+            body = (
+                <PanelBody>
+                    <TagEditor tags={tagList} onSave={this.fireTagsChange.bind(this)}/>
+                </PanelBody>
+            );
         } else {
-            body = this.renderTagsList();
+            body = this.renderTagsList(tagList);
         }
 
         return (
-            <div className="sidebar-section tags-section">
-                <div className="section-header">
+            <Panel className="tags-section">
+                <PanelHeader>
                     <h2>Tags</h2>
                     {editIcon}
-                </div>
-                <div className="section-body">
-                    {body}
-                </div>
-            </div>
+                </PanelHeader>
+                {body}
+            </Panel>
         );
     }
 
@@ -194,7 +210,7 @@ export default class ImageSidebar extends RefluxComponent {
         }
 
         const tagCounts = images.reduce((previous, current) => {
-            current.metadata.tags.forEach((tag) => {
+            current.tags.forEach((tag) => {
                 if (previous[tag]) {
                     previous[tag] = previous[tag] + 1;
                 } else {
@@ -215,24 +231,25 @@ export default class ImageSidebar extends RefluxComponent {
         });
     }
 
-    renderTagsList() {
-        const sortedTags   = this.getTagList(),
-              tagListItems = sortedTags.map((tag) => {
-                  console.log(this.getTagType(tag));
-                  const tagType = this.getTagType(tag).toLowerCase();
-                  return (
-                      <li key={tag} className="tags-list-item">
-                          <Link className={tagType} to={`/images?tags=${encodeURIComponent(tag)}`}>
-                              {tag}
-                          </Link>
-                      </li>
-                  );
-              });
+    renderTagsList(tagList) {
+        const tagListItems = tagList.map((tag) => {
+            const tagType = this.getTagType(tag).toLowerCase();
+            return (
+                <PanelListItem key={tag} className={`tags-list-item ${tagType}`}>
+                    <Link className={`tag-name ${tagType}`} to={`/images?tags=${encodeURIComponent(tag)}`}>
+                        {TagService.toDisplayName(tag)}
+                    </Link>
+                    <Link className={tagType} to={`/tags/${tag}`}>
+                        <i className="tag-icon material-icons">edit</i>
+                    </Link>
+                </PanelListItem>
+            );
+        });
 
         return (
-            <ul className="tags-list">
+            <PanelList className="tags-list">
                 {tagListItems}
-            </ul>
+            </PanelList>
         );
     }
 

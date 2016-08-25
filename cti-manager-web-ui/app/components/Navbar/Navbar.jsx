@@ -18,6 +18,9 @@ export default class Navbar extends React.Component {
                     <li className="nav-link-list-item">
                         <NavLink to="/images" className="nav-link">Images</NavLink>
                     </li>
+                    <li className="nav-link-list-item">
+                        <NavLink className="nav-link" to="/tags">Tags</NavLink>
+                    </li>
                 </ul>
             </div>
         );

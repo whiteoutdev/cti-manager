@@ -1,26 +1,44 @@
 import React from 'react';
-import {HotKeys} from 'react-hotkeys';
 import _ from 'lodash';
+
+import RefluxComponent from '../RefluxComponent/RefluxComponent';
+import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
+
+import TagService from '../../services/TagService';
+import TagStore from '../../stores/TagStore';
+import TagActions from '../../actions/TagActions';
 
 import './TagEditor.scss';
 
-export default class TagEditor extends React.Component {
+export default class TagEditor extends RefluxComponent {
     constructor(props) {
         super();
         this.state = {
-            tags: props.tags.slice(),
-            deletedTags: []
+            tags       : props.tags.slice(),
+            deletedTags: [],
+            allTags    : []
         };
+        this.listenTo(TagStore, this.updateTags, (data) => {
+            this.state.allTags = data.tags.map(tag => TagService.toDisplayName(tag.id));
+        });
+        TagActions.updateTags();
+    }
+
+    updateTags(tags) {
+        this.setState({
+            allTags: tags.map(tag => TagService.toDisplayName(tag.id))
+        });
     }
 
     fireSave() {
         const newTags = _.difference(this.state.tags.slice(), this.state.deletedTags);
         if (typeof this.props.onSave === 'function') {
-            this.props.onSave(newTags);
+            this.props.onSave(newTags.map(newTag => TagService.toTagId(newTag)));
         }
     }
 
     addTag(tag, callback) {
+        tag = tag.trim();
         const deletedIndex    = this.state.deletedTags.indexOf(tag),
               currentTagIndex = this.state.tags.indexOf(tag);
 
@@ -42,11 +60,15 @@ export default class TagEditor extends React.Component {
         });
     }
 
-    addTagFromInput() {
-        const newTag = this.refs.addTagInput.value;
-        this.addTag(newTag, () => {
+    addTagAndClear(tag) {
+        this.addTag(tag, () => {
             this.refs.addTagInput.value = '';
         });
+    }
+
+    addTagFromInput() {
+        const newTag = this.refs.addTagInput.value;
+        this.addTagAndClear(newTag);
     }
 
     deleteTag(tag) {
@@ -68,20 +90,21 @@ export default class TagEditor extends React.Component {
         this.refs.addTagInput.focus();
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate() {
         this.refs.addTagInput.focus();
     }
 
     renderAddTagInput() {
         return (
-            <HotKeys handlers={{enter: this.addTagFromInput.bind(this)}}>
-                <div className="add-tag-section">
-                    <input ref="addTagInput" type="text"/>
-                    <button className="accent" onClick={this.addTagFromInput.bind(this)}>
-                        <i className="material-icons">add</i>
-                    </button>
-                </div>
-            </HotKeys>
+            <div className="add-tag-section">
+                <AutocompleteInput ref="addTagInput"
+                                   items={this.state.allTags}
+                                   onAutocomplete={this.addTagAndClear.bind(this)}
+                                   onEnter={this.addTagFromInput.bind(this)}/>
+                <button className="accent" onClick={this.addTagFromInput.bind(this)}>
+                    <i className="material-icons">add</i>
+                </button>
+            </div>
         );
     }
 
@@ -116,7 +139,7 @@ export default class TagEditor extends React.Component {
         const tagListItems = tags.map((tag) => {
             return (
                 <li key={tag} className="tag-editor-list-item">
-                    <span className={`tag ${this.calculateTagClass(tag)}`}>{tag}</span>
+                    <span className={`tag ${this.calculateTagClass(tag)}`}>{TagService.toDisplayName(tag)}</span>
                     {this.renderTagButton(tag)}
                 </li>
             );

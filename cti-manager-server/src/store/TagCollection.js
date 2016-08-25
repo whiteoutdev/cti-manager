@@ -1,17 +1,27 @@
+import _ from 'lodash';
+
 import appConfig from '../config/app.config';
 import logger from '../util/logger';
 import DBConnectionService from './DBConnectionService';
-import Tag from '../model/Tag';
+import Tag from '../model/tag/Tag';
+import TagType from '../model/tag/TagType';
 
 export default class TagCollection {
     static init() {
         return TagCollection.createTags(['tagme']);
     }
 
-    static getTags(skip, limit) {
+    static getTags(query, skip, limit) {
+        const dbQuery = {};
+        if (query) {
+            dbQuery._id = {
+                $regex: new RegExp(query)
+            };
+        }
+
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.tagsCollection)
-                .find({})
+                .find(dbQuery)
                 .skip(skip || 0)
                 .limit(limit || 0)
                 .toArray()
@@ -29,8 +39,19 @@ export default class TagCollection {
             return db.collection(appConfig.db.tagsCollection).findOne({
                 _id: tag
             }).then((doc) => {
+                if (!doc) {
+                    return null;
+                }
                 return Tag.fromDatabase(doc).serialiseToApi();
             });
+        });
+    }
+
+    static getTagTypeNames() {
+        return _.filter(TagType, (type) => {
+            return type instanceof TagType;
+        }).map((type) => {
+            return type.name;
         });
     }
 
@@ -66,5 +87,30 @@ export default class TagCollection {
                     return null;
                 });
         })
+    }
+
+    static updateTag(tagData) {
+        const tag   = Tag.fromApi(tagData),
+              query = {_id: tag.id},
+              doc   = tag.serialiseToDatabase();
+
+        return DBConnectionService.getDB().then((db) => {
+            return db.collection(appConfig.db.tagsCollection)
+                .updateOne(query, doc)
+                .then(writeResult => writeResult.result);
+        });
+    }
+
+    static getDerivingTags(tagId) {
+        return DBConnectionService.getDB().then((db) => {
+            return db.collection(appConfig.db.tagsCollection)
+                .find({d: tagId})
+                .toArray()
+                .then((docs) => {
+                    return docs.map((doc) => {
+                        return Tag.fromDatabase(doc).serialiseToApi();
+                    });
+                });
+        });
     }
 }

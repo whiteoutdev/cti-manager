@@ -1,11 +1,11 @@
 @import '../../scss/colours';
+@import '../../scss/mixins';
 
 .ImagesPageThumbnailGallery {
     padding: 2rem;
 
     .thumbnail-list {
-        display: flex;
-        flex-flow: row wrap;
+        @include flex-row-wrap;
         align-items: flex-start;
         justify-content: space-between;
 
@@ -22,8 +22,7 @@
         padding: 1em 0 2.5em;
 
         .nav-buttons {
-            display: flex;
-            flex-flow: row wrap;
+            @include flex-row-wrap;
             align-content: center;
             justify-content: center;
 

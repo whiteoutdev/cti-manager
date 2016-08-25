@@ -6,13 +6,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _AbstractModel2 = require('./AbstractModel');
+var _AbstractModel2 = require('../AbstractModel');
 
 var _AbstractModel3 = _interopRequireDefault(_AbstractModel2);
 
 var _TagType = require('./TagType');
 
 var _TagType2 = _interopRequireDefault(_TagType);
+
+var _TagMetadata = require('./TagMetadata');
+
+var _TagMetadata2 = _interopRequireDefault(_TagMetadata);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25,14 +29,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Tag = function (_AbstractModel) {
     _inherits(Tag, _AbstractModel);
 
-    function Tag(name, type, derivedTags) {
+    function Tag(name, type, derivedTags, metadata) {
         _classCallCheck(this, Tag);
 
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Tag).call(this));
 
         _this.id = Tag.encode(name);
         _this.type = type || _TagType2.default.GENERAL;
-        _this.derivedTags = derivedTags || [];
+        _this.derivedTags = (derivedTags || []).filter(function (tag) {
+            return tag;
+        });
+        _this.metadata = metadata || new _TagMetadata2.default();
         return _this;
     }
 
@@ -42,7 +49,8 @@ var Tag = function (_AbstractModel) {
             return {
                 _id: this.id,
                 t: this.type.code,
-                d: this.derivedTags
+                d: this.derivedTags,
+                m: this.metadata.serialiseToDatabase()
             };
         }
     }, {
@@ -51,13 +59,19 @@ var Tag = function (_AbstractModel) {
             return {
                 id: this.id,
                 type: this.type.name,
-                derivedTags: this.derivedTags
+                derivedTags: this.derivedTags,
+                metadata: this.metadata
             };
         }
     }], [{
         key: 'fromDatabase',
         value: function fromDatabase(doc) {
-            return new Tag(doc._id, _TagType2.default.fromCode(doc.t), doc.d);
+            return new Tag(doc._id, _TagType2.default.fromCode(doc.t), doc.d, _TagMetadata2.default.fromDatabase(doc.m));
+        }
+    }, {
+        key: 'fromApi',
+        value: function fromApi(tagData) {
+            return new Tag(tagData.id, _TagType2.default.fromName(tagData.type), tagData.derivedTags, _TagMetadata2.default.fromApi(tagData.metadata));
         }
     }, {
         key: 'encode',

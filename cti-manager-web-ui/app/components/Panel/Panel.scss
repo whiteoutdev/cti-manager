@@ -1,0 +1,90 @@
+@import '../../scss/colours';
+@import '../../scss/mixins';
+
+$panel-gutter: 1rem;
+$panel-border-style: 1px solid $font-dark-decoration;
+
+@mixin panel-part-border {
+    border-left: $panel-border-style;
+    border-right: $panel-border-style;
+
+    &:last-child {
+        border-bottom: $panel-border-style;
+    }
+}
+
+.Panel {
+    position: relative;
+    background-color: $white;
+
+    .PanelHeader {
+        @include flex-row-nowrap;
+        align-items: center;
+        padding: .5rem $panel-gutter;
+        background-color: $brand-primary;
+
+        h1, h2, h3, h4, h5, h6, i {
+            font-weight: 400;
+            color: $font-light-primary;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            flex: 1;
+        }
+
+        i {
+            opacity: .75;
+            cursor: pointer;
+            transition: all 150ms linear;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        & + .PanelBody {
+            border-top: none;
+        }
+    }
+
+    .PanelBody {
+        @include panel-part-border;
+        padding: 1rem $panel-gutter;
+    }
+
+    .PanelList {
+        .PanelListItem {
+            @include panel-part-border;
+            padding: 0 $panel-gutter;
+        }
+    }
+
+    .PanelButtons {
+        @include flex-row-nowrap;
+
+        .PanelButton {
+            flex: 1;
+            height: 2.5em;
+
+            border-bottom: $panel-border-style;
+            border-top: $panel-border-style;
+
+            &:first-child {
+                border-left: $panel-border-style;
+            }
+
+            &:last-child {
+                border-right: $panel-border-style;
+            }
+
+            &.primary {
+                border-color: $brand-primary;
+            }
+
+            &.accent {
+                border-color: $brand-accent;
+            }
+        }
+    }
+
+}

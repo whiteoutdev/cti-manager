@@ -22,6 +22,10 @@ var _lwip = require('lwip');
 
 var _lwip2 = _interopRequireDefault(_lwip);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _app = require('../config/app.config');
 
 var _app2 = _interopRequireDefault(_app);
@@ -33,6 +37,10 @@ var _logger2 = _interopRequireDefault(_logger);
 var _DBConnectionService = require('./DBConnectionService');
 
 var _DBConnectionService2 = _interopRequireDefault(_DBConnectionService);
+
+var _TagCollection = require('./TagCollection');
+
+var _TagCollection2 = _interopRequireDefault(_TagCollection);
 
 var _HashService = require('../util/HashService');
 
@@ -67,7 +75,7 @@ var ImageCollection = function () {
         key: 'init',
         value: function init() {
             return _DBConnectionService2.default.getDB().then(function (db) {
-                return db.collection(_app2.default.db.filesCollection).createIndex({ 'metadata.tags': 1 });
+                return db.collection(_app2.default.db.filesCollection).createIndex({ 'metadata.ta': 1 });
             });
         }
     }, {
@@ -84,7 +92,7 @@ var ImageCollection = function () {
                                 var thumbnailID = info.thumbnailID,
                                     width = info.width,
                                     height = info.height,
-                                    image = new _Image2.default(file, hash, thumbnailID, width, height);
+                                    image = new _Image2.default(file.mimetype, hash, thumbnailID, width, height);
                                 _this.storeFile(db, image, file.path).then(function () {
                                     resolve();
                                 });
@@ -105,7 +113,7 @@ var ImageCollection = function () {
 
             var fileType = file.originalname.match(/\.((?:\w|\d)+)$/)[1],
                 thumbnailName = hash + '-thumb.' + fileType,
-                thumbnailModel = new _Thumbnail2.default(thumbnailName),
+                thumbnailModel = new _Thumbnail2.default(thumbnailName, file.mimetype),
                 thumbnailPath = _app2.default.tmpDir + '/' + thumbnailName;
             return new Promise(function (resolve, reject) {
                 _lwip2.default.open(file.path, fileType, function (err, image) {
@@ -134,7 +142,7 @@ var ImageCollection = function () {
         key: 'storeFile',
         value: function storeFile(db, file, path) {
             var options = {
-                metadata: file
+                metadata: file.serialiseToDatabase()
             },
                 bucket = new GridFSBucket(db);
 
@@ -152,15 +160,15 @@ var ImageCollection = function () {
             });
         }
     }, {
-        key: 'downloadImage',
-        value: function downloadImage(objectIDHex) {
+        key: 'downloadFile',
+        value: function downloadFile(fileIDHex, deserialise) {
             return _DBConnectionService2.default.getDB().then(function (db) {
-                var oid = ObjectID.createFromHexString(objectIDHex),
+                var oid = ObjectID.createFromHexString(fileIDHex),
                     bucket = new GridFSBucket(db);
                 return bucket.find({ _id: oid }).toArray().then(function (arr) {
                     if (arr.length) {
                         return {
-                            doc: arr[0],
+                            doc: deserialise(arr[0]).serialiseToApi(),
                             stream: bucket.openDownloadStream(oid)
                         };
                     }
@@ -168,33 +176,69 @@ var ImageCollection = function () {
             });
         }
     }, {
-        key: 'getImage',
-        value: function getImage(imageIDHex) {
+        key: 'downloadImage',
+        value: function downloadImage(objectIDHex) {
+            return ImageCollection.downloadFile(objectIDHex, _Image2.default.fromDatabase);
+        }
+    }, {
+        key: 'getFile',
+        value: function getFile(fileIDHex, deserialize) {
             return _DBConnectionService2.default.getDB().then(function (db) {
-                var oid = ObjectID.createFromHexString(imageIDHex),
+                var oid = ObjectID.createFromHexString(fileIDHex),
                     bucket = new GridFSBucket(db);
                 return bucket.find({ _id: oid }).toArray().then(function (arr) {
                     if (arr.length) {
-                        return arr[0];
+                        return deserialize(arr[0]).serialiseToApi();
                     }
                 });
             });
         }
     }, {
+        key: 'getImage',
+        value: function getImage(imageIDHex) {
+            return ImageCollection.getFile(imageIDHex, _Image2.default.fromDatabase);
+        }
+    }, {
         key: 'getImages',
         value: function getImages(tags, skip, limit) {
             return _DBConnectionService2.default.getDB().then(function (db) {
-                var bucket = new GridFSBucket(db),
-                    query = { 'metadata.fileType': _FileType2.default.IMAGE };
+                var bucket = new GridFSBucket(db);
+                var baseQuery = { 'metadata.t': _FileType2.default.IMAGE.code },
+                    queryPromise = null;
+
                 if (tags && tags.length) {
-                    query['metadata.tags'] = {
-                        $all: tags
-                    };
+                    var queryPromises = tags.map(function (tag) {
+                        return _TagCollection2.default.getDerivingTags(tag).then(function (derivingTags) {
+                            var tagIds = derivingTags.map(function (derivingTag) {
+                                return derivingTag.id;
+                            });
+                            tagIds.unshift(tag);
+                            return {
+                                $or: tagIds.map(function (tagId) {
+                                    return { 'metadata.ta': tagId };
+                                })
+                            };
+                        });
+                    });
+
+                    queryPromise = Promise.all(queryPromises).then(function (queries) {
+                        return _lodash2.default.extend(baseQuery, { $and: queries });
+                    });
+                } else {
+                    queryPromise = Promise.resolve(baseQuery);
                 }
-                var cursor = bucket.find(query);
-                return cursor.count().then(function (count) {
-                    return cursor.skip(skip || 0).limit(limit || 0).sort({ uploadDate: -1 }).toArray().then(function (images) {
-                        return { images: images, count: count };
+
+                return queryPromise.then(function (query) {
+                    var cursor = bucket.find(query);
+                    return cursor.count().then(function (count) {
+                        return cursor.skip(skip || 0).limit(limit || 0).sort({ uploadDate: -1 }).toArray().then(function (images) {
+                            return {
+                                images: images.map(function (image) {
+                                    return _Image2.default.fromDatabase(image).serialiseToApi();
+                                }),
+                                count: count
+                            };
+                        });
                     });
                 });
             });
@@ -205,22 +249,20 @@ var ImageCollection = function () {
             var _this3 = this;
 
             return this.getImage(imageIDHex).then(function (image) {
-                return _this3.getImage(image.metadata.thumbnailID.toHexString());
+                return _this3.getFile(image.thumbnailID.toHexString(), _Thumbnail2.default.fromDatabase);
             });
         }
     }, {
         key: 'downloadThumbnail',
         value: function downloadThumbnail(imageIDHex) {
-            var _this4 = this;
-
             return this.getImage(imageIDHex).then(function (image) {
-                return _this4.downloadImage(image.metadata.thumbnailID.toHexString());
+                return ImageCollection.downloadFile(image.thumbnailID.toHexString(), _Thumbnail2.default.fromDatabase);
             });
         }
     }, {
         key: 'setTags',
         value: function setTags(imageIDHex, tags) {
-            var _this5 = this;
+            var _this4 = this;
 
             return _DBConnectionService2.default.getDB().then(function (db) {
                 var oid = ObjectID.createFromHexString(imageIDHex);
@@ -228,37 +270,17 @@ var ImageCollection = function () {
                     _id: oid
                 }, {
                     $set: {
-                        'metadata.tags': tags
+                        'metadata.ta': tags
                     }
                 }).then(function (data) {
                     var result = data.result;
                     if (result.nModified) {
                         _logger2.default.debug('Tags updated for ' + result.nModified + ' image' + (result.nModified > 1 ? 's' : ''));
-                        return _this5.getImage(imageIDHex);
+                        return _this4.getImage(imageIDHex);
                     } else {
                         _logger2.default.warn('No image found with ID ' + imageIDHex);
                         return null;
                     }
-                });
-            });
-        }
-    }, {
-        key: 'findImages',
-        value: function findImages(tags, limit) {
-            var query = {};
-            if (tags && tags.length) {
-                query['metadata.tags'] = {
-                    $all: tags
-                };
-            }
-            return _DBConnectionService2.default.getDB().then(function (db) {
-                var pipeline = [{ $match: query }];
-                if (limit) {
-                    pipeline.push({ $sample: { size: limit } });
-                }
-                var cursor = db.collection(_app2.default.db.filesCollection).aggregate(pipeline, { cursor: { batchSize: 1 } });
-                return cursor.toArray().then(function (documents) {
-                    return documents;
                 });
             });
         }

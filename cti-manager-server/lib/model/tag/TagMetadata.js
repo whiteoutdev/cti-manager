@@ -6,13 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _AbstractFile2 = require('./AbstractFile');
+var _AbstractModel2 = require('../AbstractModel');
 
-var _AbstractFile3 = _interopRequireDefault(_AbstractFile2);
-
-var _FileType = require('./FileType');
-
-var _FileType2 = _interopRequireDefault(_FileType);
+var _AbstractModel3 = _interopRequireDefault(_AbstractModel2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,25 +18,49 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Thumbnail = function (_AbstractFile) {
-    _inherits(Thumbnail, _AbstractFile);
+var TagMetadata = function (_AbstractModel) {
+    _inherits(TagMetadata, _AbstractModel);
 
-    function Thumbnail(name, mimeType, id) {
-        _classCallCheck(this, Thumbnail);
+    function TagMetadata(urls, pixivId) {
+        _classCallCheck(this, TagMetadata);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(Thumbnail).call(this, _FileType2.default.THUMBNAIL, name, mimeType, id));
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TagMetadata).call(this));
+
+        _this.urls = urls || [];
+        _this.pixivId = pixivId || null;
+        return _this;
     }
 
-    _createClass(Thumbnail, null, [{
+    _createClass(TagMetadata, [{
+        key: 'serialiseToDatabase',
+        value: function serialiseToDatabase() {
+            return {
+                u: this.urls,
+                p: this.pixivId
+            };
+        }
+    }, {
+        key: 'serialiseToApi',
+        value: function serialiseToApi() {
+            var metadata = {
+                urls: this.urls
+            };
+            this.pixivId && (metadata.pixivId = pixivId);
+            return metadata;
+        }
+    }], [{
         key: 'fromDatabase',
         value: function fromDatabase(doc) {
-            var md = doc.metadata;
-            return new Thumbnail(md.n, md.m, doc._id);
+            return new TagMetadata(doc.u, doc.p);
+        }
+    }, {
+        key: 'fromApi',
+        value: function fromApi(metadata) {
+            return new TagMetadata(metadata.urls, metadata.pixivId);
         }
     }]);
 
-    return Thumbnail;
-}(_AbstractFile3.default);
+    return TagMetadata;
+}(_AbstractModel3.default);
 
-exports.default = Thumbnail;
-;
+exports.default = TagMetadata;
