@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --prod",
     "dev": "webpack-dev-server --hot --inline",
-    "prod": "npm run build && babel build/config.js --out-file lib/config.js && node server/app | bunyan",
+    "prod": "npm run build && babel build/config.js --out-file server/config.js && node server/app | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -24,7 +24,7 @@ var TagMetadata = function (_AbstractModel) {
     function TagMetadata(urls, pixivId) {
         _classCallCheck(this, TagMetadata);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TagMetadata).call(this));
+        var _this = _possibleConstructorReturn(this, (TagMetadata.__proto__ || Object.getPrototypeOf(TagMetadata)).call(this));
 
         _this.urls = urls || [];
         _this.pixivId = pixivId || null;

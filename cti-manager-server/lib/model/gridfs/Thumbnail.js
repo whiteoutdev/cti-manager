@@ -28,7 +28,7 @@ var Thumbnail = function (_AbstractFile) {
     function Thumbnail(name, mimeType, id) {
         _classCallCheck(this, Thumbnail);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(Thumbnail).call(this, _FileType2.default.THUMBNAIL, name, mimeType, id));
+        return _possibleConstructorReturn(this, (Thumbnail.__proto__ || Object.getPrototypeOf(Thumbnail)).call(this, _FileType2.default.THUMBNAIL, name, mimeType, id));
     }
 
     _createClass(Thumbnail, null, [{

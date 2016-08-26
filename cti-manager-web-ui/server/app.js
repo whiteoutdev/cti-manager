@@ -1,6 +1,6 @@
 const express     = require('express'),
       compression = require('compression'),
-      config      = require('../lib/config').default,
+      config      = require('./config').default,
       logger      = require('./logger');
 
 const app  = express(),

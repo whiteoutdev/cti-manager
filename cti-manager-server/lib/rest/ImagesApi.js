@@ -40,7 +40,7 @@ var ImagesApi = function (_RestApi) {
     function ImagesApi() {
         _classCallCheck(this, ImagesApi);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(ImagesApi).apply(this, arguments));
+        return _possibleConstructorReturn(this, (ImagesApi.__proto__ || Object.getPrototypeOf(ImagesApi)).apply(this, arguments));
     }
 
     _createClass(ImagesApi, [{

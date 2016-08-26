@@ -38,7 +38,7 @@ var Image = function (_AbstractFile) {
     function Image(mimeType, hash, thumbnailID, width, height, tags, id) {
         _classCallCheck(this, Image);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Image).call(this, _FileType2.default.IMAGE, hash, mimeType, id));
+        var _this = _possibleConstructorReturn(this, (Image.__proto__ || Object.getPrototypeOf(Image)).call(this, _FileType2.default.IMAGE, hash, mimeType, id));
 
         _this.hash = hash;
         _this.thumbnailID = thumbnailID;
@@ -56,7 +56,7 @@ var Image = function (_AbstractFile) {
     _createClass(Image, [{
         key: 'serialiseToDatabase',
         value: function serialiseToDatabase() {
-            var serialised = _get(Object.getPrototypeOf(Image.prototype), 'serialiseToDatabase', this).call(this);
+            var serialised = _get(Image.prototype.__proto__ || Object.getPrototypeOf(Image.prototype), 'serialiseToDatabase', this).call(this);
             return _lodash2.default.extend(serialised, {
                 h: this.hash,
                 ti: this.thumbnailID,
@@ -68,7 +68,7 @@ var Image = function (_AbstractFile) {
     }, {
         key: 'serialiseToApi',
         value: function serialiseToApi() {
-            var serialised = _get(Object.getPrototypeOf(Image.prototype), 'serialiseToApi', this).call(this);
+            var serialised = _get(Image.prototype.__proto__ || Object.getPrototypeOf(Image.prototype), 'serialiseToApi', this).call(this);
             return _lodash2.default.extend(serialised, {
                 hash: this.hash,
                 thumbnailID: this.thumbnailID,
