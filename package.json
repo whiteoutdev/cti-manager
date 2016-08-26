@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "version": "node version"
+    "version": "node version",
+    "postinstall": "cd cti-manager-server && npm install && cd ../cti-manager-web-ui && npm install && cd .."
   },
   "author": "",
   "license": "ISC"
