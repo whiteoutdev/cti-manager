@@ -32,7 +32,7 @@ var Tag = function (_AbstractModel) {
     function Tag(name, type, derivedTags, metadata) {
         _classCallCheck(this, Tag);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Tag).call(this));
+        var _this = _possibleConstructorReturn(this, (Tag.__proto__ || Object.getPrototypeOf(Tag)).call(this));
 
         _this.id = Tag.encode(name);
         _this.type = type || _TagType2.default.GENERAL;

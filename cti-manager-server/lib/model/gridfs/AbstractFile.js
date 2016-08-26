@@ -24,7 +24,7 @@ var AbstractFile = function (_AbstractModel) {
     function AbstractFile(fileType, name, mimeType, id) {
         _classCallCheck(this, AbstractFile);
 
-        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AbstractFile).call(this));
+        var _this = _possibleConstructorReturn(this, (AbstractFile.__proto__ || Object.getPrototypeOf(AbstractFile)).call(this));
 
         _this.fileType = fileType;
         _this.name = name;

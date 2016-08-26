@@ -32,7 +32,7 @@ var TagsApi = function (_RestApi) {
     function TagsApi() {
         _classCallCheck(this, TagsApi);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(TagsApi).apply(this, arguments));
+        return _possibleConstructorReturn(this, (TagsApi.__proto__ || Object.getPrototypeOf(TagsApi)).apply(this, arguments));
     }
 
     _createClass(TagsApi, [{
