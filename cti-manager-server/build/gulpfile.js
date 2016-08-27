@@ -10,26 +10,26 @@ const isJs = function(file) {
     return file.path.endsWith('.js');
 };
 
-gulp.task('db', ['build'], (cb) => {
+gulp.task('server:db', ['server:build'], (cb) => {
     const rebuildDatabase = require('./scripts/rebuildDatabase').default;
     rebuildDatabase().then(cb);
 });
 
-gulp.task('dev', ['db'], () => {
+gulp.task('server:dev', ['server:db'], () => {
     nodemon({
         script: `${config.root}/index.js`,
-        tasks : 'build',
+        tasks : 'server:build',
         ignore: config.lib
     });
 });
 
-gulp.task('clean', (cb) => {
+gulp.task('server:clean', (cb) => {
     del([config.lib]).then(() => {
         cb();
     });
 });
 
-gulp.task('build', ['clean'], () => {
+gulp.task('server:build', ['server:clean'], () => {
     return gulp.src(`${config.src}/**/*`)
         .pipe(gulpif(isJs, babel()))
         .pipe(gulp.dest(config.lib));

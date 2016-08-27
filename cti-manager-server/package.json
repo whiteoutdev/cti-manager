@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "gulp build | bunyan",
+    "build": "gulp server:build | bunyan",
     "serve": "node index | bunyan",
-    "db": "gulp db | bunyan",
-    "db-dev": "gulp db --dev | bunyan",
-    "dev": "gulp dev --dev | bunyan",
+    "db": "gulp server:db | bunyan",
+    "db-dev": "gulp server:db --dev | bunyan",
+    "dev": "gulp server:dev --dev | bunyan",
     "prod": "npm run build && npm run serve",
     "test": "echo \"Error: no test specified\" && exit 1",
     "preversion": "npm run build"
