@@ -18,6 +18,7 @@ gulp.task('server:db', ['server:build'], (cb) => {
 gulp.task('server:dev', ['server:db'], () => {
     nodemon({
         script: `${config.root}/index.js`,
+        args  : ['--dev'],
         tasks : 'server:build',
         ignore: config.lib
     });

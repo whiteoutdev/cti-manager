@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --prod",
-    "dev": "webpack-dev-server --hot --inline",
+    "dev": "gulp ui:dev",
     "prod": "npm run build && babel build/config.js --out-file server/config.js && node server/app | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -36,6 +36,8 @@
     "compression-webpack-plugin": "^0.3.1",
     "css-loader": "^0.23.1",
     "file-loader": "^0.9.0",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.7",
     "html-webpack-plugin": "^2.22.0",
     "json-loader": "^0.5.4",
     "node-sass": "^3.8.0",
