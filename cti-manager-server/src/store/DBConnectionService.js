@@ -1,4 +1,3 @@
-import co from 'co';
 import MongoDB from 'mongodb';
 
 import appConfig from '../config/app.config';
