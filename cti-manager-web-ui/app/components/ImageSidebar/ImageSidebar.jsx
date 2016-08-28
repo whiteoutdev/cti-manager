@@ -22,10 +22,17 @@ import ImagesApi from '../../api/ImagesApi';
 
 import './ImageSidebar.scss';
 
+const acceptedImageMimeTypes = [
+    'image/jpeg',
+    'image/pjpeg',
+    'image/png',
+    'image/gif'
+];
+
 export default class ImageSidebar extends RefluxComponent {
     constructor(props) {
         super(props);
-        this.id = `ImageSidebar-${uuid.v1()}`;
+        this.id    = `ImageSidebar-${uuid.v1()}`;
         this.state = {
             uploadPending: false,
             tagEditMode  : false,
@@ -80,7 +87,7 @@ export default class ImageSidebar extends RefluxComponent {
     }
 
     uploadImages() {
-        const files = this.refs.fileInput.files;
+        const files    = this.refs.fileInput.files;
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             const file   = files[i],
@@ -145,7 +152,10 @@ export default class ImageSidebar extends RefluxComponent {
                                        className="upload-input"
                                        type="file"
                                        multiple
-                                       onChange={() => {this.forceUpdate()}}/>
+                                       accept={acceptedImageMimeTypes.join(', ')}
+                                       onChange={() => {
+                                           this.forceUpdate()
+                                       }}/>
                                 <label htmlFor={`${this.id}-upload-input`} className="button upload-input-label">
                                     <i className="material-icons">file_upload</i>
                                     {uploadText}
