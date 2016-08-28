@@ -4,10 +4,18 @@
   "description": "Nothing here yet",
   "main": "index.js",
   "scripts": {
+    "dev": "gulp dev --dev | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1",
     "version": "node version",
     "postinstall": "cd cti-manager-server && npm install && cd ../cti-manager-web-ui && npm install && cd .."
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "bunyan": "^1.8.1",
+    "gulp": "^3.9.1",
+    "lodash": "^4.15.0"
+  }
 }

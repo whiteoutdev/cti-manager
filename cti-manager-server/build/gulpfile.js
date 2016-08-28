@@ -35,3 +35,5 @@ gulp.task('server:build', ['server:clean'], () => {
         .pipe(gulpif(isJs, babel()))
         .pipe(gulp.dest(config.lib));
 });
+
+export default gulp.tasks;

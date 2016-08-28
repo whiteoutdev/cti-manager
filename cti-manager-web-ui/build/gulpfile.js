@@ -19,3 +19,5 @@ gulp.task('ui:dev', () => {
         gutil.log(`Webpack Dev Server listening at http://${config.devServer.host}:${config.devServer.port}`);
     });
 });
+
+export default gulp.tasks;
