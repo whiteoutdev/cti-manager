@@ -58,6 +58,14 @@ var _Thumbnail = require('../model/gridfs/Thumbnail');
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
+var _ExceptionWrapper = require('../model/exception/ExceptionWrapper');
+
+var _ExceptionWrapper2 = _interopRequireDefault(_ExceptionWrapper);
+
+var _CTIWarning = require('../model/exception/CTIWarning');
+
+var _CTIWarning2 = _interopRequireDefault(_CTIWarning);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -84,9 +92,12 @@ var ImageCollection = function () {
             var _this = this;
 
             _logger2.default.info(files.length + ' images received for ingest');
+
+            var exceptionWrapper = new _ExceptionWrapper2.default();
+
             return _DBConnectionService2.default.getDB().then(function (db) {
                 var promises = files.map(function (file) {
-                    return new Promise(function (resolve, reject) {
+                    return new Promise(function (resolve) {
                         _HashService2.default.getHash(file.path).then(function (hash) {
                             _this.createThumbnail(db, file, hash).then(function (info) {
                                 var thumbnailID = info.thumbnailID,
@@ -96,6 +107,9 @@ var ImageCollection = function () {
                                 _this.storeFile(db, image, file.path).then(function () {
                                     resolve();
                                 });
+                            }).catch(function (exception) {
+                                exceptionWrapper.addException(exception);
+                                resolve();
                             });
                         });
                     });
@@ -103,6 +117,7 @@ var ImageCollection = function () {
 
                 return Promise.all(promises).then(function () {
                     _logger2.default.info(promises.length + ' images written to database');
+                    return exceptionWrapper;
                 });
             });
         }
@@ -118,14 +133,18 @@ var ImageCollection = function () {
             return new Promise(function (resolve, reject) {
                 _lwip2.default.open(file.path, fileType, function (err, image) {
                     if (err) {
-                        reject(err);
+                        var message = 'Failed to create thumbnail for file ' + file.originalname;
+                        _logger2.default.warn(message);
+                        reject(new _CTIWarning2.default(message, err));
                     }
                     var originalWidth = image.width(),
                         originalHeight = image.height(),
                         scale = Math.min(thumbnailSize / originalWidth, thumbnailSize / originalHeight);
                     image.batch().scale(scale).writeFile(thumbnailPath, function (err) {
                         if (err) {
-                            reject(err);
+                            var _message = 'Failed to create thumbnail for file ' + file.originalname;
+                            _logger2.default.warn(_message);
+                            reject(new _CTIWarning2.default(_message, err));
                         }
                         _this2.storeFile(db, thumbnailModel, thumbnailPath).then(function (thumbnailID) {
                             resolve({
@@ -133,6 +152,10 @@ var ImageCollection = function () {
                                 width: originalWidth,
                                 height: originalHeight
                             });
+                        }).catch(function (err) {
+                            var message = 'Failed to store thumbnail for file ' + file.originalname;
+                            _logger2.default.warn(message);
+                            reject(new _CTIWarning2.default(message, err));
                         });
                     });
                 });

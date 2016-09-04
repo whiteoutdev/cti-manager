@@ -26,6 +26,14 @@ var _TagCollection = require('../store/TagCollection');
 
 var _TagCollection2 = _interopRequireDefault(_TagCollection);
 
+var _ExceptionWrapper = require('../model/exception/ExceptionWrapper');
+
+var _ExceptionWrapper2 = _interopRequireDefault(_ExceptionWrapper);
+
+var _CTIError = require('../model/exception/CTIError');
+
+var _CTIError2 = _interopRequireDefault(_CTIError);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -46,12 +54,10 @@ var ImagesApi = function (_RestApi) {
     _createClass(ImagesApi, [{
         key: 'configure',
         value: function configure(app) {
-            var _this2 = this;
-
             app.post('/images', _upload2.default.array('images'), function (req, res, next) {
                 _logger2.default.debug('Image upload request received for ' + req.files.length + ' images');
-                _ImageCollection2.default.addImages(req.files).then(function () {
-                    res.status(200).end();
+                _ImageCollection2.default.addImages(req.files).then(function (exceptionWrapper) {
+                    res.status(200).send(exceptionWrapper);
                 });
             });
 
@@ -69,6 +75,9 @@ var ImagesApi = function (_RestApi) {
                 }
                 _ImageCollection2.default.getImages(tags, skip, limit).then(function (info) {
                     res.status(200).send(info);
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 
@@ -81,6 +90,9 @@ var ImagesApi = function (_RestApi) {
                     } else {
                         res.sendStatus(404);
                     }
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 
@@ -88,7 +100,10 @@ var ImagesApi = function (_RestApi) {
                 var imageIDHex = req.params.imageIDHex;
                 _logger2.default.debug('Image download requested for image ID: ' + imageIDHex);
                 _ImageCollection2.default.downloadImage(imageIDHex).then(function (data) {
-                    _this2.downloadFromFileInfo(res, data);
+                    ImagesApi.downloadFromFileInfo(res, data);
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 
@@ -97,6 +112,9 @@ var ImagesApi = function (_RestApi) {
                 _logger2.default.debug('Image thumbnail requested for image ID: ' + imageIDHex);
                 _ImageCollection2.default.getThumbnail(imageIDHex).then(function (thumbnail) {
                     res.status(200).send(thumbnail);
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 
@@ -104,7 +122,10 @@ var ImagesApi = function (_RestApi) {
                 var imageIDHex = req.params.imageIDHex;
                 _logger2.default.debug('Image thumbnail download requested for image ID: ' + imageIDHex);
                 _ImageCollection2.default.downloadThumbnail(imageIDHex).then(function (data) {
-                    _this2.downloadFromFileInfo(res, data);
+                    ImagesApi.downloadFromFileInfo(res, data);
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 
@@ -121,16 +142,23 @@ var ImagesApi = function (_RestApi) {
                     }
                 }).catch(function (err) {
                     _logger2.default.error(err);
-                    res.sendStatus(500);
+                    res.status(500).send(err);
                 });
             });
         }
-    }, {
+    }], [{
         key: 'downloadFromFileInfo',
         value: function downloadFromFileInfo(res, data) {
             var mimeType = data.doc.mimeType;
             res.set({
                 'Content-Type': mimeType
+            });
+
+            var downloadStream = data.stream;
+            downloadStream.on('error', function (err) {
+                var exception = new _CTIError2.default('Download failed', err),
+                    exceptionWrapper = new _ExceptionWrapper2.default(undefined, undefined, [exception]);
+                res.status(500).send(exceptionWrapper);
             });
             data.stream.pipe(res);
         }

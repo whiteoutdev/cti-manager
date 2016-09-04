@@ -12,6 +12,8 @@ import HashService from '../util/HashService';
 import FileType from '../model/gridfs/FileType';
 import Image from '../model/gridfs/Image';
 import Thumbnail from '../model/gridfs/Thumbnail';
+import ExceptionWrapper from '../model/exception/ExceptionWrapper';
+import CTIWarning from '../model/exception/CTIWarning';
 
 const ObjectID      = MongoDB.ObjectID,
       GridFSBucket  = MongoDB.GridFSBucket,
@@ -26,9 +28,12 @@ export default class ImageCollection {
 
     static addImages(files) {
         logger.info(`${files.length} images received for ingest`);
+
+        const exceptionWrapper = new ExceptionWrapper();
+
         return DBConnectionService.getDB().then((db) => {
             const promises = files.map((file) => {
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve) => {
                     HashService.getHash(file.path).then((hash) => {
                         this.createThumbnail(db, file, hash).then((info) => {
                             const thumbnailID = info.thumbnailID,
@@ -38,6 +43,9 @@ export default class ImageCollection {
                             this.storeFile(db, image, file.path).then(() => {
                                 resolve();
                             });
+                        }).catch((exception) => {
+                            exceptionWrapper.addException(exception);
+                            resolve();
                         });
                     });
                 });
@@ -45,6 +53,7 @@ export default class ImageCollection {
 
             return Promise.all(promises).then(() => {
                 logger.info(`${promises.length} images written to database`);
+                return exceptionWrapper;
             });
         });
     }
@@ -57,7 +66,9 @@ export default class ImageCollection {
         return new Promise((resolve, reject) => {
             lwip.open(file.path, fileType, (err, image) => {
                 if (err) {
-                    reject(err);
+                    const message = `Failed to create thumbnail for file ${file.originalname}`;
+                    logger.warn(message);
+                    reject(new CTIWarning(message, err));
                 }
                 const originalWidth  = image.width(),
                       originalHeight = image.height(),
@@ -66,7 +77,9 @@ export default class ImageCollection {
                     .scale(scale)
                     .writeFile(thumbnailPath, (err) => {
                         if (err) {
-                            reject(err);
+                            const message = `Failed to create thumbnail for file ${file.originalname}`;
+                            logger.warn(message);
+                            reject(new CTIWarning(message, err));
                         }
                         this.storeFile(db, thumbnailModel, thumbnailPath).then((thumbnailID) => {
                             resolve({
@@ -74,6 +87,10 @@ export default class ImageCollection {
                                 width : originalWidth,
                                 height: originalHeight
                             });
+                        }).catch((err) => {
+                            const message = `Failed to store thumbnail for file ${file.originalname}`;
+                            logger.warn(message);
+                            reject(new CTIWarning(message, err));
                         });
                     });
             });
@@ -182,7 +199,7 @@ export default class ImageCollection {
                                     count
                                 };
                             });
-                    })
+                    });
             });
         });
     }
