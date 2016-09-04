@@ -5,7 +5,7 @@ import keymap from '../../config/keymap.config';
 
 import './App.scss';
 
-export default class App extends React.Component {
+class App extends React.Component {
     render() {
         return (
             <HotKeys keyMap={keymap}>
@@ -15,4 +15,10 @@ export default class App extends React.Component {
             </HotKeys>
         );
     }
+}
+
+App.propTypes = {
+    children: React.PropTypes.node
 };
+
+export default App;

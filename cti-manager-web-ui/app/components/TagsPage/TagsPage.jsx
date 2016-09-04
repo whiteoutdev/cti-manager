@@ -14,7 +14,7 @@ import TagTypeStore from '../../stores/TagTypeStore';
 
 import './TagsPage.scss';
 
-export default class TagsPage extends RefluxComponent {
+class TagsPage extends RefluxComponent {
     constructor() {
         super();
         this.state = {
@@ -25,7 +25,7 @@ export default class TagsPage extends RefluxComponent {
         });
         this.listenTo(TagStore, this.onTagsChange, (data) => {
             this.state.allTags = data.tags;
-            this.state.tagIndex = data.tagIndex
+            this.state.tagIndex = data.tagIndex;
         });
     }
 
@@ -227,7 +227,7 @@ export default class TagsPage extends RefluxComponent {
                     <span className="no-pixiv-id">None</span>
                     <i className="material-icons pixiv-id-edit" onClick={this.toggleEditPixivId.bind(this)}>edit</i>
                 </div>
-            )
+            );
         }
 
         return (
@@ -271,3 +271,9 @@ export default class TagsPage extends RefluxComponent {
         );
     }
 }
+
+TagsPage.propTypes = {
+    routeParams: React.PropTypes.object
+};
+
+export default TagsPage;

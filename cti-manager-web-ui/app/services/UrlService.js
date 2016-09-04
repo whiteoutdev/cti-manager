@@ -13,4 +13,4 @@ export default class UrlService {
         });
         return queryString === '?' ? '' : queryString;
     }
-};
+}

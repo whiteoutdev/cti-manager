@@ -45,4 +45,4 @@ export default class ImagesApi {
             return res.data;
         });
     }
-};
+}

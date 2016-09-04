@@ -5,9 +5,10 @@ import appConfig from '../../config/app.config';
 
 import './ImagesPageThumbnailGallery.scss';
 
-const maxNavButtons = 11;
+const maxNavButtons = 11,
+      PropTypes     = React.PropTypes;
 
-export default class ImagesPageThumbnailGallery extends React.Component {
+class ImagesPageThumbnailGallery extends React.Component {
     shouldComponentUpdate(nextProps) {
         return JSON.stringify(nextProps) !== JSON.stringify(this.props);
     }
@@ -115,4 +116,22 @@ export default class ImagesPageThumbnailGallery extends React.Component {
             </div>
         );
     }
+}
+
+ImagesPageThumbnailGallery.propTypes = {
+    ids  : PropTypes.arrayOf(PropTypes.string),
+    count: PropTypes.number,
+    limit: PropTypes.number,
+    skip : PropTypes.number,
+    query: PropTypes.string
 };
+
+ImagesPageThumbnailGallery.defaultProps = {
+    ids  : [],
+    count: 0,
+    limit: 40,
+    skip : 0,
+    query: ''
+};
+
+export default ImagesPageThumbnailGallery;

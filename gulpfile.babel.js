@@ -8,4 +8,4 @@ gulp.tasks = _.extend({}, serverTasks, uiTasks);
 
 gulp.task('dev', ['server:dev', 'ui:dev']);
 
-gulp.task('qa', ['server:qa']);
+gulp.task('qa', ['server:qa', 'ui:qa']);

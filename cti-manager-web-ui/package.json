@@ -7,7 +7,7 @@
     "build": "webpack --prod",
     "dev": "gulp ui:dev",
     "prod": "npm run build && babel build/config.js --out-file server/config.js && node server/app | bunyan",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp qa"
   },
   "author": "",
   "license": "ISC",
@@ -35,6 +35,7 @@
     "babel-preset-react": "^6.11.1",
     "compression-webpack-plugin": "^0.3.1",
     "css-loader": "^0.23.1",
+    "eslint-plugin-react": "^6.2.0",
     "file-loader": "^0.9.0",
     "gulp": "^3.9.1",
     "gulp-eslint": "^3.0.1",

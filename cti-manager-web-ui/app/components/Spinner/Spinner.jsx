@@ -2,7 +2,7 @@ import React from 'react';
 
 import './Spinner.scss';
 
-export default class Spinner extends React.Component {
+class Spinner extends React.Component {
     render() {
         return (
             <div className="Spinner">
@@ -16,6 +16,8 @@ export default class Spinner extends React.Component {
                             strokeMiterlimit="10"/>
                 </svg>
             </div>
-        )
+        );
     }
-};
+}
+
+export default Spinner;

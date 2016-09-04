@@ -7,7 +7,7 @@ import appConfig from '../../config/app.config';
 
 import './Navbar.scss';
 
-export default class Navbar extends React.Component {
+class Navbar extends React.Component {
     render() {
         return (
             <div className="Navbar">
@@ -26,3 +26,5 @@ export default class Navbar extends React.Component {
         );
     }
 }
+
+export default Navbar;

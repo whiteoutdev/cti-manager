@@ -23,23 +23,24 @@ import ImagesApi from '../../api/ImagesApi';
 import './ImageSidebar.scss';
 
 const acceptedImageMimeTypes = [
-    'image/jpeg',
-    'image/pjpeg',
-    'image/png',
-    'image/gif'
-];
+          'image/jpeg',
+          'image/pjpeg',
+          'image/png',
+          'image/gif'
+      ],
+      PropTypes              = React.PropTypes;
 
-export default class ImageSidebar extends RefluxComponent {
+class ImageSidebar extends RefluxComponent {
     constructor(props) {
         super(props);
-        this.id    = `ImageSidebar-${uuid.v1()}`;
+        this.id = `ImageSidebar-${uuid.v1()}`;
         this.state = {
             uploadPending: false,
             tagEditMode  : false,
             allTags      : []
         };
         this.listenTo(TagStore, this.onTagsUpdated, (data) => {
-            this.state.allTags = data.tags
+            this.state.allTags = data.tags;
         });
         TagActions.updateTags();
     }
@@ -58,19 +59,15 @@ export default class ImageSidebar extends RefluxComponent {
     }
 
     fireUploadComplete() {
-        if (typeof this.props.onUploadComplete === 'function') {
-            this.props.onUploadComplete();
-        }
+        this.props.onUploadComplete();
     }
 
     fireTagsChange(tags) {
-        if (typeof this.props.onTagsChange === 'function') {
-            this.setState({
-                tagEditMode: false
-            }, () => {
-                this.props.onTagsChange(tags);
-            });
-        }
+        this.setState({
+            tagEditMode: false
+        }, () => {
+            this.props.onTagsChange(tags);
+        });
     }
 
     search() {
@@ -87,7 +84,7 @@ export default class ImageSidebar extends RefluxComponent {
     }
 
     uploadImages() {
-        const files    = this.refs.fileInput.files;
+        const files = this.refs.fileInput.files;
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             const file   = files[i],
@@ -101,7 +98,7 @@ export default class ImageSidebar extends RefluxComponent {
                     this.fireUploadComplete();
                 });
             });
-        })
+        });
     }
 
     handleEditTags() {
@@ -153,9 +150,7 @@ export default class ImageSidebar extends RefluxComponent {
                                        type="file"
                                        multiple
                                        accept={acceptedImageMimeTypes.join(', ')}
-                                       onChange={() => {
-                                           this.forceUpdate()
-                                       }}/>
+                                       onChange={() => {this.forceUpdate()}}/>
                                 <label htmlFor={`${this.id}-upload-input`} className="button upload-input-label">
                                     <i className="material-icons">file_upload</i>
                                     {uploadText}
@@ -230,7 +225,7 @@ export default class ImageSidebar extends RefluxComponent {
             return previous;
         }, {});
 
-        const tagLimit = Number(this.props.tagLimit) || Infinity;
+        const tagLimit = this.props.tagLimit;
 
         return Object.keys(tagCounts).sort((t1, t2) => {
             const c1 = tagCounts[t1],
@@ -273,3 +268,23 @@ export default class ImageSidebar extends RefluxComponent {
         );
     }
 }
+
+ImageSidebar.propTypes = {
+    onUploadComplete: PropTypes.func,
+    onTagsChange    : PropTypes.func,
+    uploadDisabled  : PropTypes.bool,
+    tagsEditable    : PropTypes.bool,
+    images          : PropTypes.arrayOf(PropTypes.object),
+    tagLimit        : PropTypes.number
+};
+
+ImageSidebar.defaultProps = {
+    onUploadComplete: _.noop,
+    onTagsChange    : _.noop,
+    uploadDisabled  : false,
+    tagsEditable    : false,
+    images          : [],
+    tagLimit        : Infinity
+};
+
+export default ImageSidebar;

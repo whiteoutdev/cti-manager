@@ -9,9 +9,10 @@ import ImagesApi from '../../api/ImagesApi';
 
 import './ImagesPage.scss';
 
-const defaultLimit = appConfig.images.defaultPageLimit;
+const defaultLimit = appConfig.images.defaultPageLimit,
+      PropTypes    = React.PropTypes;
 
-export default class ImagesPage extends React.Component {
+class ImagesPage extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -58,7 +59,7 @@ export default class ImagesPage extends React.Component {
         return (
             <div className="ImagesPage">
                 <NavbarredPage>
-                    <ImageSidebar images={this.state.images} tagLimit="30"
+                    <ImageSidebar images={this.state.images} tagLimit={30}
                                   onUploadComplete={() => {this.runQueryFromProps(this.props.location)}}/>
                     <Gallery ids={this.state.thumbnailIds}
                              skip={this.state.skip}
@@ -69,4 +70,14 @@ export default class ImagesPage extends React.Component {
             </div>
         );
     }
+}
+
+ImagesPage.propTypes = {
+    location: PropTypes.object
 };
+
+ImagesPage.defaultProps = {
+    location: {query: {}, search: ''}
+};
+
+export default ImagesPage;

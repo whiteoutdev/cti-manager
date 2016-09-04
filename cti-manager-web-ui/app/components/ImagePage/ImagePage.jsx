@@ -1,5 +1,4 @@
 import React from 'react';
-import {Link} from 'react-router';
 
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
 import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
@@ -10,7 +9,7 @@ import TagActions from '../../actions/TagActions';
 
 import './ImagePage.scss';
 
-export default class ImagePage extends React.Component {
+class ImagePage extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -73,4 +72,10 @@ export default class ImagePage extends React.Component {
             </div>
         );
     }
+}
+
+ImagePage.propTypes = {
+    routeParams: React.PropTypes.object
 };
+
+export default ImagePage;

@@ -5,7 +5,7 @@ import bodyParser from 'body-parser';
 
 import appConfig from './config/app.config';
 import logger from './util/logger';
-import RestConfig from './rest/RestConfig'
+import RestConfig from './rest/RestConfig';
 import Hooks from './config/Hooks';
 
 del([`${appConfig.tmpDir}/**`, `!${appConfig.tmpDir}`]).then((paths) => {

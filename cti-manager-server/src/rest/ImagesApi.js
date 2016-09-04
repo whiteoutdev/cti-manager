@@ -1,5 +1,5 @@
 import logger from '../util/logger';
-import RestApi from './RestApi'
+import RestApi from './RestApi';
 import upload from './upload';
 import ImageCollection from '../store/ImageCollection';
 import TagCollection from '../store/TagCollection';

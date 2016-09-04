@@ -4,9 +4,11 @@ import _ from 'lodash';
 
 import './AutocompleteInput.scss';
 
-const props = ['limit', 'items', 'onEnter', 'onAutocomplete', 'tokenize'];
+const props        = ['limit', 'items', 'onEnter', 'onAutocomplete', 'tokenize'],
+      defaultLimit = 10,
+      PropTypes    = React.PropTypes;
 
-export default class AutocompleteInput extends React.Component {
+class AutocompleteInput extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -99,15 +101,11 @@ export default class AutocompleteInput extends React.Component {
     }
 
     fireAutocomplete(item) {
-        if (typeof this.props.onAutocomplete === 'function') {
-            this.props.onAutocomplete(item);
-        }
+        this.props.onAutocomplete(item);
     }
 
     fireEnter() {
-        if (typeof this.props.onEnter === 'function') {
-            this.props.onEnter(this.refs.input.value);
-        }
+        this.props.onEnter(this.refs.input.value);
     }
 
     updateSuggestions() {
@@ -135,7 +133,7 @@ export default class AutocompleteInput extends React.Component {
 
         query = query.toLowerCase();
         const suggestions = [],
-              limit       = Number(this.props.limit) || 10;
+              limit       = Number(this.props.limit) || defaultLimit;
 
         for (let i = 0; i < this.props.items.length && suggestions.length < limit; i++) {
             const item = this.props.items[i];
@@ -151,9 +149,7 @@ export default class AutocompleteInput extends React.Component {
     }
 
     onChange(e) {
-        if (typeof this.props.onChange === 'function') {
-            this.props.onChange(e);
-        }
+        this.props.onChange(e);
         if (!e.defaultPrevented) {
             this.updateSuggestions();
         }
@@ -185,9 +181,11 @@ export default class AutocompleteInput extends React.Component {
                     </li>
                 );
             });
-            return <ul className="suggestion-list">
-                {listItems}
-            </ul>
+            return (
+                <ul className="suggestion-list">
+                    {listItems}
+                </ul>
+            );
         } else {
             return null;
         }
@@ -205,4 +203,24 @@ export default class AutocompleteInput extends React.Component {
             </div>
         );
     }
+}
+
+AutocompleteInput.propTypes = {
+    tokenize      : PropTypes.bool,
+    onAutocomplete: PropTypes.func,
+    onEnter       : PropTypes.func,
+    limit         : PropTypes.number,
+    items         : PropTypes.arrayOf(PropTypes.string),
+    onChange      : PropTypes.func
 };
+
+AutocompleteInput.defaultProps = {
+    tokenize      : false,
+    onAutocomplete: _.noop,
+    onEnter       : _.noop,
+    limit         : defaultLimit,
+    items         : [],
+    onChange      : _.noop
+};
+
+export default AutocompleteInput;
