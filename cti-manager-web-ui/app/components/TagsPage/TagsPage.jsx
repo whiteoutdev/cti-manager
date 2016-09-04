@@ -18,7 +18,8 @@ class TagsPage extends RefluxComponent {
     constructor() {
         super();
         this.state = {
-            tag: null
+            tag     : null,
+            tagTypes: []
         };
         this.listenTo(TagTypeStore, this.onTagTypesChange, (tagTypes) => {
             this.state.tagTypes = tagTypes;

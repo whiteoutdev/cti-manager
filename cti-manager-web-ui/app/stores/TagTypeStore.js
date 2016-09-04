@@ -11,7 +11,7 @@ export default Reflux.createStore({
     },
 
     getInitialState() {
-        return this.tags;
+        return this.tagTypes;
     },
 
     onUpdateTagTypes() {
