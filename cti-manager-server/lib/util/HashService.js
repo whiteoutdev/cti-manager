@@ -14,14 +14,6 @@ var _crypto = require('crypto');
 
 var _crypto2 = _interopRequireDefault(_crypto);
 
-var _streamToString = require('stream-to-string');
-
-var _streamToString2 = _interopRequireDefault(_streamToString);
-
-var _app = require('../config/app.config');
-
-var _app2 = _interopRequireDefault(_app);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -36,7 +28,7 @@ var HashService = function () {
     _createClass(HashService, null, [{
         key: 'getHash',
         value: function getHash(filePath) {
-            return new Promise(function (resolve, reject) {
+            return new Promise(function (resolve) {
                 var hash = _crypto2.default.createHash(hashAlgorithm),
                     stream = _fs2.default.createReadStream(filePath);
                 stream.on('data', function (chunk) {

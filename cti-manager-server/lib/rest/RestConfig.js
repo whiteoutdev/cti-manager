@@ -38,4 +38,3 @@ var RestConfig = function () {
 }();
 
 exports.default = RestConfig;
-;

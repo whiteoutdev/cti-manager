@@ -7,4 +7,4 @@ export default class CTIException {
             this.message = e.message;
         }
     }
-};
+}

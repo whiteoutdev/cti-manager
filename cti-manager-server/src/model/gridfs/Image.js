@@ -45,4 +45,4 @@ export default class Image extends AbstractFile {
         const md = doc.metadata;
         return new Image(md.m, md.h, md.ti, md.w, md.he, md.ta, doc._id);
     }
-};
+}

@@ -3,6 +3,7 @@ import babel from 'gulp-babel';
 import gulpif from 'gulp-if';
 import del from 'del';
 import nodemon from 'gulp-nodemon';
+import eslint from 'gulp-eslint';
 
 import config from './config';
 
@@ -35,5 +36,14 @@ gulp.task('server:build', ['server:clean'], () => {
         .pipe(gulpif(isJs, babel()))
         .pipe(gulp.dest(config.lib));
 });
+
+gulp.task('server:lint', () => {
+    return gulp.src([`${config.src}/**/*.js`, `${config.src}/**/*.jsx`])
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
+});
+
+gulp.task('server:qa', ['server:lint']);
 
 export default gulp.tasks;

@@ -54,7 +54,7 @@ var ImagesApi = function (_RestApi) {
     _createClass(ImagesApi, [{
         key: 'configure',
         value: function configure(app) {
-            app.post('/images', _upload2.default.array('images'), function (req, res, next) {
+            app.post('/images', _upload2.default.array('images'), function (req, res) {
                 _logger2.default.debug('Image upload request received for ' + req.files.length + ' images');
                 _ImageCollection2.default.addImages(req.files).then(function (exceptionWrapper) {
                     res.status(200).send(exceptionWrapper);

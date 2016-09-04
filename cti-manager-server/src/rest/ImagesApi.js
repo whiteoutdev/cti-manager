@@ -8,7 +8,7 @@ import CTIError from '../model/exception/CTIError';
 
 export default class ImagesApi extends RestApi {
     configure(app) {
-        app.post('/images', upload.array('images'), (req, res, next) => {
+        app.post('/images', upload.array('images'), (req, res) => {
             logger.debug(`Image upload request received for ${req.files.length} images`);
             ImageCollection.addImages(req.files).then((exceptionWrapper) => {
                 res.status(200).send(exceptionWrapper);

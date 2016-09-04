@@ -12,4 +12,4 @@ export default class RestConfig {
             api.configure(app);
         });
     }
-};
+}

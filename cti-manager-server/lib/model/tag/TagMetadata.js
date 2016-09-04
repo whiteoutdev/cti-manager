@@ -45,7 +45,7 @@ var TagMetadata = function (_AbstractModel) {
             var metadata = {
                 urls: this.urls
             };
-            this.pixivId && (metadata.pixivId = pixivId);
+            this.pixivId && (metadata.pixivId = this.pixivId);
             return metadata;
         }
     }], [{

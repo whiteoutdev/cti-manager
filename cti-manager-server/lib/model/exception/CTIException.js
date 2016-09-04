@@ -18,4 +18,3 @@ var CTIException = function CTIException(type, message, e) {
 };
 
 exports.default = CTIException;
-;

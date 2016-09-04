@@ -15,7 +15,7 @@ var RestApi = function () {
 
     _createClass(RestApi, [{
         key: "configure",
-        value: function configure(app) {
+        value: function configure() {
             // Noop
         }
     }]);
@@ -24,4 +24,3 @@ var RestApi = function () {
 }();
 
 exports.default = RestApi;
-;

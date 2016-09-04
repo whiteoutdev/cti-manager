@@ -89,4 +89,3 @@ var Image = function (_AbstractFile) {
 }(_AbstractFile3.default);
 
 exports.default = Image;
-;

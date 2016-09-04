@@ -1,5 +1,5 @@
 export default class RestApi {
-    configure(app) {
+    configure() {
         // Noop
     }
-};
+}

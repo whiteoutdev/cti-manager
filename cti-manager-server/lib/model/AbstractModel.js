@@ -29,4 +29,3 @@ var AbstractModel = function () {
 }();
 
 exports.default = AbstractModel;
-;

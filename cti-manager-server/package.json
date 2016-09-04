@@ -10,7 +10,7 @@
     "db-dev": "gulp server:db --dev | bunyan",
     "dev": "gulp server:dev --dev | bunyan",
     "prod": "npm run build && npm run serve",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "gulp server:qa",
     "preversion": "npm run build"
   },
   "author": "",
@@ -36,6 +36,7 @@
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^3.0.1",
     "gulp-if": "^2.0.1",
     "gulp-nodemon": "^2.1.0"
   }

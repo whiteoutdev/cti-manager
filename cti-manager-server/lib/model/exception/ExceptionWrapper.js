@@ -42,4 +42,3 @@ var ExceptionWrapper = function () {
 }();
 
 exports.default = ExceptionWrapper;
-;
