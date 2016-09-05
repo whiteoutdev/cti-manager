@@ -3,6 +3,7 @@ import MongoDB from 'mongodb';
 import del from 'del';
 import lwip from 'lwip';
 import _ from 'lodash';
+import ffmpeg from 'fluent-ffmpeg';
 
 import appConfig from '../config/app.config';
 import logger from '../util/logger';
@@ -11,30 +12,30 @@ import TagCollection from './TagCollection';
 import HashService from '../util/HashService';
 import MimeService from '../util/MimeService';
 import FileType from '../model/gridfs/FileType';
+import Media from '../model/gridfs/Media';
 import Image from '../model/gridfs/Image';
+import Video from '../model/gridfs/Video';
 import Thumbnail from '../model/gridfs/Thumbnail';
 import ExceptionWrapper from '../model/exception/ExceptionWrapper';
 import CTIWarning from '../model/exception/CTIWarning';
+import CTIError from '../model/exception/CTIError';
 
 const ObjectID           = MongoDB.ObjectID,
       GridFSBucket       = MongoDB.GridFSBucket,
       thumbnailSize      = appConfig.thumbnailSize,
-      supportedMimeTypes = [
-          'image/jpeg',
-          'image/pjpeg',
-          'image/png',
-          'image/gif'
-      ];
+      imageMimeTypes     = MimeService.getSupportedImageTypes(),
+      videoMimeTypes     = MimeService.getSupportedVideoTypes(),
+      supportedMimeTypes = MimeService.getSupportedMimeTypes();
 
-export default class ImageCollection {
+export default class MediaCollection {
     static init() {
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.filesCollection).createIndex({'metadata.ta': 1});
         });
     }
 
-    static addImages(files) {
-        logger.info(`${files.length} images received for ingest`);
+    static addMedia(files) {
+        logger.info(`${files.length} files received for ingest`);
 
         const exceptionWrapper = new ExceptionWrapper();
 
@@ -43,19 +44,24 @@ export default class ImageCollection {
                 if (!~supportedMimeTypes.indexOf(file.mimetype)) {
                     const message = `MIME type ${file.mimetype} not supported`;
                     exceptionWrapper.addException(new CTIWarning(message));
-                    logger.debug(message);
+                    logger.warn(message);
                     return false;
                 }
                 return true;
             }).map((file) => {
+                const isVideo = !!~videoMimeTypes.indexOf(file.mimetype);
+
                 return new Promise((resolve) => {
                     HashService.getHash(file.path).then((hash) => {
-                        this.createThumbnail(db, file, hash).then((info) => {
+                        MediaCollection.createThumbnail(db, file, hash).then((info) => {
                             const thumbnailID = info.thumbnailID,
                                   width       = info.width,
                                   height      = info.height,
-                                  image       = new Image(file.mimetype, hash, thumbnailID, width, height);
-                            this.storeFile(db, image, file.path).then(() => {
+                                  media       = isVideo
+                                      ? new Video(file.mimetype, hash, thumbnailID, width, height)
+                                      : new Image(file.mimetype, hash, thumbnailID, width, height);
+
+                            this.storeFile(db, media, file.path).then(() => {
                                 resolve();
                             });
                         }).catch((exception) => {
@@ -67,13 +73,13 @@ export default class ImageCollection {
             });
 
             return Promise.all(promises).then(() => {
-                logger.info(`${promises.length} images written to database`);
+                logger.info(`${promises.length} files written to database`);
                 return exceptionWrapper;
             });
         });
     }
 
-    static createThumbnail(db, file, hash) {
+    static createImageThumbnail(db, file, hash) {
         const fileType           = MimeService.getFileExtension(file.mimetype),
               thumbnailExtension = fileType === 'gif' ? 'jpg' : fileType,
               thumbnailName      = `${hash}-thumb.${thumbnailExtension}`,
@@ -111,6 +117,53 @@ export default class ImageCollection {
                     });
             });
         });
+    }
+
+    static createVideoThumbnail(db, file, hash) {
+        return new Promise((resolve, reject) => {
+            let thumbnailName = null;
+            ffmpeg(file.path)
+                .on('filenames', (filenames) => {
+                    if (filenames.length) {
+                        thumbnailName = filenames[0];
+                    } else {
+                        const message = `Failed to create thumbnail for file ${file.originalname}`;
+                        logger.warn(message);
+                        reject(new CTIWarning(message));
+                    }
+                })
+                .on('end', () => {
+                    const newFileData = {
+                        originalname: file.originalname,
+                        mimetype    : 'image/png',
+                        filename    : thumbnailName,
+                        path        : `${appConfig.tmpDir}/${thumbnailName}`
+                    };
+                    resolve(this.createImageThumbnail(db, newFileData, hash));
+                })
+                .on('error', (err) => {
+                    const message = `Failed to create thumbnail for file ${file.originalname}`;
+                    logger.warn(message);
+                    reject(new CTIWarning(message, err));
+                })
+                .screenshots({
+                    count    : 1,
+                    timemarks: ['1']
+                }, appConfig.tmpDir);
+        });
+    }
+
+    static createThumbnail(db, file, hash) {
+        const mimeType = file.mimetype;
+
+        if (~imageMimeTypes.indexOf(mimeType)) {
+            return this.createImageThumbnail(db, file, hash);
+        } else if (~videoMimeTypes.indexOf(mimeType)) {
+            return this.createVideoThumbnail(db, file, hash);
+        }
+
+        const error = new CTIError(`Failed to create thumbnail for file ${file.originalname} - unsupported MIME type ${mimeType}`);
+        return Promise.reject(error);
     }
 
     static storeFile(db, file, path) {
@@ -151,8 +204,8 @@ export default class ImageCollection {
         });
     }
 
-    static downloadImage(objectIDHex) {
-        return ImageCollection.downloadFile(objectIDHex, Image.fromDatabase);
+    static downloadMedia(objectIDHex) {
+        return MediaCollection.downloadFile(objectIDHex, Media.fromDatabase);
     }
 
     static getFile(fileIDHex, deserialize) {
@@ -167,14 +220,19 @@ export default class ImageCollection {
         });
     }
 
-    static getImage(imageIDHex) {
-        return ImageCollection.getFile(imageIDHex, Image.fromDatabase);
+    static getMedia(mediaIDHex) {
+        return MediaCollection.getFile(mediaIDHex, Media.fromDatabase);
     }
 
-    static getImages(tags, skip, limit) {
+    static findMedia(tags, skip, limit) {
         return DBConnectionService.getDB().then((db) => {
             const bucket = new GridFSBucket(db);
-            let baseQuery    = {'metadata.t': FileType.IMAGE.code},
+            let baseQuery    = {
+                    $or: [
+                        {'metadata.t': FileType.IMAGE.code},
+                        {'metadata.t': FileType.VIDEO.code}
+                    ]
+                },
                 queryPromise = null;
 
             if (tags && tags.length) {
@@ -207,10 +265,10 @@ export default class ImageCollection {
                             .limit(limit || 0)
                             .sort({uploadDate: -1})
                             .toArray()
-                            .then((images) => {
+                            .then((media) => {
                                 return {
-                                    images: images.map((image) => {
-                                        return Image.fromDatabase(image).serialiseToApi();
+                                    media: media.map((media) => {
+                                        return Media.fromDatabase(media).serialiseToApi();
                                     }),
                                     count
                                 };
@@ -220,21 +278,21 @@ export default class ImageCollection {
         });
     }
 
-    static getThumbnail(imageIDHex) {
-        return this.getImage(imageIDHex).then((image) => {
-            return this.getFile(image.thumbnailID.toHexString(), Thumbnail.fromDatabase);
+    static getThumbnail(mediaIDHex) {
+        return this.getMedia(mediaIDHex).then((media) => {
+            return this.getFile(media.thumbnailID.toHexString(), Thumbnail.fromDatabase);
         });
     }
 
-    static downloadThumbnail(imageIDHex) {
-        return this.getImage(imageIDHex).then((image) => {
-            return ImageCollection.downloadFile(image.thumbnailID.toHexString(), Thumbnail.fromDatabase);
+    static downloadThumbnail(mediaIDHex) {
+        return this.getMedia(mediaIDHex).then((media) => {
+            return MediaCollection.downloadFile(media.thumbnailID.toHexString(), Thumbnail.fromDatabase);
         });
     }
 
-    static setTags(imageIDHex, tags) {
+    static setTags(mediaIDHex, tags) {
         return DBConnectionService.getDB().then((db) => {
-            const oid = ObjectID.createFromHexString(imageIDHex);
+            const oid = ObjectID.createFromHexString(mediaIDHex);
             return db.collection(appConfig.db.filesCollection).update({
                 _id: oid
             }, {
@@ -244,10 +302,10 @@ export default class ImageCollection {
             }).then((data) => {
                 const result = data.result;
                 if (result.nModified) {
-                    logger.debug(`Tags updated for ${result.nModified} image${result.nModified > 1 ? 's' : ''}`);
-                    return this.getImage(imageIDHex);
+                    logger.debug(`Tags updated for ${result.nModified} file${result.nModified > 1 ? 's' : ''}`);
+                    return this.getMedia(mediaIDHex);
                 } else {
-                    logger.warn(`No image found with ID ${imageIDHex}`);
+                    logger.warn(`No media found with ID ${mediaIDHex}`);
                     return null;
                 }
             });

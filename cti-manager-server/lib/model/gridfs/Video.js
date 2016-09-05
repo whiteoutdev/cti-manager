@@ -20,16 +20,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Image = function (_Media) {
-    _inherits(Image, _Media);
+var Video = function (_Media) {
+    _inherits(Video, _Media);
 
-    function Image(mimeType, hash, thumbnailID, width, height, tags, id) {
-        _classCallCheck(this, Image);
+    function Video(mimeType, hash, thumbnailID, width, height, tags, id) {
+        _classCallCheck(this, Video);
 
-        return _possibleConstructorReturn(this, (Image.__proto__ || Object.getPrototypeOf(Image)).call(this, _FileType2.default.IMAGE, mimeType, hash, thumbnailID, width, height, tags, id));
+        return _possibleConstructorReturn(this, (Video.__proto__ || Object.getPrototypeOf(Video)).call(this, _FileType2.default.VIDEO, mimeType, hash, thumbnailID, width, height, tags, id));
     }
 
-    return Image;
+    return Video;
 }(_Media3.default);
 
-exports.default = Image;
+exports.default = Video;

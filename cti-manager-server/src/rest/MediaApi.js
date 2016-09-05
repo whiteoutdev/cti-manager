@@ -1,22 +1,23 @@
 import logger from '../util/logger';
 import RestApi from './RestApi';
 import upload from './upload';
-import ImageCollection from '../store/ImageCollection';
+import MediaCollection from '../store/MediaCollection';
 import TagCollection from '../store/TagCollection';
 import ExceptionWrapper from '../model/exception/ExceptionWrapper';
 import CTIError from '../model/exception/CTIError';
+import MimeService from '../util/MimeService';
 
-export default class ImagesApi extends RestApi {
+export default class MediaApi extends RestApi {
     configure(app) {
-        app.post('/images', upload.array('images'), (req, res) => {
-            logger.debug(`Image upload request received for ${req.files.length} images`);
-            ImageCollection.addImages(req.files).then((exceptionWrapper) => {
+        app.post('/media', upload.array('media'), (req, res) => {
+            logger.debug(`Media upload request received for ${req.files.length} files`);
+            MediaCollection.addMedia(req.files).then((exceptionWrapper) => {
                 res.status(200).send(exceptionWrapper);
             });
         });
 
-        app.get('/images', (req, res) => {
-            logger.debug(`Image metadata requested`);
+        app.get('/media', (req, res) => {
+            logger.debug(`Media metadata requested`);
             const query = req.query,
                   skip  = Number(query.skip),
                   limit = Number(query.limit);
@@ -27,7 +28,7 @@ export default class ImagesApi extends RestApi {
                     return decodeURIComponent(encodedTag);
                 });
             }
-            ImageCollection.getImages(tags, skip, limit).then((info) => {
+            MediaCollection.findMedia(tags, skip, limit).then((info) => {
                 res.status(200).send(info);
             }).catch((err) => {
                 logger.error(err);
@@ -35,12 +36,12 @@ export default class ImagesApi extends RestApi {
             });
         });
 
-        app.get('/images/:imageIDHex', (req, res) => {
-            const imageIDHex = req.params.imageIDHex;
-            logger.debug(`Image metadata requested for image ID: ${imageIDHex}`);
-            ImageCollection.getImage(imageIDHex).then((imageMetadata) => {
-                if (imageMetadata) {
-                    res.status(200).send(imageMetadata);
+        app.get('/media/:mediaIDHex', (req, res) => {
+            const mediaIDHex = req.params.mediaIDHex;
+            logger.debug(`Media metadata requested for media ID: ${mediaIDHex}`);
+            MediaCollection.getMedia(mediaIDHex).then((metadata) => {
+                if (metadata) {
+                    res.status(200).send(metadata);
                 } else {
                     res.sendStatus(404);
                 }
@@ -50,21 +51,21 @@ export default class ImagesApi extends RestApi {
             });
         });
 
-        app.get('/images/:imageIDHex/download', (req, res) => {
-            const imageIDHex = req.params.imageIDHex;
-            logger.debug(`Image download requested for image ID: ${imageIDHex}`);
-            ImageCollection.downloadImage(imageIDHex).then((data) => {
-                ImagesApi.downloadFromFileInfo(res, data);
+        app.get('/media/:mediaIDHex/download', (req, res) => {
+            const mediaIDHex = req.params.mediaIDHex;
+            logger.debug(`Media download requested for media ID: ${mediaIDHex}`);
+            MediaCollection.downloadMedia(mediaIDHex).then((data) => {
+                MediaApi.downloadFromFileInfo(res, data);
             }).catch((err) => {
                 logger.error(err);
                 res.status(500).send(err);
             });
         });
 
-        app.get('/images/:imageIDHex/thumbnail', (req, res) => {
-            const imageIDHex = req.params.imageIDHex;
-            logger.debug(`Image thumbnail requested for image ID: ${imageIDHex}`);
-            ImageCollection.getThumbnail(imageIDHex).then((thumbnail) => {
+        app.get('/media/:mediaIDHex/thumbnail', (req, res) => {
+            const mediaIDHex = req.params.mediaIDHex;
+            logger.debug(`Media thumbnail requested for media ID: ${mediaIDHex}`);
+            MediaCollection.getThumbnail(mediaIDHex).then((thumbnail) => {
                 res.status(200).send(thumbnail);
             }).catch((err) => {
                 logger.error(err);
@@ -72,28 +73,28 @@ export default class ImagesApi extends RestApi {
             });
         });
 
-        app.get('/images/:imageIDHex/thumbnail/download', (req, res) => {
-            const imageIDHex = req.params.imageIDHex;
-            logger.debug(`Image thumbnail download requested for image ID: ${imageIDHex}`);
-            ImageCollection.downloadThumbnail(imageIDHex).then((data) => {
-                ImagesApi.downloadFromFileInfo(res, data);
+        app.get('/media/:mediaIDHex/thumbnail/download', (req, res) => {
+            const mediaIDHex = req.params.mediaIDHex;
+            logger.debug(`Media thumbnail download requested for media ID: ${mediaIDHex}`);
+            MediaCollection.downloadThumbnail(mediaIDHex).then((data) => {
+                MediaApi.downloadFromFileInfo(res, data);
             }).catch((err) => {
                 logger.error(err);
                 res.status(500).send(err);
             });
         });
 
-        app.post('/images/:imageIDHex/tags', (req, res) => {
-            const imageIDHex = req.params.imageIDHex,
+        app.post('/media/:mediaIDHex/tags', (req, res) => {
+            const mediaIDHex = req.params.mediaIDHex,
                   tags       = req.body.tags;
-            logger.debug(`Image tags update requested for image ID: ${imageIDHex}`);
+            logger.debug(`Media tags update requested for media ID: ${mediaIDHex}`);
             Promise.all([
-                ImageCollection.setTags(imageIDHex, tags),
+                MediaCollection.setTags(mediaIDHex, tags),
                 TagCollection.createTags(tags)
             ]).then((results) => {
-                const image = results[0];
-                if (image) {
-                    res.status(200).send(image);
+                const media = results[0];
+                if (media) {
+                    res.status(200).send(media);
                 } else {
                     res.sendStatus(404);
                 }
@@ -101,6 +102,10 @@ export default class ImagesApi extends RestApi {
                 logger.error(err);
                 res.status(500).send(err);
             });
+        });
+
+        app.get('/mediatypes', (req, res) => {
+            res.status(200).send(MimeService.getSupportedMimeTypes());
         });
     }
 

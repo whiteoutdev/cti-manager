@@ -4,7 +4,7 @@ import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
 import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
 
 import appConfig from '../../config/app.config';
-import ImagesApi from '../../api/ImagesApi';
+import MediaApi from '../../api/MediaApi';
 import TagActions from '../../actions/TagActions';
 
 import './ImagePage.scss';
@@ -19,8 +19,8 @@ class ImagePage extends React.Component {
     }
 
     updateTags(tags) {
-        ImagesApi.setTags(this.props.routeParams.imageID, tags).then((image) => {
-            this.setState({image}, () => {
+        MediaApi.setTags(this.props.routeParams.imageID, tags).then((media) => {
+            this.setState({media}, () => {
                 TagActions.updateTags();
             });
         });
@@ -28,8 +28,8 @@ class ImagePage extends React.Component {
 
     getImage(props) {
         const imageId = props.routeParams.imageID;
-        ImagesApi.getImage(imageId).then((image) => {
-            this.setState({image});
+        MediaApi.getMedia(imageId).then((media) => {
+            this.setState({media});
         });
     }
 
@@ -39,19 +39,42 @@ class ImagePage extends React.Component {
         });
     }
 
+    toggleVideoPause() {
+        const player = this.refs.videoPlayer;
+        if (player.paused) {
+            player.play();
+        } else {
+            player.pause();
+        }
+    }
+
     componentDidMount() {
         this.getImage(this.props);
     }
 
     renderImage() {
-        if (this.state.image) {
-            const downloadUrl = `${appConfig.api.path}/images/${this.state.image.id}/download`;
-            return (
-                <img className={this.state.maximized ? 'max' : ''}
-                     src={downloadUrl}
-                     alt={this.state.image.id}
-                     onClick={this.toggleMaximize.bind(this)}/>
-            );
+        const media = this.state.media;
+
+        if (media) {
+            const downloadUrl = `${appConfig.api.path}/media/${media.id}/download`;
+            if (media.type === 'video') {
+                return (
+                    <video ref="videoPlayer"
+                           src={downloadUrl}
+                           autoPlay
+                           controls
+                           muted
+                           loop
+                           onClick={this.toggleVideoPause.bind(this)}/>
+                );
+            } else {
+                return (
+                    <img className={this.state.maximized ? 'max' : ''}
+                         src={downloadUrl}
+                         alt={this.state.media.id}
+                         onClick={this.toggleMaximize.bind(this)}/>
+                );
+            }
         }
     }
 
@@ -59,7 +82,7 @@ class ImagePage extends React.Component {
         return (
             <div className="ImagePage">
                 <NavbarredPage>
-                    <ImageSidebar images={this.state.image ? [this.state.image] : []}
+                    <ImageSidebar images={this.state.media ? [this.state.media] : []}
                                   uploadDisabled
                                   tagsEditable
                                   onTagsChange={this.updateTags.bind(this)}/>

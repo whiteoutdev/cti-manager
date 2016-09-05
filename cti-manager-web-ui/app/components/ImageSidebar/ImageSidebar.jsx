@@ -18,29 +18,28 @@ import history from '../../services/history';
 import TagService from '../../services/TagService';
 import TagStore from '../../stores/TagStore';
 import TagActions from '../../actions/TagActions';
-import ImagesApi from '../../api/ImagesApi';
+import MediaTypeStore from '../../stores/MediaTypeStore';
+import MediaApi from '../../api/MediaApi';
 
 import './ImageSidebar.scss';
 
-const acceptedImageMimeTypes = [
-          'image/jpeg',
-          'image/pjpeg',
-          'image/png',
-          'image/gif'
-      ],
-      PropTypes              = React.PropTypes;
+const PropTypes = React.PropTypes;
 
 class ImageSidebar extends RefluxComponent {
     constructor(props) {
         super(props);
         this.id = `ImageSidebar-${uuid.v1()}`;
         this.state = {
-            uploadPending: false,
-            tagEditMode  : false,
-            allTags      : []
+            uploadPending     : false,
+            tagEditMode       : false,
+            allTags           : [],
+            supportedMimeTypes: []
         };
         this.listenTo(TagStore, this.onTagsUpdated, (data) => {
             this.state.allTags = data.tags;
+        });
+        this.listenTo(MediaTypeStore, this.onMediaTypesUpdated, (mimeTypes) => {
+            this.state.supportedMimeTypes = mimeTypes;
         });
         TagActions.updateTags();
     }
@@ -55,6 +54,12 @@ class ImageSidebar extends RefluxComponent {
     onTagsUpdated(tags) {
         this.setState({
             allTags: tags
+        });
+    }
+
+    onMediaTypesUpdated(mimeTypes) {
+        this.setState({
+            supportedMimeTypes: mimeTypes
         });
     }
 
@@ -76,7 +81,7 @@ class ImageSidebar extends RefluxComponent {
               tagsString = tags.map((tag) => {
                   return encodeURIComponent(tag);
               }).join();
-        history.push(`/images?tags=${tagsString}`);
+        history.push(`/media?tags=${tagsString}`);
     }
 
     canUpload() {
@@ -90,10 +95,10 @@ class ImageSidebar extends RefluxComponent {
             const file   = files[i],
                   reader = new FileReader();
             reader.readAsDataURL(file);
-            formData.append('images', file);
+            formData.append('media', file);
         }
         this.setState({uploadPending: true}, () => {
-            ImagesApi.uploadFiles(formData).then(() => {
+            MediaApi.uploadFiles(formData).then(() => {
                 this.setState({uploadPending: false}, () => {
                     this.fireUploadComplete();
                 });
@@ -149,7 +154,7 @@ class ImageSidebar extends RefluxComponent {
                                        className="upload-input"
                                        type="file"
                                        multiple
-                                       accept={acceptedImageMimeTypes.join(', ')}
+                                       accept={this.state.supportedMimeTypes.join(', ')}
                                        onChange={() => {this.forceUpdate()}}/>
                                 <label htmlFor={`${this.id}-upload-input`} className="button upload-input-label">
                                     <i className="material-icons">file_upload</i>
@@ -241,7 +246,7 @@ class ImageSidebar extends RefluxComponent {
             const tagType = this.getTagType(tag).toLowerCase();
             return (
                 <PanelListItem key={tag} className={`tags-list-item ${tagType}`}>
-                    <Link className={`tag-name ${tagType}`} to={`/images?tags=${encodeURIComponent(tag)}`}>
+                    <Link className={`tag-name ${tagType}`} to={`/media?tags=${encodeURIComponent(tag)}`}>
                         {TagService.toDisplayName(tag)}
                     </Link>
                     <Link className={tagType} to={`/tags/${tag}`}>

@@ -18,8 +18,8 @@ class ImagesPageThumbnailGallery extends React.Component {
             return this.props.ids.map((id) => {
                 return (
                     <li key={id} className="thumbnail-list-item">
-                        <Link to={`/images/${id}`}>
-                            <img src={`${appConfig.api.path}/images/${id}/thumbnail/download`} alt={id}/>
+                        <Link to={`/media/${id}`}>
+                            <img src={`${appConfig.api.path}/media/${id}/thumbnail/download`} alt={id}/>
                         </Link>
                     </li>
                 );
@@ -54,7 +54,7 @@ class ImagesPageThumbnailGallery extends React.Component {
                 );
             } else {
                 const newSkip = i * limit;
-                let url = `/images?${query ? `${query}&` : ''}skip=${newSkip}&limit=${limit}`;
+                let url = `/media?${query ? `${query}&` : ''}skip=${newSkip}&limit=${limit}`;
                 navButtons.push(
                     <li key={i} className="nav-button link">
                         <Link to={url}>{i + 1}</Link>
@@ -64,11 +64,11 @@ class ImagesPageThumbnailGallery extends React.Component {
         }
 
         if (currentPage > 0) {
-            const previousPageUrl = `/images?${query ? `${query}&` : ''}skip=${(currentPage - 1) *
-                                                                               limit}&limit=${limit}`;
+            const previousPageUrl = `/media?${query ? `${query}&` : ''}skip=${(currentPage - 1) *
+                                                                              limit}&limit=${limit}`;
             navButtons.unshift(
                 <li key="firstPage" className="nav-button link button-link">
-                    <Link to={`/images?${query ? `${query}&` : ''}limit=${limit}`}>
+                    <Link to={`/media?${query ? `${query}&` : ''}limit=${limit}`}>
                         <i className="material-icons">first_page</i>
                     </Link>
                 </li>,
@@ -81,7 +81,7 @@ class ImagesPageThumbnailGallery extends React.Component {
         }
 
         if (currentPage < pageCount - 1) {
-            const nextPageUrl = `/images?${query ? `${query}&` : ''}skip=${(currentPage + 1) * limit}&limit=${limit}`;
+            const nextPageUrl = `/media?${query ? `${query}&` : ''}skip=${(currentPage + 1) * limit}&limit=${limit}`;
             navButtons.push(
                 <li key="nextPage" className="nav-button link button-link">
                     <Link to={nextPageUrl}>
@@ -89,7 +89,7 @@ class ImagesPageThumbnailGallery extends React.Component {
                     </Link>
                 </li>,
                 <li key="lastPage" className="nav-button link button-link">
-                    <Link to={`/images?${query ? `${query}&` : ''}skip=${(pageCount - 1) * limit}&limit=${limit}`}>
+                    <Link to={`/media?${query ? `${query}&` : ''}skip=${(pageCount - 1) * limit}&limit=${limit}`}>
                         <i className="material-icons">last_page</i>
                     </Link>
                 </li>

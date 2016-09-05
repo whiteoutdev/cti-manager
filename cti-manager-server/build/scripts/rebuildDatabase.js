@@ -2,7 +2,7 @@ import 'babel-polyfill';
 
 import logger from '../../src/util/logger';
 import DBConnectionService  from '../../src/store/DBConnectionService';
-import ImageCollection from '../../src/store/ImageCollection';
+import MediaCollection from '../../src/store/MediaCollection';
 import TagCollection from '../../src/store/TagCollection';
 
 export default function() {
@@ -18,7 +18,7 @@ export default function() {
 
             return Promise.all(dropPromises).then(() => {
                 const createPromises = [
-                    ImageCollection.init(),
+                    MediaCollection.init(),
                     TagCollection.init()
                 ];
                 return Promise.all(createPromises).then(() => {

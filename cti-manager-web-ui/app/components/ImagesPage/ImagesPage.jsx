@@ -5,7 +5,7 @@ import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
 import Gallery from './ImagesPageThumbnailGallery.jsx';
 
 import appConfig from '../../config/app.config';
-import ImagesApi from '../../api/ImagesApi';
+import MediaApi from '../../api/MediaApi';
 
 import './ImagesPage.scss';
 
@@ -39,9 +39,9 @@ class ImagesPage extends React.Component {
             const tagsString = search.match(/tags=([^&]+)/)[1];
             tags = tagsString.split(',');
         }
-        ImagesApi.getImages(tags, skip, limit).then((data) => {
-            const images       = data.images,
-                  thumbnailIds = data.images.map(image => image.id),
+        MediaApi.findMedia(tags, skip, limit).then((data) => {
+            const images       = data.media,
+                  thumbnailIds = data.media.map(file => file.id),
                   count        = data.count;
             this.setState({images, thumbnailIds, skip, limit, count});
         });

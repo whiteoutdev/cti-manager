@@ -5,7 +5,7 @@ class LandingPage extends React.Component {
     render() {
         return (
             <div className="LandingPage">
-                <Link to="/images">Images</Link>
+                <Link to="/media">Media</Link>
             </div>
         );
     }

@@ -18,9 +18,9 @@ var _upload = require('./upload');
 
 var _upload2 = _interopRequireDefault(_upload);
 
-var _ImageCollection = require('../store/ImageCollection');
+var _MediaCollection = require('../store/MediaCollection');
 
-var _ImageCollection2 = _interopRequireDefault(_ImageCollection);
+var _MediaCollection2 = _interopRequireDefault(_MediaCollection);
 
 var _TagCollection = require('../store/TagCollection');
 
@@ -34,6 +34,10 @@ var _CTIError = require('../model/exception/CTIError');
 
 var _CTIError2 = _interopRequireDefault(_CTIError);
 
+var _MimeService = require('../util/MimeService');
+
+var _MimeService2 = _interopRequireDefault(_MimeService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -42,27 +46,27 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ImagesApi = function (_RestApi) {
-    _inherits(ImagesApi, _RestApi);
+var MediaApi = function (_RestApi) {
+    _inherits(MediaApi, _RestApi);
 
-    function ImagesApi() {
-        _classCallCheck(this, ImagesApi);
+    function MediaApi() {
+        _classCallCheck(this, MediaApi);
 
-        return _possibleConstructorReturn(this, (ImagesApi.__proto__ || Object.getPrototypeOf(ImagesApi)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (MediaApi.__proto__ || Object.getPrototypeOf(MediaApi)).apply(this, arguments));
     }
 
-    _createClass(ImagesApi, [{
+    _createClass(MediaApi, [{
         key: 'configure',
         value: function configure(app) {
-            app.post('/images', _upload2.default.array('images'), function (req, res) {
-                _logger2.default.debug('Image upload request received for ' + req.files.length + ' images');
-                _ImageCollection2.default.addImages(req.files).then(function (exceptionWrapper) {
+            app.post('/media', _upload2.default.array('media'), function (req, res) {
+                _logger2.default.debug('Media upload request received for ' + req.files.length + ' files');
+                _MediaCollection2.default.addMedia(req.files).then(function (exceptionWrapper) {
                     res.status(200).send(exceptionWrapper);
                 });
             });
 
-            app.get('/images', function (req, res) {
-                _logger2.default.debug('Image metadata requested');
+            app.get('/media', function (req, res) {
+                _logger2.default.debug('Media metadata requested');
                 var query = req.query,
                     skip = Number(query.skip),
                     limit = Number(query.limit);
@@ -73,7 +77,7 @@ var ImagesApi = function (_RestApi) {
                         return decodeURIComponent(encodedTag);
                     });
                 }
-                _ImageCollection2.default.getImages(tags, skip, limit).then(function (info) {
+                _MediaCollection2.default.findMedia(tags, skip, limit).then(function (info) {
                     res.status(200).send(info);
                 }).catch(function (err) {
                     _logger2.default.error(err);
@@ -81,12 +85,12 @@ var ImagesApi = function (_RestApi) {
                 });
             });
 
-            app.get('/images/:imageIDHex', function (req, res) {
-                var imageIDHex = req.params.imageIDHex;
-                _logger2.default.debug('Image metadata requested for image ID: ' + imageIDHex);
-                _ImageCollection2.default.getImage(imageIDHex).then(function (imageMetadata) {
-                    if (imageMetadata) {
-                        res.status(200).send(imageMetadata);
+            app.get('/media/:mediaIDHex', function (req, res) {
+                var mediaIDHex = req.params.mediaIDHex;
+                _logger2.default.debug('Media metadata requested for media ID: ' + mediaIDHex);
+                _MediaCollection2.default.getMedia(mediaIDHex).then(function (metadata) {
+                    if (metadata) {
+                        res.status(200).send(metadata);
                     } else {
                         res.sendStatus(404);
                     }
@@ -96,21 +100,21 @@ var ImagesApi = function (_RestApi) {
                 });
             });
 
-            app.get('/images/:imageIDHex/download', function (req, res) {
-                var imageIDHex = req.params.imageIDHex;
-                _logger2.default.debug('Image download requested for image ID: ' + imageIDHex);
-                _ImageCollection2.default.downloadImage(imageIDHex).then(function (data) {
-                    ImagesApi.downloadFromFileInfo(res, data);
+            app.get('/media/:mediaIDHex/download', function (req, res) {
+                var mediaIDHex = req.params.mediaIDHex;
+                _logger2.default.debug('Media download requested for media ID: ' + mediaIDHex);
+                _MediaCollection2.default.downloadMedia(mediaIDHex).then(function (data) {
+                    MediaApi.downloadFromFileInfo(res, data);
                 }).catch(function (err) {
                     _logger2.default.error(err);
                     res.status(500).send(err);
                 });
             });
 
-            app.get('/images/:imageIDHex/thumbnail', function (req, res) {
-                var imageIDHex = req.params.imageIDHex;
-                _logger2.default.debug('Image thumbnail requested for image ID: ' + imageIDHex);
-                _ImageCollection2.default.getThumbnail(imageIDHex).then(function (thumbnail) {
+            app.get('/media/:mediaIDHex/thumbnail', function (req, res) {
+                var mediaIDHex = req.params.mediaIDHex;
+                _logger2.default.debug('Media thumbnail requested for media ID: ' + mediaIDHex);
+                _MediaCollection2.default.getThumbnail(mediaIDHex).then(function (thumbnail) {
                     res.status(200).send(thumbnail);
                 }).catch(function (err) {
                     _logger2.default.error(err);
@@ -118,25 +122,25 @@ var ImagesApi = function (_RestApi) {
                 });
             });
 
-            app.get('/images/:imageIDHex/thumbnail/download', function (req, res) {
-                var imageIDHex = req.params.imageIDHex;
-                _logger2.default.debug('Image thumbnail download requested for image ID: ' + imageIDHex);
-                _ImageCollection2.default.downloadThumbnail(imageIDHex).then(function (data) {
-                    ImagesApi.downloadFromFileInfo(res, data);
+            app.get('/media/:mediaIDHex/thumbnail/download', function (req, res) {
+                var mediaIDHex = req.params.mediaIDHex;
+                _logger2.default.debug('Media thumbnail download requested for media ID: ' + mediaIDHex);
+                _MediaCollection2.default.downloadThumbnail(mediaIDHex).then(function (data) {
+                    MediaApi.downloadFromFileInfo(res, data);
                 }).catch(function (err) {
                     _logger2.default.error(err);
                     res.status(500).send(err);
                 });
             });
 
-            app.post('/images/:imageIDHex/tags', function (req, res) {
-                var imageIDHex = req.params.imageIDHex,
+            app.post('/media/:mediaIDHex/tags', function (req, res) {
+                var mediaIDHex = req.params.mediaIDHex,
                     tags = req.body.tags;
-                _logger2.default.debug('Image tags update requested for image ID: ' + imageIDHex);
-                Promise.all([_ImageCollection2.default.setTags(imageIDHex, tags), _TagCollection2.default.createTags(tags)]).then(function (results) {
-                    var image = results[0];
-                    if (image) {
-                        res.status(200).send(image);
+                _logger2.default.debug('Media tags update requested for media ID: ' + mediaIDHex);
+                Promise.all([_MediaCollection2.default.setTags(mediaIDHex, tags), _TagCollection2.default.createTags(tags)]).then(function (results) {
+                    var media = results[0];
+                    if (media) {
+                        res.status(200).send(media);
                     } else {
                         res.sendStatus(404);
                     }
@@ -144,6 +148,10 @@ var ImagesApi = function (_RestApi) {
                     _logger2.default.error(err);
                     res.status(500).send(err);
                 });
+            });
+
+            app.get('/mediatypes', function (req, res) {
+                res.status(200).send(_MimeService2.default.getSupportedMimeTypes());
             });
         }
     }], [{
@@ -164,7 +172,7 @@ var ImagesApi = function (_RestApi) {
         }
     }]);
 
-    return ImagesApi;
+    return MediaApi;
 }(_RestApi3.default);
 
-exports.default = ImagesApi;
+exports.default = MediaApi;

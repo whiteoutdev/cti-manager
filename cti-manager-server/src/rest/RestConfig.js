@@ -1,8 +1,8 @@
-import ImagesApi from './ImagesApi';
+import MediaApi from './MediaApi';
 import TagsApi from './TagsApi';
 
 const apis = [
-    new ImagesApi(),
+    new MediaApi(),
     new TagsApi()
 ];
 

@@ -22,6 +22,7 @@ var FileType = function FileType(name, code) {
 exports.default = {
     IMAGE: new FileType('image', 1),
     THUMBNAIL: new FileType('thumbnail', 2),
+    VIDEO: new FileType('video', 3),
 
     fromCode: function fromCode(code) {
         return _lodash2.default.find(this, function (fileType) {
