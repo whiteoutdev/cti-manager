@@ -92,40 +92,6 @@
                     }
                 }
             }
-
-            .pixiv-id-section {
-                .pixiv-id-display {
-                    span, a, i {
-                        vertical-align: middle;
-                    }
-
-                    span {
-                        color: $font-dark-secondary;
-                    }
-
-                    i {
-                        color: $brand-primary;
-                        font-size: 1.25em;
-                        margin-left: .5em;
-                        opacity: .5;
-                        cursor: pointer;
-                        transition: all 100ms linear;
-
-                        &:hover {
-                            opacity: 1;
-                        }
-                    }
-                }
-
-                .pixiv-id-form {
-                    @include flex-row-wrap;
-
-                    input {
-                        width: auto;
-                        border-right: 0;
-                    }
-                }
-            }
         }
     }
 }

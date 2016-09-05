@@ -74,7 +74,6 @@ export default class ImageCollection {
     }
 
     static createThumbnail(db, file, hash) {
-        console.log(file);
         const fileType           = MimeService.getFileExtension(file.mimetype),
               thumbnailExtension = fileType === 'gif' ? 'jpg' : fileType,
               thumbnailName      = `${hash}-thumb.${thumbnailExtension}`,

@@ -8,7 +8,7 @@ export default class Tag extends AbstractModel {
         this.id = Tag.encode(name);
         this.type = type || TagType.GENERAL;
         this.derivedTags = (derivedTags || []).filter(tag => tag);
-        this.metadata = metadata || new TagMetadata();
+        this.metadata = metadata || new TagMetadata(null, null, this.id, this.id);
     }
 
     serialiseToDatabase() {

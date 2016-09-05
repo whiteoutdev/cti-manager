@@ -139,7 +139,6 @@ var ImageCollection = function () {
         value: function createThumbnail(db, file, hash) {
             var _this2 = this;
 
-            console.log(file);
             var fileType = _MimeService2.default.getFileExtension(file.mimetype),
                 thumbnailExtension = fileType === 'gif' ? 'jpg' : fileType,
                 thumbnailName = hash + '-thumb.' + thumbnailExtension,
