@@ -41,7 +41,7 @@ class EditableLink extends React.Component {
         return (
             <HotKeys className="link-form" handlers={{enter: this.fireSave.bind(this)}}>
                 <input type="text"
-                       className="link-input"
+                       className="link-input with-addon"
                        ref="editableInput"
                        defaultValue={this.props.display}
                        onBlur={this.toggleEditMode.bind(this)}/>

@@ -52,10 +52,6 @@
             .derived-tags-section {
                 .tag-search-section {
                     @include flex-row-nowrap;
-
-                    input {
-                        border-right: 0;
-                    }
                 }
 
                 .derived-tag-list {
@@ -81,6 +77,39 @@
                             font-size: 1em;
                             margin-left: .5em;
                             vertical-align: middle;
+                            opacity: .5;
+                            cursor: pointer;
+                            transition: all 100ms linear;
+
+                            &:hover {
+                                opacity: 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .tag-urls-section {
+                .tag-url-input-form {
+                    @include flex-row-nowrap;
+
+                    input {
+                        width: auto;
+                    }
+                }
+
+                .url-list {
+                    padding: .5em 0 0;
+
+                    .url-list-item {
+                        @include flex-row-nowrap;
+                        align-items: center;
+                        margin-bottom: .5em;
+
+                        .delete-icon {
+                            color: $brand-primary;
+                            font-size: 1.25em;
+                            margin-left: .5em;
                             opacity: .5;
                             cursor: pointer;
                             transition: all 100ms linear;

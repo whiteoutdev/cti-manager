@@ -13,4 +13,9 @@ export default class UrlService {
         });
         return queryString === '?' ? '' : queryString;
     }
+
+    static createAbsoluteUrl(url) {
+        const schemeRegex = /^https?\:\/\//;
+        return schemeRegex.test(url) ? url : `http://${url}`;
+    }
 }

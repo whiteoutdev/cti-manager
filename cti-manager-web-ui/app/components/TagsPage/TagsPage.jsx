@@ -1,4 +1,6 @@
 import React from 'react';
+import {HotKeys} from 'react-hotkeys';
+import uuid from 'uuid';
 
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
@@ -11,6 +13,7 @@ import TagService from '../../services/TagService';
 import TagActions from '../../actions/TagActions';
 import TagStore from '../../stores/TagStore';
 import TagTypeStore from '../../stores/TagTypeStore';
+import UrlService from '../../services/UrlService';
 
 import './TagsPage.scss';
 
@@ -110,6 +113,18 @@ class TagsPage extends RefluxComponent {
         TagsApi.updateTag(tag.id, tag);
     }
 
+    addTagUrl() {
+        const tag = this.state.tag;
+        tag.metadata.urls.push(this.refs.tagUrlInput.value);
+        TagsApi.updateTag(tag.id, tag);
+    }
+
+    removeUrl(index) {
+        const tag = this.state.tag;
+        tag.metadata.urls.splice(index, 1);
+        TagsApi.updateTag(tag.id, tag);
+    }
+
     renderTagNameSection(tag) {
         return (
             <div className="tag-fact">
@@ -172,6 +187,7 @@ class TagsPage extends RefluxComponent {
                 <div className="right-col">
                     <div className="tag-search-section">
                         <AutocompleteInput ref="tagInput"
+                                           className="with-addon"
                                            items={this.state.allTags.map(tag => tag.id)}
                                            onAutocomplete={this.addDerivedTagAndClear.bind(this)}
                                            onEnter={this.addDerivedTagFromInput.bind(this)}/>
@@ -231,6 +247,34 @@ class TagsPage extends RefluxComponent {
         ];
     }
 
+    renderTagUrlsSection(tag) {
+        const urlItems = tag.metadata.urls.map((url, index) => {
+            return (
+                <li key={uuid.v4()} className="url-list-item">
+                    <a href={UrlService.createAbsoluteUrl(url)}>{url}</a>
+                    <i className="material-icons delete-icon" onClick={() => {this.removeUrl(index)}}>delete</i>
+                </li>
+            );
+        });
+
+        return (
+            <div className="tag-fact tag-urls-section">
+                <div className="left-col">Links:</div>
+                <div className="right-col">
+                    <HotKeys className="tag-url-input-form" handlers={{enter: this.addTagUrl.bind(this)}}>
+                        <input ref="tagUrlInput" type="text" className="with-addon"/>
+                        <button className="accent" onClick={this.addTagUrl.bind(this)}>
+                            <i className="material-icons">add</i>
+                        </button>
+                    </HotKeys>
+                    <ul className="url-list">
+                        {urlItems}
+                    </ul>
+                </div>
+            </div>
+        );
+    }
+
     renderTagDetails() {
         const tag = this.state.tag;
         if (!tag) {
@@ -245,6 +289,7 @@ class TagsPage extends RefluxComponent {
                     {this.renderDerivedTagsSection(tag)}
                     {this.renderPixivIdSection(tag)}
                     {this.renderBooruLinksSection(tag)}
+                    {this.renderTagUrlsSection(tag)}
                 </div>
             </div>
         );
