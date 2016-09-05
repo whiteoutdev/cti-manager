@@ -46,6 +46,10 @@ var _HashService = require('../util/HashService');
 
 var _HashService2 = _interopRequireDefault(_HashService);
 
+var _MimeService = require('../util/MimeService');
+
+var _MimeService2 = _interopRequireDefault(_MimeService);
+
 var _FileType = require('../model/gridfs/FileType');
 
 var _FileType2 = _interopRequireDefault(_FileType);
@@ -72,7 +76,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var ObjectID = _mongodb2.default.ObjectID,
     GridFSBucket = _mongodb2.default.GridFSBucket,
-    thumbnailSize = _app2.default.thumbnailSize;
+    thumbnailSize = _app2.default.thumbnailSize,
+    supportedMimeTypes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'];
 
 var ImageCollection = function () {
     function ImageCollection() {
@@ -96,7 +101,15 @@ var ImageCollection = function () {
             var exceptionWrapper = new _ExceptionWrapper2.default();
 
             return _DBConnectionService2.default.getDB().then(function (db) {
-                var promises = files.map(function (file) {
+                var promises = files.filter(function (file) {
+                    if (!~supportedMimeTypes.indexOf(file.mimetype)) {
+                        var message = 'MIME type ' + file.mimetype + ' not supported';
+                        exceptionWrapper.addException(new _CTIWarning2.default(message));
+                        _logger2.default.debug(message);
+                        return false;
+                    }
+                    return true;
+                }).map(function (file) {
                     return new Promise(function (resolve) {
                         _HashService2.default.getHash(file.path).then(function (hash) {
                             _this.createThumbnail(db, file, hash).then(function (info) {
@@ -126,8 +139,10 @@ var ImageCollection = function () {
         value: function createThumbnail(db, file, hash) {
             var _this2 = this;
 
-            var fileType = file.originalname.match(/\.((?:\w|\d)+)$/)[1],
-                thumbnailName = hash + '-thumb.' + fileType,
+            console.log(file);
+            var fileType = _MimeService2.default.getFileExtension(file.mimetype),
+                thumbnailExtension = fileType === 'gif' ? 'jpg' : fileType,
+                thumbnailName = hash + '-thumb.' + thumbnailExtension,
                 thumbnailModel = new _Thumbnail2.default(thumbnailName, file.mimetype),
                 thumbnailPath = _app2.default.tmpDir + '/' + thumbnailName;
             return new Promise(function (resolve, reject) {

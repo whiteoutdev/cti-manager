@@ -9,15 +9,22 @@ import logger from '../util/logger';
 import DBConnectionService from './DBConnectionService';
 import TagCollection from './TagCollection';
 import HashService from '../util/HashService';
+import MimeService from '../util/MimeService';
 import FileType from '../model/gridfs/FileType';
 import Image from '../model/gridfs/Image';
 import Thumbnail from '../model/gridfs/Thumbnail';
 import ExceptionWrapper from '../model/exception/ExceptionWrapper';
 import CTIWarning from '../model/exception/CTIWarning';
 
-const ObjectID      = MongoDB.ObjectID,
-      GridFSBucket  = MongoDB.GridFSBucket,
-      thumbnailSize = appConfig.thumbnailSize;
+const ObjectID           = MongoDB.ObjectID,
+      GridFSBucket       = MongoDB.GridFSBucket,
+      thumbnailSize      = appConfig.thumbnailSize,
+      supportedMimeTypes = [
+          'image/jpeg',
+          'image/pjpeg',
+          'image/png',
+          'image/gif'
+      ];
 
 export default class ImageCollection {
     static init() {
@@ -32,7 +39,15 @@ export default class ImageCollection {
         const exceptionWrapper = new ExceptionWrapper();
 
         return DBConnectionService.getDB().then((db) => {
-            const promises = files.map((file) => {
+            const promises = files.filter((file) => {
+                if (!~supportedMimeTypes.indexOf(file.mimetype)) {
+                    const message = `MIME type ${file.mimetype} not supported`;
+                    exceptionWrapper.addException(new CTIWarning(message));
+                    logger.debug(message);
+                    return false;
+                }
+                return true;
+            }).map((file) => {
                 return new Promise((resolve) => {
                     HashService.getHash(file.path).then((hash) => {
                         this.createThumbnail(db, file, hash).then((info) => {
@@ -59,10 +74,12 @@ export default class ImageCollection {
     }
 
     static createThumbnail(db, file, hash) {
-        const fileType       = file.originalname.match(/\.((?:\w|\d)+)$/)[1],
-              thumbnailName  = `${hash}-thumb.${fileType}`,
-              thumbnailModel = new Thumbnail(thumbnailName, file.mimetype),
-              thumbnailPath  = `${appConfig.tmpDir}/${thumbnailName}`;
+        console.log(file);
+        const fileType           = MimeService.getFileExtension(file.mimetype),
+              thumbnailExtension = fileType === 'gif' ? 'jpg' : fileType,
+              thumbnailName      = `${hash}-thumb.${thumbnailExtension}`,
+              thumbnailModel     = new Thumbnail(thumbnailName, file.mimetype),
+              thumbnailPath      = `${appConfig.tmpDir}/${thumbnailName}`;
         return new Promise((resolve, reject) => {
             lwip.open(file.path, fileType, (err, image) => {
                 if (err) {
