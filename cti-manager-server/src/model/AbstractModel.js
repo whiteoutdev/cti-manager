@@ -6,4 +6,4 @@ export default class AbstractModel {
     serialiseToApi() {
         return this;
     }
-};
+}

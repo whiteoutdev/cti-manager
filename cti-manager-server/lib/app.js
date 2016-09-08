@@ -28,6 +28,10 @@ var _RestConfig = require('./rest/RestConfig');
 
 var _RestConfig2 = _interopRequireDefault(_RestConfig);
 
+var _Hooks = require('./config/Hooks');
+
+var _Hooks2 = _interopRequireDefault(_Hooks);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (0, _del2.default)([_app2.default.tmpDir + '/**', '!' + _app2.default.tmpDir]).then(function (paths) {
@@ -50,4 +54,10 @@ _RestConfig2.default.configure(app);
 
 app.listen(_app2.default.api.port, function () {
     _logger2.default.info('CTI Manager API listening on port ' + _app2.default.api.port);
+});
+
+_Hooks2.default.onUncaughtException(function (e) {
+    _logger2.default.error('Uncaught Exception:');
+    _logger2.default.error(e.message);
+    _logger2.default.error(e.stack);
 });

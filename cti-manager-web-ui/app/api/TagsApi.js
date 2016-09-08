@@ -15,7 +15,7 @@ export default class TagsApi {
 
     static getTag(tagId) {
         return http.get(`${apiPath}/tags/${tagId}`)
-            .then(res => res.data)
+            .then(res => res.data);
     }
 
     static getTagTypes() {
@@ -28,6 +28,6 @@ export default class TagsApi {
             .then((res) => {
                 TagActions.updateTag(tagId);
                 return res;
-            })
+            });
     }
-};
+}

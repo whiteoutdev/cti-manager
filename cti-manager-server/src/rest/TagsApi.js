@@ -11,6 +11,9 @@ export default class TagsApi extends RestApi {
                   limit  = Number(query.limit);
             TagCollection.getTags(search, skip, limit).then((tags) => {
                 res.status(200).send(tags);
+            }).catch((err) => {
+                logger.error(err);
+                res.status(500).send(err);
             });
         });
 
@@ -23,6 +26,9 @@ export default class TagsApi extends RestApi {
                 } else {
                     res.sendStatus(404);
                 }
+            }).catch((err) => {
+                logger.error(err);
+                res.status(500).send(err);
             });
         });
 
@@ -37,6 +43,9 @@ export default class TagsApi extends RestApi {
                 } else {
                     res.sendStatus(200);
                 }
+            }).catch((err) => {
+                logger.error(err);
+                res.status(500).send(err);
             });
         });
 
@@ -47,6 +56,9 @@ export default class TagsApi extends RestApi {
             tagData.id = tagId;
             TagCollection.updateTag(tagData).then(() => {
                 res.sendStatus(200);
+            }).catch((err) => {
+                logger.error(err);
+                res.status(500).send(err);
             });
         });
 

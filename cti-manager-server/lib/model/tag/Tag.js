@@ -39,7 +39,7 @@ var Tag = function (_AbstractModel) {
         _this.derivedTags = (derivedTags || []).filter(function (tag) {
             return tag;
         });
-        _this.metadata = metadata || new _TagMetadata2.default();
+        _this.metadata = metadata || new _TagMetadata2.default(null, null, _this.id, _this.id);
         return _this;
     }
 

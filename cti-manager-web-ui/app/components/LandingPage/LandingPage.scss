@@ -1,0 +1,63 @@
+@import '../../scss/colours';
+@import '../../scss/mixins';
+
+$tile-height: 12rem;
+$tile-padding: 1rem;
+$tile-text-font-size: 1rem;
+$tile-text-line-height: 2 * $tile-text-font-size;
+$tile-icon-height: $tile-height - 2 * $tile-padding - $tile-text-line-height;
+
+.LandingPage {
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: $off-white;
+    padding: 3rem 0;
+
+    .main-heading {
+        font-size: 2.5rem;
+        font-weight: 500;
+        color: $brand-primary;
+        text-align: center;
+    }
+
+    .landing-page-list {
+        @include flex-row-wrap;
+        justify-content: center;
+        margin: auto;
+        padding: 6rem 0;
+        max-width: 1024px;
+
+        .landing-page-list-item {
+            background-color: $white;
+            box-shadow: 1px 1px 16px 0 rgba($black, .25);
+            margin: 1rem 2rem;
+
+            a {
+                display: block;
+                color: $font-dark-hint;
+                padding: 1rem;
+                width: $tile-height;
+                height: $tile-height;
+                text-decoration: none;
+                text-align: center;
+                transition: all 150ms linear;
+
+                &:hover {
+                    color: $brand-accent;
+                }
+
+                i {
+                    display: block;
+                    font-size: $tile-icon-height;
+                    margin: auto;
+                }
+
+                span {
+                    line-height: $tile-text-line-height;
+                    font-size: $tile-text-font-size;
+                }
+            }
+        }
+    }
+}

@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --prod",
-    "dev": "webpack-dev-server --hot --inline",
+    "dev": "gulp ui:dev",
     "prod": "npm run build && babel build/config.js --out-file server/config.js && node server/app | bunyan",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp qa"
   },
   "author": "",
   "license": "ISC",
@@ -29,13 +29,17 @@
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
-    "babel-core": "^6.11.4",
+    "babel-core": "^6.14.0",
     "babel-loader": "^6.2.4",
-    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "compression-webpack-plugin": "^0.3.1",
     "css-loader": "^0.23.1",
+    "eslint-plugin-react": "^6.2.0",
     "file-loader": "^0.9.0",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
+    "gulp-util": "^3.0.7",
     "html-webpack-plugin": "^2.22.0",
     "json-loader": "^0.5.4",
     "node-sass": "^3.8.0",

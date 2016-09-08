@@ -10,4 +10,4 @@ export default class Thumbnail extends AbstractFile {
         const md = doc.metadata;
         return new Thumbnail(md.n, md.m, doc._id);
     }
-};
+}

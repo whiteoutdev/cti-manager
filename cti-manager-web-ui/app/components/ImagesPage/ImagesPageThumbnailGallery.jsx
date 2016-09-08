@@ -5,9 +5,10 @@ import appConfig from '../../config/app.config';
 
 import './ImagesPageThumbnailGallery.scss';
 
-const maxNavButtons = 11;
+const maxNavButtons = 11,
+      PropTypes     = React.PropTypes;
 
-export default class ImagesPageThumbnailGallery extends React.Component {
+class ImagesPageThumbnailGallery extends React.Component {
     shouldComponentUpdate(nextProps) {
         return JSON.stringify(nextProps) !== JSON.stringify(this.props);
     }
@@ -17,8 +18,8 @@ export default class ImagesPageThumbnailGallery extends React.Component {
             return this.props.ids.map((id) => {
                 return (
                     <li key={id} className="thumbnail-list-item">
-                        <Link to={`/images/${id}`}>
-                            <img src={`${appConfig.api.path}/images/${id}/thumbnail/download`} alt={id}/>
+                        <Link to={`/media/${id}`}>
+                            <img src={`${appConfig.api.path}/media/${id}/thumbnail/download`} alt={id}/>
                         </Link>
                     </li>
                 );
@@ -53,7 +54,7 @@ export default class ImagesPageThumbnailGallery extends React.Component {
                 );
             } else {
                 const newSkip = i * limit;
-                let url = `/images?${query ? `${query}&` : ''}skip=${newSkip}&limit=${limit}`;
+                let url = `/media?${query ? `${query}&` : ''}skip=${newSkip}&limit=${limit}`;
                 navButtons.push(
                     <li key={i} className="nav-button link">
                         <Link to={url}>{i + 1}</Link>
@@ -63,11 +64,11 @@ export default class ImagesPageThumbnailGallery extends React.Component {
         }
 
         if (currentPage > 0) {
-            const previousPageUrl = `/images?${query ? `${query}&` : ''}skip=${(currentPage - 1) *
-                                                                               limit}&limit=${limit}`;
+            const previousPageUrl = `/media?${query ? `${query}&` : ''}skip=${(currentPage - 1) *
+                                                                              limit}&limit=${limit}`;
             navButtons.unshift(
                 <li key="firstPage" className="nav-button link button-link">
-                    <Link to={`/images?${query ? `${query}&` : ''}limit=${limit}`}>
+                    <Link to={`/media?${query ? `${query}&` : ''}limit=${limit}`}>
                         <i className="material-icons">first_page</i>
                     </Link>
                 </li>,
@@ -80,7 +81,7 @@ export default class ImagesPageThumbnailGallery extends React.Component {
         }
 
         if (currentPage < pageCount - 1) {
-            const nextPageUrl = `/images?${query ? `${query}&` : ''}skip=${(currentPage + 1) * limit}&limit=${limit}`;
+            const nextPageUrl = `/media?${query ? `${query}&` : ''}skip=${(currentPage + 1) * limit}&limit=${limit}`;
             navButtons.push(
                 <li key="nextPage" className="nav-button link button-link">
                     <Link to={nextPageUrl}>
@@ -88,7 +89,7 @@ export default class ImagesPageThumbnailGallery extends React.Component {
                     </Link>
                 </li>,
                 <li key="lastPage" className="nav-button link button-link">
-                    <Link to={`/images?${query ? `${query}&` : ''}skip=${(pageCount - 1) * limit}&limit=${limit}`}>
+                    <Link to={`/media?${query ? `${query}&` : ''}skip=${(pageCount - 1) * limit}&limit=${limit}`}>
                         <i className="material-icons">last_page</i>
                     </Link>
                 </li>
@@ -115,4 +116,22 @@ export default class ImagesPageThumbnailGallery extends React.Component {
             </div>
         );
     }
+}
+
+ImagesPageThumbnailGallery.propTypes = {
+    ids  : PropTypes.arrayOf(PropTypes.string),
+    count: PropTypes.number,
+    limit: PropTypes.number,
+    skip : PropTypes.number,
+    query: PropTypes.string
 };
+
+ImagesPageThumbnailGallery.defaultProps = {
+    ids  : [],
+    count: 0,
+    limit: 40,
+    skip : 0,
+    query: ''
+};
+
+export default ImagesPageThumbnailGallery;

@@ -1,6 +1,9 @@
 import React from 'react';
+import _ from 'lodash';
 
-export default class PanelList extends React.Component {
+const PropTypes = React.PropTypes;
+
+class PanelList extends React.Component {
     render() {
         const props = _.extend({}, this.props);
         props.className = props.className ? `PanelList ${props.className}` : 'PanelList';
@@ -12,3 +15,10 @@ export default class PanelList extends React.Component {
         );
     }
 }
+
+PanelList.propTypes = {
+    children : PropTypes.node,
+    className: PropTypes.string
+};
+
+export default PanelList;

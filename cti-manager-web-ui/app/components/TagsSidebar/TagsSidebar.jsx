@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import {HotKeys} from 'react-hotkeys';
 import escapeRegex from 'escape-string-regexp';
 
@@ -17,7 +18,7 @@ import TagStore from '../../stores/TagStore';
 
 import './TagsSidebar.scss';
 
-export default class TagsSidebar extends RefluxComponent {
+class TagsSidebar extends RefluxComponent {
     constructor() {
         super();
         this.state = {
@@ -65,9 +66,7 @@ export default class TagsSidebar extends RefluxComponent {
     }
 
     fireTagSelect() {
-        if (typeof this.props.onTagSelect === 'function') {
-            this.props.onTagSelect(this.state.selectedTag);
-        }
+        this.props.onTagSelect(this.state.selectedTag);
     }
 
     selectTag(tag) {
@@ -141,4 +140,14 @@ export default class TagsSidebar extends RefluxComponent {
             </div>
         );
     }
+}
+
+TagsSidebar.propTypes = {
+    onTagSelect: React.PropTypes.func
 };
+
+TagsSidebar.defaultProps = {
+    onTagSelect: _.noop
+};
+
+export default TagsSidebar;

@@ -52,10 +52,6 @@
             .derived-tags-section {
                 .tag-search-section {
                     @include flex-row-nowrap;
-
-                    input {
-                        border-right: 0;
-                    }
                 }
 
                 .derived-tag-list {
@@ -93,36 +89,35 @@
                 }
             }
 
-            .pixiv-id-section {
-                .pixiv-id-display {
-                    span, a, i {
-                        vertical-align: middle;
-                    }
-
-                    span {
-                        color: $font-dark-secondary;
-                    }
-
-                    i {
-                        color: $brand-primary;
-                        font-size: 1.25em;
-                        margin-left: .5em;
-                        opacity: .5;
-                        cursor: pointer;
-                        transition: all 100ms linear;
-
-                        &:hover {
-                            opacity: 1;
-                        }
-                    }
-                }
-
-                .pixiv-id-form {
-                    @include flex-row-wrap;
+            .tag-urls-section {
+                .tag-url-input-form {
+                    @include flex-row-nowrap;
 
                     input {
                         width: auto;
-                        border-right: 0;
+                    }
+                }
+
+                .url-list {
+                    padding: .5em 0 0;
+
+                    .url-list-item {
+                        @include flex-row-nowrap;
+                        align-items: center;
+                        margin-bottom: .5em;
+
+                        .delete-icon {
+                            color: $brand-primary;
+                            font-size: 1.25em;
+                            margin-left: .5em;
+                            opacity: .5;
+                            cursor: pointer;
+                            transition: all 100ms linear;
+
+                            &:hover {
+                                opacity: 1;
+                            }
+                        }
                     }
                 }
             }

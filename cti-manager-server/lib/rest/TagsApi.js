@@ -45,6 +45,9 @@ var TagsApi = function (_RestApi) {
                     limit = Number(query.limit);
                 _TagCollection2.default.getTags(search, skip, limit).then(function (tags) {
                     res.status(200).send(tags);
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 
@@ -57,6 +60,9 @@ var TagsApi = function (_RestApi) {
                     } else {
                         res.sendStatus(404);
                     }
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 
@@ -71,6 +77,9 @@ var TagsApi = function (_RestApi) {
                     } else {
                         res.sendStatus(200);
                     }
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 
@@ -81,6 +90,9 @@ var TagsApi = function (_RestApi) {
                 tagData.id = tagId;
                 _TagCollection2.default.updateTag(tagData).then(function () {
                     res.sendStatus(200);
+                }).catch(function (err) {
+                    _logger2.default.error(err);
+                    res.status(500).send(err);
                 });
             });
 

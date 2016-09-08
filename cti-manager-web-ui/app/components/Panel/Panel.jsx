@@ -3,7 +3,9 @@ import _ from 'lodash';
 
 import './Panel.scss';
 
-export default class Panel extends React.Component {
+const PropTypes = React.PropTypes;
+
+class Panel extends React.Component {
     render() {
         const props = _.extend({}, this.props);
         props.className = props.className ? `Panel ${props.className}` : 'Panel';
@@ -14,4 +16,11 @@ export default class Panel extends React.Component {
             </div>
         );
     }
+}
+
+Panel.propTypes = {
+    children : PropTypes.node,
+    className: PropTypes.string
 };
+
+export default Panel;

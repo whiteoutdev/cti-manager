@@ -10,7 +10,9 @@ import TagActions from '../../actions/TagActions';
 
 import './TagEditor.scss';
 
-export default class TagEditor extends RefluxComponent {
+const PropTypes = React.PropTypes;
+
+class TagEditor extends RefluxComponent {
     constructor(props) {
         super();
         this.state = {
@@ -32,9 +34,7 @@ export default class TagEditor extends RefluxComponent {
 
     fireSave() {
         const newTags = _.difference(this.state.tags.slice(), this.state.deletedTags);
-        if (typeof this.props.onSave === 'function') {
-            this.props.onSave(newTags.map(newTag => TagService.toTagId(newTag)));
-        }
+        this.props.onSave(newTags.map(newTag => TagService.toTagId(newTag)));
     }
 
     addTag(tag, callback) {
@@ -162,3 +162,15 @@ export default class TagEditor extends RefluxComponent {
         );
     }
 }
+
+TagEditor.propTypes = {
+    tags  : PropTypes.arrayOf(PropTypes.string),
+    onSave: PropTypes.func
+};
+
+TagEditor.defaultProps = {
+    tags  : [],
+    onSave: _.noop
+};
+
+export default TagEditor;

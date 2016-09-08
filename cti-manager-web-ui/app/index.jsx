@@ -18,8 +18,8 @@ const routes = (
     <Router history={history}>
         <Route path="/" component={App}>
             <IndexRoute component={LandingPage}/>
-            <Route path="/images" component={ImagesPage}/>
-            <Route path="/images/:imageID" component={ImagePage}/>
+            <Route path="/media" component={ImagesPage}/>
+            <Route path="/media/:imageID" component={ImagePage}/>
             <Route path="/tags" component={TagsPage}/>
             <Route path="/tags/:tagID" component={TagsPage}/>
         </Route>

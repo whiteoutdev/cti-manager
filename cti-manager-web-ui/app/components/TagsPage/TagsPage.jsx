@@ -1,31 +1,35 @@
 import React from 'react';
 import {HotKeys} from 'react-hotkeys';
+import uuid from 'uuid';
 
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
 import TagsSidebar from '../TagsSidebar/TagsSidebar.jsx';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
+import EditableLink from '../EditableLink/EditableLink.jsx';
 
 import TagsApi from '../../api/TagsApi';
 import TagService from '../../services/TagService';
 import TagActions from '../../actions/TagActions';
 import TagStore from '../../stores/TagStore';
 import TagTypeStore from '../../stores/TagTypeStore';
+import UrlService from '../../services/UrlService';
 
 import './TagsPage.scss';
 
-export default class TagsPage extends RefluxComponent {
+class TagsPage extends RefluxComponent {
     constructor() {
         super();
         this.state = {
-            tag: null
+            tag     : null,
+            tagTypes: []
         };
         this.listenTo(TagTypeStore, this.onTagTypesChange, (tagTypes) => {
             this.state.tagTypes = tagTypes;
         });
         this.listenTo(TagStore, this.onTagsChange, (data) => {
             this.state.allTags = data.tags;
-            this.state.tagIndex = data.tagIndex
+            this.state.tagIndex = data.tagIndex;
         });
     }
 
@@ -103,17 +107,22 @@ export default class TagsPage extends RefluxComponent {
         }
     }
 
-    toggleEditPixivId() {
-        this.setState({
-            editPixivId: !this.state.editPixivId
-        });
+    setMetadata(key, value) {
+        const tag = this.state.tag;
+        tag.metadata[key] = value;
+        TagsApi.updateTag(tag.id, tag);
     }
 
-    setPixivId() {
+    addTagUrl() {
         const tag = this.state.tag;
-        tag.metadata.pixivId = Number(this.refs.pixivIdInput.value);
+        tag.metadata.urls.push(this.refs.tagUrlInput.value);
         TagsApi.updateTag(tag.id, tag);
-        this.toggleEditPixivId();
+    }
+
+    removeUrl(index) {
+        const tag = this.state.tag;
+        tag.metadata.urls.splice(index, 1);
+        TagsApi.updateTag(tag.id, tag);
     }
 
     renderTagNameSection(tag) {
@@ -178,6 +187,7 @@ export default class TagsPage extends RefluxComponent {
                 <div className="right-col">
                     <div className="tag-search-section">
                         <AutocompleteInput ref="tagInput"
+                                           className="with-addon"
                                            items={this.state.allTags.map(tag => tag.id)}
                                            onAutocomplete={this.addDerivedTagAndClear.bind(this)}
                                            onEnter={this.addDerivedTagFromInput.bind(this)}/>
@@ -199,44 +209,67 @@ export default class TagsPage extends RefluxComponent {
         }
         const pixivId = tag.metadata.pixivId;
 
-        let pixivLinkDisplay = null;
-
-        if (this.state.editPixivId) {
-            pixivLinkDisplay = (
-                <HotKeys className="pixiv-id-form" handlers={{enter: this.setPixivId.bind(this)}}>
-                    <input type="text"
-                           ref="pixivIdInput"
-                           defaultValue={pixivId}
-                           onBlur={this.toggleEditPixivId.bind(this)}/>
-                    <button className="accent" onClick={this.setPixivId.bind(this)}>
-                        <i className="material-icons">done</i>
-                    </button>
-                </HotKeys>
-            );
-        } else if (pixivId) {
-            const pixivUrl = pixivId ? `http://www.pixiv.net/member.php?id=${pixivId}` : null;
-            pixivLinkDisplay = (
-                <div className="pixiv-id-display">
-                    <a href={pixivUrl}>{pixivId}</a>
-                    <i className="material-icons pixiv-id-edit" onClick={this.toggleEditPixivId.bind(this)}>edit</i>
-                </div>
-            );
-        } else {
-            pixivLinkDisplay = (
-                <div className="pixiv-id-display">
-                    <span className="no-pixiv-id">None</span>
-                    <i className="material-icons pixiv-id-edit" onClick={this.toggleEditPixivId.bind(this)}>edit</i>
-                </div>
-            )
-        }
-
         return (
             <div className="tag-fact pixiv-id-section">
                 <div className="left-col">
                     Pixiv ID:
                 </div>
                 <div className="right-col">
-                    {pixivLinkDisplay}
+                    <EditableLink display={pixivId}
+                                  link={`http://www.pixiv.net/member.php?id=${pixivId}`}
+                                  onSave={(newPixivId) => {this.setMetadata('pixivId', newPixivId)}}/>
+                </div>
+            </div>
+        );
+    }
+
+    renderBooruLinksSection(tag) {
+        const gelbooruLink = `http://www.gelbooru.com/index.php?page=post&s=list&tags=${tag.metadata.gelbooruTag}`,
+              danbooruLink = `http://danbooru.donmai.us/posts?tags=${tag.metadata.danbooruTag}`;
+
+        return [
+            <div key="gelbooru" className="tag-fact gelbooru-link-section">
+                <div className="left-col">Gelbooru Tag:</div>
+                <div className="right-col">
+                    <EditableLink display={tag.metadata.gelbooruTag}
+                                  link={gelbooruLink}
+                                  onSave={(newTag) => {this.setMetadata('gelbooruTag', newTag)}}/>
+                </div>
+            </div>,
+            <div key="danbooru" className="tag-fact danbooru-link-section">
+                <div className="left-col">Danbooru Tag:</div>
+                <div className="right-col">
+                    <EditableLink display={tag.metadata.danbooruTag}
+                                  link={danbooruLink}
+                                  onSave={(newTag) => {this.setMetadata('danbooruTag', newTag)}}/>
+                </div>
+            </div>
+        ];
+    }
+
+    renderTagUrlsSection(tag) {
+        const urlItems = tag.metadata.urls.map((url, index) => {
+            return (
+                <li key={uuid.v4()} className="url-list-item">
+                    <a href={UrlService.createAbsoluteUrl(url)}>{url}</a>
+                    <i className="material-icons delete-icon" onClick={() => {this.removeUrl(index)}}>delete</i>
+                </li>
+            );
+        });
+
+        return (
+            <div className="tag-fact tag-urls-section">
+                <div className="left-col">Links:</div>
+                <div className="right-col">
+                    <HotKeys className="tag-url-input-form" handlers={{enter: this.addTagUrl.bind(this)}}>
+                        <input ref="tagUrlInput" type="text" className="with-addon"/>
+                        <button className="accent" onClick={this.addTagUrl.bind(this)}>
+                            <i className="material-icons">add</i>
+                        </button>
+                    </HotKeys>
+                    <ul className="url-list">
+                        {urlItems}
+                    </ul>
                 </div>
             </div>
         );
@@ -255,6 +288,8 @@ export default class TagsPage extends RefluxComponent {
                     {this.renderTagTypeSection(tag)}
                     {this.renderDerivedTagsSection(tag)}
                     {this.renderPixivIdSection(tag)}
+                    {this.renderBooruLinksSection(tag)}
+                    {this.renderTagUrlsSection(tag)}
                 </div>
             </div>
         );
@@ -271,3 +306,9 @@ export default class TagsPage extends RefluxComponent {
         );
     }
 }
+
+TagsPage.propTypes = {
+    routeParams: React.PropTypes.object
+};
+
+export default TagsPage;

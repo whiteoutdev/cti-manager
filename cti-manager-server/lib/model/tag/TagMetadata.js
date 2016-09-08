@@ -21,13 +21,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var TagMetadata = function (_AbstractModel) {
     _inherits(TagMetadata, _AbstractModel);
 
-    function TagMetadata(urls, pixivId) {
+    function TagMetadata(urls, pixivId, gelbooruTag, danbooruTag) {
         _classCallCheck(this, TagMetadata);
 
         var _this = _possibleConstructorReturn(this, (TagMetadata.__proto__ || Object.getPrototypeOf(TagMetadata)).call(this));
 
         _this.urls = urls || [];
         _this.pixivId = pixivId || null;
+        _this.gelbooruTag = gelbooruTag || '';
+        _this.danbooruTag = danbooruTag || '';
         return _this;
     }
 
@@ -36,27 +38,31 @@ var TagMetadata = function (_AbstractModel) {
         value: function serialiseToDatabase() {
             return {
                 u: this.urls,
-                p: this.pixivId
+                p: this.pixivId,
+                g: this.gelbooruTag,
+                d: this.danbooruTag
             };
         }
     }, {
         key: 'serialiseToApi',
         value: function serialiseToApi() {
             var metadata = {
-                urls: this.urls
+                urls: this.urls,
+                gelbooruTag: this.gelbooruTag,
+                danbooruTag: this.danbooruTag
             };
-            this.pixivId && (metadata.pixivId = pixivId);
+            this.pixivId && (metadata.pixivId = this.pixivId);
             return metadata;
         }
     }], [{
         key: 'fromDatabase',
         value: function fromDatabase(doc) {
-            return new TagMetadata(doc.u, doc.p);
+            return new TagMetadata(doc.u, doc.p, doc.g, doc.d);
         }
     }, {
         key: 'fromApi',
         value: function fromApi(metadata) {
-            return new TagMetadata(metadata.urls, metadata.pixivId);
+            return new TagMetadata(metadata.urls, metadata.pixivId, metadata.gelbooruTag, metadata.danbooruTag);
         }
     }]);
 

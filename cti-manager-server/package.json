@@ -4,14 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf lib && babel src -d lib",
+    "build": "gulp server:build | bunyan",
     "serve": "node index | bunyan",
-    "serve-dev": "node index --dev | bunyan",
-    "db": "npm run build && node lib/scripts/rebuildDatabase | bunyan",
-    "db-dev": "npm run build && node lib/scripts/rebuildDatabase --dev | bunyan",
-    "dev": "npm run build && npm run db-dev && npm run serve-dev",
+    "db": "gulp server:db | bunyan",
+    "db-dev": "gulp server:db --dev | bunyan",
+    "dev": "gulp server:dev --dev | bunyan",
     "prod": "npm run build && npm run serve",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "gulp server:qa",
     "preversion": "npm run build"
   },
   "author": "",
@@ -23,6 +22,7 @@
     "cors": "^2.7.1",
     "del": "^2.2.1",
     "express": "^4.14.0",
+    "fluent-ffmpeg": "^2.1.0",
     "lodash": "^4.14.1",
     "lwip": "0.0.9",
     "mongodb": "^2.2.4",
@@ -33,6 +33,12 @@
   "devDependencies": {
     "babel-cli": "^6.11.4",
     "babel-polyfill": "^6.9.1",
-    "babel-preset-es2015": "^6.9.0"
+    "babel-preset-es2015": "^6.9.0",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-if": "^2.0.1",
+    "gulp-nodemon": "^2.1.0"
   }
 }

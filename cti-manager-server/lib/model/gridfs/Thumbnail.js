@@ -43,4 +43,3 @@ var Thumbnail = function (_AbstractFile) {
 }(_AbstractFile3.default);
 
 exports.default = Thumbnail;
-;

@@ -4,7 +4,7 @@ import Navbar from '../Navbar/Navbar.jsx';
 
 import './NavbarredPage.scss';
 
-export default class NavbarredPage extends React.Component {
+class NavbarredPage extends React.Component {
     render() {
         return (
             <div className="NavbarredPage">
@@ -15,4 +15,10 @@ export default class NavbarredPage extends React.Component {
             </div>
         );
     }
+}
+
+NavbarredPage.propTypes = {
+    children: React.PropTypes.node
 };
+
+export default NavbarredPage;
