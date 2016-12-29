@@ -38,7 +38,9 @@ var TagsApi = function (_RestApi) {
     _createClass(TagsApi, [{
         key: 'configure',
         value: function configure(app) {
+
             app.get('/tags', function (req, res) {
+                _logger2.default.debug('Tags requested');
                 var query = req.query,
                     search = query.query,
                     skip = Number(query.skip),
@@ -50,10 +52,9 @@ var TagsApi = function (_RestApi) {
                     res.status(500).send(err);
                 });
             });
-
             app.get('/tags/:tag', function (req, res) {
-                _logger2.default.debug('Tags requested');
                 var tag = decodeURIComponent(req.params.tag);
+                _logger2.default.debug('Tag ' + tag + ' requested');
                 _TagCollection2.default.getTag(tag).then(function (tag) {
                     if (tag) {
                         res.status(200).send(tag);
