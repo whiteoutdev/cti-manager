@@ -4,6 +4,7 @@
   "description": "Nothing here yet",
   "main": "index.js",
   "scripts": {
+    "build": "gulp build",
     "dev": "gulp dev --dev | bunyan",
     "test": "gulp qa",
     "version": "node version",

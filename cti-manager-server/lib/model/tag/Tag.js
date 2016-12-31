@@ -76,7 +76,7 @@ var Tag = function (_AbstractModel) {
     }, {
         key: 'encode',
         value: function encode(name) {
-            return name.replace(/ /g, '_');
+            return name.replace(/ /g, '_').toLowerCase();
         }
     }]);
 

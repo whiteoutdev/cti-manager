@@ -14,18 +14,22 @@ var _crypto = require('crypto');
 
 var _crypto2 = _interopRequireDefault(_crypto);
 
+var _bcryptNodejs = require('bcrypt-nodejs');
+
+var _bcryptNodejs2 = _interopRequireDefault(_bcryptNodejs);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var hashAlgorithm = 'sha256';
 
-var HashService = function () {
-    function HashService() {
-        _classCallCheck(this, HashService);
+var CryptoService = function () {
+    function CryptoService() {
+        _classCallCheck(this, CryptoService);
     }
 
-    _createClass(HashService, null, [{
+    _createClass(CryptoService, null, [{
         key: 'getHash',
         value: function getHash(filePath) {
             return new Promise(function (resolve) {
@@ -39,9 +43,19 @@ var HashService = function () {
                 });
             });
         }
+    }, {
+        key: 'hashPassword',
+        value: function hashPassword(password) {
+            return _bcryptNodejs2.default.hashSync(password, _bcryptNodejs2.default.genSaltSync(8), null);
+        }
+    }, {
+        key: 'validatePassword',
+        value: function validatePassword(password, hash) {
+            return _bcryptNodejs2.default.compareSync(password, hash);
+        }
     }]);
 
-    return HashService;
+    return CryptoService;
 }();
 
-exports.default = HashService;
+exports.default = CryptoService;

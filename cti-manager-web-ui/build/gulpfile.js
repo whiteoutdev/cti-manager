@@ -3,7 +3,6 @@ import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import gutil from 'gulp-util';
 import eslint from 'gulp-eslint';
-import using from 'gulp-using';
 
 import config from './config';
 import webpackConfig from './webpack.config';

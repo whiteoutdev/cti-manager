@@ -46,9 +46,9 @@ var _TagCollection = require('./TagCollection');
 
 var _TagCollection2 = _interopRequireDefault(_TagCollection);
 
-var _HashService = require('../util/HashService');
+var _CryptoService = require('../util/CryptoService');
 
-var _HashService2 = _interopRequireDefault(_HashService);
+var _CryptoService2 = _interopRequireDefault(_CryptoService);
 
 var _MimeService = require('../util/MimeService');
 
@@ -131,7 +131,7 @@ var MediaCollection = function () {
                     var isVideo = !!~videoMimeTypes.indexOf(file.mimetype);
 
                     return new Promise(function (resolve) {
-                        _HashService2.default.getHash(file.path).then(function (hash) {
+                        _CryptoService2.default.getHash(file.path).then(function (hash) {
                             MediaCollection.createThumbnail(db, file, hash).then(function (info) {
                                 var thumbnailID = info.thumbnailID,
                                     width = info.width,

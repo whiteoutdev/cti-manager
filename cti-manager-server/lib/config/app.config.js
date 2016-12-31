@@ -28,7 +28,8 @@ exports.default = {
         port: 27017,
         name: dev ? 'cti-dev' : 'cti',
         filesCollection: 'fs.files',
-        tagsCollection: 'tags'
+        tagsCollection: 'tags',
+        userCollection: 'users'
     },
     tmpDir: 'tmp',
     thumbnailSize: 180
