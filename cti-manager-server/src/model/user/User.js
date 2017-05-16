@@ -12,7 +12,7 @@ export default class User extends AbstractModel {
     serialiseToDatabase() {
         return {
             _id: this.username,
-            p:   this.password
+            p  : this.password
         };
     }
 
@@ -26,4 +26,4 @@ export default class User extends AbstractModel {
         logger.debug(doc._id, doc.p);
         return new User(doc._id, doc.p);
     }
-};
+}

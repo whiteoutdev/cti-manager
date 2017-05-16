@@ -6,7 +6,7 @@ export default class UserApi extends RestApi {
             if (req.user) {
                 res.sendStatus(200);
             } else {
-                res.sendStatus(403)
+                res.sendStatus(403);
             }
         });
 
@@ -16,7 +16,7 @@ export default class UserApi extends RestApi {
             });
         });
     }
-};
+}
 
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {

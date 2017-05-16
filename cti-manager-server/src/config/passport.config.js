@@ -4,7 +4,7 @@ import logger from '../util/logger';
 import CryptoService from '../util/CryptoService';
 import UserCollection from '../store/UserCollection';
 
-export default function (passport) {
+export default function(passport) {
     logger.info('Configuring passport...');
 
     passport.serializeUser((user, done) => {
@@ -43,5 +43,5 @@ export default function (passport) {
 
                 return done(null, user);
             });
-    }))
-};
+    }));
+}
