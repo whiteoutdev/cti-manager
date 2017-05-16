@@ -37,7 +37,7 @@ class ImagesPage extends React.Component {
         let tags = null;
         if (query.tags) {
             const tagsString = search.match(/tags=([^&]+)/)[1];
-            tags = tagsString.split(',');
+            tags = tagsString.split(',').map(tag => tag.toLowerCase());
         }
         MediaApi.findMedia(tags, skip, limit).then((data) => {
             const images       = data.media,

@@ -56,7 +56,7 @@ export default class TagCollection {
     }
 
     static createTags(tags) {
-        tags = tags.map(tag => Tag.encode(tag).toLowerCase());
+        tags = tags.map(tag => Tag.encode(tag));
         const query = {
             _id: {
                 $in: tags

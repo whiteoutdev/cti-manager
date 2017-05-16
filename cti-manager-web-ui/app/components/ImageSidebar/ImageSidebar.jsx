@@ -249,7 +249,7 @@ class ImageSidebar extends RefluxComponent {
                     <Link className={`tag-name ${tagType}`} to={`/media?tags=${encodeURIComponent(tag)}`}>
                         {TagService.toDisplayName(tag)}
                     </Link>
-                    <Link className={tagType} to={`/tags/${tag}`}>
+                    <Link className={tagType} to={`/tags/${encodeURIComponent(tag)}`}>
                         <i className="tag-icon material-icons">edit</i>
                     </Link>
                 </PanelListItem>

@@ -9,7 +9,7 @@ import appConfig from '../config/app.config';
 import logger from '../util/logger';
 import DBConnectionService from './DBConnectionService';
 import TagCollection from './TagCollection';
-import HashService from '../util/HashService';
+import CryptoService from '../util/CryptoService';
 import MimeService from '../util/MimeService';
 import FileType from '../model/gridfs/FileType';
 import Media from '../model/gridfs/Media';
@@ -52,7 +52,7 @@ export default class MediaCollection {
                 const isVideo = !!~videoMimeTypes.indexOf(file.mimetype);
 
                 return new Promise((resolve) => {
-                    HashService.getHash(file.path).then((hash) => {
+                    CryptoService.getHash(file.path).then((hash) => {
                         MediaCollection.createThumbnail(db, file, hash).then((info) => {
                             const thumbnailID = info.thumbnailID,
                                   width       = info.width,

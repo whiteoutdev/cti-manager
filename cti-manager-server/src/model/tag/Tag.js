@@ -14,9 +14,9 @@ export default class Tag extends AbstractModel {
     serialiseToDatabase() {
         return {
             _id: this.id,
-            t  : this.type.code,
-            d  : this.derivedTags,
-            m  : this.metadata.serialiseToDatabase()
+            t: this.type.code,
+            d: this.derivedTags,
+            m: this.metadata.serialiseToDatabase()
         };
     }
 
@@ -26,10 +26,10 @@ export default class Tag extends AbstractModel {
 
     serialiseToApi() {
         return {
-            id         : this.id,
-            type       : this.type.name,
+            id: this.id,
+            type: this.type.name,
             derivedTags: this.derivedTags,
-            metadata   : this.metadata
+            metadata: this.metadata
         };
     }
 
@@ -43,6 +43,6 @@ export default class Tag extends AbstractModel {
     }
 
     static encode(name) {
-        return name.replace(/ /g, '_');
+        return name.replace(/ /g, '_').toLowerCase();
     }
 }

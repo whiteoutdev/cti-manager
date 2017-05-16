@@ -90,7 +90,7 @@ var TagCollection = function () {
         key: 'createTags',
         value: function createTags(tags) {
             tags = tags.map(function (tag) {
-                return _Tag2.default.encode(tag).toLowerCase();
+                return _Tag2.default.encode(tag);
             });
             var query = {
                 _id: {

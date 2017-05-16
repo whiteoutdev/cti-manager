@@ -4,7 +4,9 @@ import TagCollection from '../store/TagCollection';
 
 export default class TagsApi extends RestApi {
     configure(app) {
+
         app.get('/tags', (req, res) => {
+            logger.debug('Tags requested');
             const query  = req.query,
                   search = query.query,
                   skip   = Number(query.skip),
@@ -16,10 +18,9 @@ export default class TagsApi extends RestApi {
                 res.status(500).send(err);
             });
         });
-
         app.get('/tags/:tag', (req, res) => {
-            logger.debug('Tags requested');
             const tag = decodeURIComponent(req.params.tag);
+            logger.debug(`Tag ${tag} requested`);
             TagCollection.getTag(tag).then((tag) => {
                 if (tag) {
                     res.status(200).send(tag);

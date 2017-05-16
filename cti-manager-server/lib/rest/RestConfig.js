@@ -14,11 +14,15 @@ var _TagsApi = require('./TagsApi');
 
 var _TagsApi2 = _interopRequireDefault(_TagsApi);
 
+var _UserApi = require('./UserApi');
+
+var _UserApi2 = _interopRequireDefault(_UserApi);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var apis = [new _MediaApi2.default(), new _TagsApi2.default()];
+var apis = [new _MediaApi2.default(), new _TagsApi2.default(), new _UserApi2.default()];
 
 var RestConfig = function () {
     function RestConfig() {
@@ -27,9 +31,9 @@ var RestConfig = function () {
 
     _createClass(RestConfig, null, [{
         key: 'configure',
-        value: function configure(app) {
+        value: function configure(app, passport) {
             apis.forEach(function (api) {
-                api.configure(app);
+                api.configure(app, passport);
             });
         }
     }]);

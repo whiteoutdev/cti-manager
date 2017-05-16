@@ -3,9 +3,11 @@ import AbstractModel from '../AbstractModel';
 export default class AbstractFile extends AbstractModel {
     constructor(fileType, name, mimeType, id) {
         super();
+
         this.fileType = fileType;
         this.name = name;
         this.mimeType = mimeType;
+
         if (id) {
             this.id = id;
         }
@@ -32,10 +34,4 @@ export default class AbstractFile extends AbstractModel {
 
         return serialised;
     }
-
-    static fromDatabase(doc) {
-        const md = doc.metadata;
-        return new AbstractFile(md.t, md.n, md.m);
-    }
-
 }

@@ -1,9 +1,10 @@
 import fs from 'fs';
 import crypto from 'crypto';
+import bcrypt from 'bcrypt-nodejs';
 
 const hashAlgorithm = 'sha256';
 
-export default class HashService {
+export default class CryptoService {
     static getHash(filePath) {
         return new Promise((resolve) => {
             const hash   = crypto.createHash(hashAlgorithm),
@@ -15,5 +16,13 @@ export default class HashService {
                 resolve(hash.digest('hex'));
             });
         });
+    }
+
+    static hashPassword(password) {
+        return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+    }
+
+    static validatePassword(password, hash) {
+        return bcrypt.compareSync(password, hash);
     }
 }

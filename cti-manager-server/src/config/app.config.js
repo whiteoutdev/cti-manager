@@ -7,17 +7,18 @@ const argv = yargs.argv,
 
 export default {
     dev,
-    version      : packageJson.version,
-    api          : {
+    version:       packageJson.version,
+    api:           {
         port: 3333
     },
-    db           : {
-        host           : 'localhost',
-        port           : 27017,
-        name           : dev ? 'cti-dev' : 'cti',
+    db:            {
+        host:            'localhost',
+        port:            27017,
+        name:            dev ? 'cti-dev' : 'cti',
         filesCollection: 'fs.files',
-        tagsCollection : 'tags'
+        tagsCollection:  'tags',
+        userCollection:  'users'
     },
-    tmpDir       : 'tmp',
+    tmpDir:        'tmp',
     thumbnailSize: 180
 };

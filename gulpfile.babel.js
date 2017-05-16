@@ -6,6 +6,8 @@ import uiTasks from './cti-manager-web-ui/build/gulpfile';
 
 gulp.tasks = _.extend({}, serverTasks, uiTasks);
 
+gulp.task('build', ['server:build']);
+
 gulp.task('dev', ['server:dev', 'ui:dev']);
 
 gulp.task('qa', ['server:qa', 'ui:qa']);
