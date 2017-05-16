@@ -59,5 +59,3 @@ var _UserCollection = require('../store/UserCollection');
 var _UserCollection2 = _interopRequireDefault(_UserCollection);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-;
