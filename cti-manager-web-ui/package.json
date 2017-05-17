@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --prod",
     "dev": "gulp ui:dev",
-    "prod": "npm run build && babel build/config.js --out-file server/config.js && node server/app | bunyan",
+    "prod": "yarn run build && babel build/config.js --out-file server/config.js && node server/app | bunyan",
     "test": "gulp qa"
   },
   "author": "",

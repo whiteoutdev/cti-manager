@@ -9,9 +9,9 @@
     "db": "gulp server:db | bunyan",
     "db-dev": "gulp server:db --dev | bunyan",
     "dev": "gulp server:dev --dev | bunyan",
-    "prod": "npm run build && npm run serve",
+    "prod": "yarn run build && yarn run serve",
     "test": "gulp server:qa",
-    "preversion": "npm run build"
+    "preversion": "yarn run build"
   },
   "author": "",
   "license": "ISC",

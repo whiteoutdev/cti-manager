@@ -50,7 +50,7 @@ var UserApi = function (_RestApi) {
 }(_RestApi3.default);
 
 exports.default = UserApi;
-;
+
 
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {

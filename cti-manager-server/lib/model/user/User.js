@@ -62,4 +62,3 @@ var User = function (_AbstractModel) {
 }(_AbstractModel3.default);
 
 exports.default = User;
-;

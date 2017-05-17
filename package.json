@@ -8,7 +8,7 @@
     "dev": "gulp dev --dev | bunyan",
     "test": "gulp qa",
     "version": "node version",
-    "postinstall": "cd cti-manager-server && npm install && cd ../cti-manager-web-ui && npm install && cd .."
+    "postinstall": "cd cti-manager-server && yarn && cd ../cti-manager-web-ui && yarn && cd .."
   },
   "author": "",
   "license": "ISC",
