@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import {HotKeys} from 'react-hotkeys';
 import escapeRegex from 'escape-string-regexp';
+import PropTypes from 'prop-types';
 
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Panel from '../Panel/Panel.jsx';
@@ -143,7 +144,7 @@ class TagsSidebar extends RefluxComponent {
 }
 
 TagsSidebar.propTypes = {
-    onTagSelect: React.PropTypes.func
+    onTagSelect: PropTypes.func
 };
 
 TagsSidebar.defaultProps = {

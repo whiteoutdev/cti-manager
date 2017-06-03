@@ -1,12 +1,12 @@
 import React from 'react';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import appConfig from '../../config/app.config';
 
 import './ImagesPageThumbnailGallery.scss';
 
-const maxNavButtons = 11,
-      PropTypes     = React.PropTypes;
+const maxNavButtons = 11;
 
 class ImagesPageThumbnailGallery extends React.Component {
     shouldComponentUpdate(nextProps) {

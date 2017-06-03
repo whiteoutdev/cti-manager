@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Navbar from '../Navbar/Navbar.jsx';
 
@@ -18,7 +19,7 @@ class NavbarredPage extends React.Component {
 }
 
 NavbarredPage.propTypes = {
-    children: React.PropTypes.node
+    children: PropTypes.node
 };
 
 export default NavbarredPage;

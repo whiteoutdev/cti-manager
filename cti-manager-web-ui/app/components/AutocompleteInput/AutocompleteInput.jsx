@@ -1,12 +1,12 @@
 import React from 'react';
 import {HotKeys} from 'react-hotkeys';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import './AutocompleteInput.scss';
 
 const props        = ['limit', 'items', 'onEnter', 'onAutocomplete', 'tokenize'],
-      defaultLimit = 10,
-      PropTypes    = React.PropTypes;
+      defaultLimit = 10;
 
 class AutocompleteInput extends React.Component {
     constructor() {

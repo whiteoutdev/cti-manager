@@ -1,16 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
 import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
 import Gallery from './ImagesPageThumbnailGallery.jsx';
 
 import appConfig from '../../config/app.config';
+import UrlService from '../../services/UrlService';
 import MediaApi from '../../api/MediaApi';
 
 import './ImagesPage.scss';
 
-const defaultLimit = appConfig.images.defaultPageLimit,
-      PropTypes    = React.PropTypes;
+const defaultLimit = appConfig.images.defaultPageLimit;
 
 class ImagesPage extends React.Component {
     constructor() {
@@ -30,15 +31,16 @@ class ImagesPage extends React.Component {
     }
 
     runQueryFromProps(location) {
-        const query  = location.query,
-              search = location.search,
-              skip   = Number(query.skip) || 0,
-              limit  = Number(query.limit) || defaultLimit;
+        const search = UrlService.parseQueryString(location.search),
+              skip   = Number(search.skip) || 0,
+              limit  = Number(search.limit) || defaultLimit;
+
         let tags = null;
-        if (query.tags) {
-            const tagsString = search.match(/tags=([^&]+)/)[1];
-            tags = tagsString.split(',').map(tag => tag.toLowerCase());
+
+        if (search.tags) {
+            tags = search.tags.split(',').map(tag => tag.toLowerCase());
         }
+
         MediaApi.findMedia(tags, skip, limit).then((data) => {
             const images       = data.media,
                   thumbnailIds = data.media.map(file => file.id),
