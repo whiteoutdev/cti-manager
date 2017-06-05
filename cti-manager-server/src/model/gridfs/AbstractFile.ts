@@ -1,5 +1,5 @@
 import AbstractModel from '../AbstractModel';
-import FileType from "./FileType";
+import FileType from './FileType';
 
 export default class AbstractFile extends AbstractModel {
     protected id: string;
@@ -19,20 +19,19 @@ export default class AbstractFile extends AbstractModel {
         }
     }
 
-
-    getId(): string {
+    public getId(): string {
         return this.id;
     }
 
-    getFileType(): FileType {
+    public getFileType(): FileType {
         return this.fileType;
     }
 
-    getName(): string {
+    public getName(): string {
         return this.name;
     }
 
-    getMimeType(): string {
+    public getMimeType(): string {
         return this.mimeType;
     }
 

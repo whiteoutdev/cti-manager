@@ -1,17 +1,15 @@
-import * as _ from 'lodash';
-
 import appConfig from '../config/app.config';
-import logger from '../util/logger';
-import DBConnectionService from './DBConnectionService';
 import Tag from '../model/tag/Tag';
 import TagType from '../model/tag/TagType';
+import logger from '../util/logger';
+import DBConnectionService from './DBConnectionService';
 
 export default class TagCollection {
-    public static init() {
+    public static init(): Promise<any> {
         return TagCollection.createTags(['tagme']);
     }
 
-    public static getTags(query?: string, skip?: number, limit?: number) {
+    public static getTags(query?: string, skip?: number, limit?: number): Promise<any[]> {
         const dbQuery: any = {};
         if (query) {
             dbQuery._id = {
@@ -33,7 +31,7 @@ export default class TagCollection {
         });
     }
 
-    public static getTag(tag: string) {
+    public static getTag(tag: string): Promise<any> {
         tag = Tag.encode(tag);
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.tagsCollection).findOne({
@@ -47,12 +45,12 @@ export default class TagCollection {
         });
     }
 
-    public static getTagTypeNames() {
-        return TagType.values().map(type => type.getName());
+    public static getTagTypeNames(): string[] {
+        return TagType.values().map((type) => type.getName());
     }
 
-    public static createTags(tags: string[]) {
-        tags = tags.map(tag => Tag.encode(tag));
+    public static createTags(tags: string[]): Promise<string[]> {
+        tags = tags.map((tag) => Tag.encode(tag));
         const query = {
             _id: {
                 $in: tags
@@ -85,7 +83,7 @@ export default class TagCollection {
         });
     }
 
-    static updateTag(tagData: any) {
+    public static updateTag(tagData: any): Promise<any> {
         const tag   = Tag.fromApi(tagData),
               query = {_id: tag.getId()},
               doc   = tag.serialiseToDatabase();
@@ -93,11 +91,11 @@ export default class TagCollection {
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.tagsCollection)
                 .updateOne(query, doc)
-                .then(writeResult => writeResult.result);
+                .then((writeResult) => writeResult.result);
         });
     }
 
-    static getDerivingTags(tagId: string) {
+    public static getDerivingTags(tagId: string): Promise<any[]> {
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.tagsCollection)
                 .find({d: tagId})

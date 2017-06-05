@@ -1,4 +1,4 @@
-import CTIExceptionType from "./CTIExceptionType";
+import CTIExceptionType from './CTIExceptionType';
 
 export default class CTIException {
     private type: CTIExceptionType;

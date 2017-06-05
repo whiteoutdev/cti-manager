@@ -1,5 +1,5 @@
-import appConfig from '../config/app.config';
 import * as bunyan from 'bunyan';
+import appConfig from '../config/app.config';
 
 const logger = bunyan.createLogger({
     name : 'cti-manager',

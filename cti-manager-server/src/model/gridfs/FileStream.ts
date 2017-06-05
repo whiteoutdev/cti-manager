@@ -1,5 +1,5 @@
-import AbstractFile from './AbstractFile';
 import {GridFSBucketReadStream} from 'mongodb';
+import AbstractFile from './AbstractFile';
 
 interface FileStream<F extends AbstractFile> {
     doc: F;

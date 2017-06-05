@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt-nodejs';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
 
 const hashAlgorithm = 'sha256';
 

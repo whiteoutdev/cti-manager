@@ -1,12 +1,12 @@
-import {Strategy as LocalStrategy} from 'passport-local';
 import {Passport} from 'passport';
+import {Strategy as LocalStrategy} from 'passport-local';
 
-import logger from '../util/logger';
-import CryptoService from '../util/CryptoService';
+import User from '../model/user/User';
 import UserCollection from '../store/UserCollection';
-import User from "../model/user/User";
+import CryptoService from '../util/CryptoService';
+import logger from '../util/logger';
 
-export default function (passport: Passport) {
+export default function(passport: Passport): void {
     logger.info('Configuring passport...');
 
     passport.serializeUser((user: User, done) => {

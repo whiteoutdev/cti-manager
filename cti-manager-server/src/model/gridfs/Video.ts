@@ -1,5 +1,5 @@
-import Media from './Media';
 import FileType from './FileType';
+import Media from './Media';
 
 export default class Video extends Media {
     constructor(mimeType: string, hash: string, thumbnailID: string, width: number, height: number, tags?: string[],

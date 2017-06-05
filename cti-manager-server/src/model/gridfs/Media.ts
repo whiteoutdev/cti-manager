@@ -1,10 +1,15 @@
 import * as _ from 'lodash';
 
-import AbstractFile from './AbstractFile';
 import MimeService from '../../util/MimeService';
+import AbstractFile from './AbstractFile';
 import FileType from './FileType';
 
 export default class Media extends AbstractFile {
+    public static fromDatabase(doc: any): Media {
+        const md = doc.metadata;
+        return new Media(FileType.fromCode(md.t), md.m, md.h, md.ti.toHexString(), md.w, md.he, md.ta, doc._id);
+    }
+
     private hash: string;
     private thumbnailID: string;
     private width: number;
@@ -66,10 +71,5 @@ export default class Media extends AbstractFile {
             height     : this.height,
             tags       : this.tags
         });
-    }
-
-    public static fromDatabase(doc: any): Media {
-        const md = doc.metadata;
-        return new Media(FileType.fromCode(md.t), md.m, md.h, md.ti.toHexString(), md.w, md.he, md.ta, doc._id);
     }
 }

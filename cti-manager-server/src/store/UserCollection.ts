@@ -1,8 +1,8 @@
 import appConfig from '../config/app.config';
-import DBConnectionService from './DBConnectionService';
 import User from '../model/user/User';
-import logger from '../util/logger';
 import CryptoService from '../util/CryptoService';
+import logger from '../util/logger';
+import DBConnectionService from './DBConnectionService';
 
 export default class UserCollection {
     public static init(): Promise<any> {
@@ -13,7 +13,7 @@ export default class UserCollection {
         });
     }
 
-    static createUser(userData: {username: string, password: string}) {
+    public static createUser(userData: {username: string, password: string}): Promise<any> {
         const username = userData.username,
               password = CryptoService.hashPassword(userData.password),
               user     = new User(username, password);
@@ -26,7 +26,7 @@ export default class UserCollection {
         });
     }
 
-    static findUser(username: string) {
+    public static findUser(username: string): Promise<User> {
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.userCollection)
                 .findOne({_id: username})
@@ -36,4 +36,3 @@ export default class UserCollection {
         });
     }
 }
-

@@ -1,5 +1,5 @@
 interface Map<T> {
-    [key: string]: T
+    [key: string]: T;
 }
 
 export {Map};

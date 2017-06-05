@@ -1,16 +1,31 @@
-import logger from '../util/logger';
-import RestApi from './RestApi';
-import upload from './upload';
+import {Express, Response} from 'express';
+import CTIError from '../model/exception/CTIError';
+import ExceptionWrapper from '../model/exception/ExceptionWrapper';
+import FileStream from '../model/gridfs/FileStream';
 import MediaCollection from '../store/MediaCollection';
 import TagCollection from '../store/TagCollection';
-import ExceptionWrapper from '../model/exception/ExceptionWrapper';
-import CTIError from '../model/exception/CTIError';
+import logger from '../util/logger';
 import MimeService from '../util/MimeService';
-import {Express, Response} from 'express';
-import FileStream from '../model/gridfs/FileStream';
+import RestApi from './RestApi';
+import upload from './upload';
 
 export default class MediaApi implements RestApi {
-    configure(app: Express) {
+    private static downloadFromFileInfo(res: Response, data: FileStream<any>): void {
+        const mimeType = data.doc.mimeType;
+        res.set({
+            'Content-Type': mimeType
+        });
+
+        const downloadStream = data.stream;
+        downloadStream.on('error', (err) => {
+            const exception        = new CTIError('Download failed', err),
+                  exceptionWrapper = new ExceptionWrapper(undefined, undefined, [exception]);
+            res.status(500).send(exceptionWrapper);
+        });
+        data.stream.pipe(res);
+    }
+
+    public configure(app: Express): void {
         app.post('/media', upload.fields([{name: 'media'}]), (req: Express.Request, res) => {
             const files = req.files.media;
             logger.debug(`Media upload request received for ${files.length} files`);
@@ -113,20 +128,5 @@ export default class MediaApi implements RestApi {
         app.get('/mediatypes', (req, res) => {
             res.status(200).send(MimeService.getSupportedMimeTypes());
         });
-    }
-
-    static downloadFromFileInfo(res: Response, data: FileStream<any>) {
-        const mimeType = data.doc.mimeType;
-        res.set({
-            'Content-Type': mimeType
-        });
-
-        const downloadStream = data.stream;
-        downloadStream.on('error', (err) => {
-            const exception        = new CTIError('Download failed', err),
-                  exceptionWrapper = new ExceptionWrapper(undefined, undefined, [exception]);
-            res.status(500).send(exceptionWrapper);
-        });
-        data.stream.pipe(res);
     }
 }

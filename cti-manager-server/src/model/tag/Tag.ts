@@ -1,18 +1,13 @@
 import AbstractModel from '../AbstractModel';
-import TagType from './TagType';
 import TagMetadata from './TagMetadata';
+import TagType from './TagType';
 
 export default class Tag extends AbstractModel {
-    private id: string;
-    private type: TagType;
-    private derivedTags: string[];
-    private metadata: TagMetadata;
-
     public static fromDatabase(doc: any): Tag {
         return new Tag(doc._id, TagType.fromCode(doc.t), doc.d, TagMetadata.fromDatabase(doc.m));
     }
 
-    static fromApi(tagData: any): Tag {
+    public static fromApi(tagData: any): Tag {
         return new Tag(
             tagData.id,
             TagType.fromName(tagData.type),
@@ -21,15 +16,20 @@ export default class Tag extends AbstractModel {
         );
     }
 
-    static encode(name: string): string {
+    public static encode(name: string): string {
         return name.replace(/ /g, '_').toLowerCase();
     }
+
+    private id: string;
+    private type: TagType;
+    private derivedTags: string[];
+    private metadata: TagMetadata;
 
     constructor(name: string, type?: TagType, derivedTags?: string[], metadata?: TagMetadata) {
         super();
         this.id = Tag.encode(name);
         this.type = type || TagType.GENERAL;
-        this.derivedTags = (derivedTags || []).filter(tag => tag);
+        this.derivedTags = (derivedTags || []).filter((tag) => tag);
         this.metadata = metadata || new TagMetadata(null, null, this.id, this.id);
     }
 

@@ -1,11 +1,10 @@
+import {Express} from 'express';
+import TagCollection from '../store/TagCollection';
 import logger from '../util/logger';
 import RestApi from './RestApi';
-import TagCollection from '../store/TagCollection';
-import {Express} from 'express';
 
 export default class TagsApi implements RestApi {
-    configure(app: Express) {
-
+    public configure(app: Express): void {
         app.get('/tags', (req, res) => {
             logger.debug('Tags requested');
             const query  = req.query,
@@ -19,19 +18,22 @@ export default class TagsApi implements RestApi {
                 res.status(500).send(err);
             });
         });
+
         app.get('/tags/:tag', (req, res) => {
-            const tag = decodeURIComponent(req.params.tag);
-            logger.debug(`Tag ${tag} requested`);
-            TagCollection.getTag(tag).then((tag) => {
-                if (tag) {
-                    res.status(200).send(tag);
-                } else {
-                    res.sendStatus(404);
-                }
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+            const tagName = decodeURIComponent(req.params.tag);
+            logger.debug(`Tag ${tagName} requested`);
+            TagCollection.getTag(tagName)
+                .then((tag) => {
+                    if (tag) {
+                        res.status(200).send(tag);
+                    } else {
+                        res.sendStatus(404);
+                    }
+                })
+                .catch((err) => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         app.post('/tags', (req, res) => {

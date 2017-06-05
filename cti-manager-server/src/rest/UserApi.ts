@@ -1,9 +1,9 @@
-import RestApi from './RestApi';
 import {Express, NextFunction, Request, Response} from 'express';
 import {Passport} from 'passport';
+import RestApi from './RestApi';
 
 export default class UserApi implements RestApi {
-    public configure(app: Express, passport: Passport) {
+    public configure(app: Express, passport: Passport): void {
         app.post('/login', passport.authenticate('local-login'), (req, res) => {
             if (req.user) {
                 res.sendStatus(200);
@@ -20,7 +20,7 @@ export default class UserApi implements RestApi {
     }
 }
 
-function isLoggedIn(req: Request, res: Response, next: NextFunction) {
+function isLoggedIn(req: Request, res: Response, next: NextFunction): void {
     if (req.isAuthenticated()) {
         return next();
     }

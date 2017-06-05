@@ -1,9 +1,9 @@
 export default class AbstractModel {
-    serialiseToDatabase(): any {
+    public serialiseToDatabase(): any {
         return this;
     }
 
-    serialiseToApi(): any {
+    public serialiseToApi(): any {
         return this;
     }
 }

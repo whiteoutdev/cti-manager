@@ -3,8 +3,8 @@ import gulp from 'gulp';
 import gulpif from 'gulp-if';
 import del from 'del';
 import nodemon from 'gulp-nodemon';
-import eslint from 'gulp-eslint';
 import ts from 'gulp-typescript';
+import tslint from 'gulp-tslint';
 
 import config from './config';
 
@@ -42,10 +42,16 @@ gulp.task('server:build', ['server:clean'], () => {
 });
 
 gulp.task('server:lint', () => {
-    return gulp.src([`${config.src}/**/*.js`, `${config.src}/**/*.jsx`])
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failAfterError());
+    return gulp.src([`${config.src}/**/*.ts`])
+        .pipe(tslint({
+            configuration: `${config.root}/tslint.json`,
+            fix          : true,
+            formatter    : 'stylish',
+        }))
+        .pipe(tslint.report({
+            emitError             : true,
+            summarizeFailureOutput: true
+        }));
 });
 
 gulp.task('server:qa', ['server:lint']);

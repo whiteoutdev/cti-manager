@@ -3,6 +3,11 @@ import AbstractModel from '../AbstractModel';
 import logger from '../../util/logger';
 
 export default class User extends AbstractModel {
+    public static fromDatabase(doc: any): User {
+        logger.debug(doc._id, doc.p);
+        return new User(doc._id, doc.p);
+    }
+
     private id: string;
     private username: string;
     private password: string;
@@ -17,11 +22,11 @@ export default class User extends AbstractModel {
         return this.id;
     }
 
-    public getUsername() {
+    public getUsername(): string {
         return this.username;
     }
 
-    public getPassword() {
+    public getPassword(): string {
         return this.password;
     }
 
@@ -36,10 +41,5 @@ export default class User extends AbstractModel {
         return {
             username: this.username
         };
-    }
-
-    public static fromDatabase(doc: any): User {
-        logger.debug(doc._id, doc.p);
-        return new User(doc._id, doc.p);
     }
 }

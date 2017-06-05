@@ -1,17 +1,17 @@
-import * as del from 'del';
-import * as express from 'express';
-import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
+import * as cors from 'cors';
+import * as del from 'del';
+import * as express from 'express';
 import * as session from 'express-session';
-import {Passport} from 'passport';
 import * as morgan from 'morgan';
+import {Passport} from 'passport';
 
 import appConfig from './config/app.config';
-import configurePassport from './config/passport.config';
-import logger from './util/logger';
-import RestConfig from './rest/RestConfig';
 import Hooks from './config/Hooks';
+import configurePassport from './config/passport.config';
+import RestConfig from './rest/RestConfig';
+import logger from './util/logger';
 
 const passport = new Passport() as Passport;
 

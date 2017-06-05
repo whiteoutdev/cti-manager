@@ -1,6 +1,14 @@
 import AbstractModel from '../AbstractModel';
 
 export default class TagMetadata extends AbstractModel {
+    public static fromDatabase(doc: any): TagMetadata {
+        return new TagMetadata(doc.u, doc.p, doc.g, doc.d);
+    }
+
+    public static fromApi(metadata: any): TagMetadata {
+        return new TagMetadata(metadata.urls, metadata.pixivId, metadata.gelbooruTag, metadata.danbooruTag);
+    }
+
     private urls: string[];
     private pixivId: string;
     private gelbooruTag: string;
@@ -14,7 +22,7 @@ export default class TagMetadata extends AbstractModel {
         this.danbooruTag = danbooruTag || '';
     }
 
-    serialiseToDatabase() {
+    public serialiseToDatabase(): any {
         return {
             u: this.urls,
             p: this.pixivId,
@@ -23,11 +31,7 @@ export default class TagMetadata extends AbstractModel {
         };
     }
 
-    static fromDatabase(doc: any) {
-        return new TagMetadata(doc.u, doc.p, doc.g, doc.d);
-    }
-
-    serialiseToApi() {
+    public serialiseToApi(): any {
         const metadata: any = {
             urls       : this.urls,
             gelbooruTag: this.gelbooruTag,
@@ -35,9 +39,5 @@ export default class TagMetadata extends AbstractModel {
         };
         this.pixivId && (metadata.pixivId = this.pixivId);
         return metadata;
-    }
-
-    static fromApi(metadata: any) {
-        return new TagMetadata(metadata.urls, metadata.pixivId, metadata.gelbooruTag, metadata.danbooruTag);
     }
 }

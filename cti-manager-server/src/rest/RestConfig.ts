@@ -1,8 +1,8 @@
+import {Express} from 'express';
+import {Passport} from 'passport';
 import MediaApi from './MediaApi';
 import TagsApi from './TagsApi';
 import UserApi from './UserApi';
-import {Express} from 'express';
-import {Passport} from 'passport';
 
 const apis = [
     new MediaApi(),
@@ -11,7 +11,7 @@ const apis = [
 ];
 
 export default class RestConfig {
-    static configure(app: Express, passport: Passport) {
+    public static configure(app: Express, passport: Passport): void {
         apis.forEach((api) => {
             api.configure(app, passport);
         });

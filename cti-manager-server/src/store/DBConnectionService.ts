@@ -24,7 +24,7 @@ class DBConnectionService {
         });
     }
 
-    getDB() {
+    public getDB(): Promise<Db> {
         return this.connectionPromise;
     }
 }

@@ -1,17 +1,17 @@
-import logger from '../util/logger';
-import DBConnectionService  from '../store/DBConnectionService';
+import DBConnectionService from '../store/DBConnectionService';
 import MediaCollection from '../store/MediaCollection';
 import TagCollection from '../store/TagCollection';
 import UserCollection from '../store/UserCollection';
+import logger from '../util/logger';
 
-export default function () {
+export default function(): Promise<any> {
     return DBConnectionService.getDB().then((db) => {
         return db.listCollections({}).toArray().then((collections) => {
             const dropPromises = collections.map((collection) => {
                 return db.collection(collection.name)
                     .drop()
                     .then(() => {
-                        logger.info(`Dropped collection: ${collection.name}`)
+                        logger.info(`Dropped collection: ${collection.name}`);
                     });
             });
 
@@ -28,4 +28,4 @@ export default function () {
             });
         });
     });
-};
+}

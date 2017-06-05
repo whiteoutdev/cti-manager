@@ -1,14 +1,27 @@
 import * as _ from 'lodash';
-import TagCode from "./TagCode";
+import TagCode from './TagCode';
 
 export default class TagType {
-    private name: string;
-    private code: TagCode;
-
     public static GENERAL = new TagType('general', TagCode.GENERAL);
     public static COPYRIGHT = new TagType('copyright', TagCode.COPYRIGHT);
     public static CHARACTER = new TagType('character', TagCode.CHARACTER);
     public static ARTIST = new TagType('artist', TagCode.ARTIST);
+
+    public static fromCode(code: TagCode): TagType {
+        return _.find(TagType.TYPES, (tagType) => {
+            return tagType.code === code;
+        });
+    }
+
+    public static fromName(name: string): TagType {
+        return _.find(TagType.TYPES, (tagType) => {
+            return tagType.name === name;
+        });
+    }
+
+    public static values(): TagType[] {
+        return TagType.TYPES.slice();
+    }
 
     private static TYPES = [
         TagType.GENERAL,
@@ -16,6 +29,9 @@ export default class TagType {
         TagType.CHARACTER,
         TagType.ARTIST
     ];
+
+    private name: string;
+    private code: TagCode;
 
     constructor(name: string, code: TagCode) {
         this.name = name;
@@ -30,19 +46,4 @@ export default class TagType {
         return this.code;
     }
 
-    public static fromCode(code: TagCode): TagType {
-        return _.find(TagType.TYPES, tagType => {
-            return tagType.code === code;
-        });
-    }
-
-    public static fromName(name: string): TagType {
-        return _.find(TagType.TYPES, tagType => {
-            return tagType.name === name;
-        });
-    }
-
-    public static values(): TagType[] {
-        return TagType.TYPES.slice();
-    }
 }

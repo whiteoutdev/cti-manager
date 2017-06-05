@@ -1,7 +1,7 @@
+import CTIError from './CTIError';
+import CTIException from './CTIException';
 import CTIExceptionType from './CTIExceptionType';
-import CTIWarning from "./CTIWarning";
-import CTIError from "./CTIError";
-import CTIException from "./CTIException";
+import CTIWarning from './CTIWarning';
 
 export default class ExceptionWrapper {
     private data: any;
@@ -14,7 +14,7 @@ export default class ExceptionWrapper {
         this.errors = errors ? errors.slice() : [];
     }
 
-    addException(exception: CTIException) {
+    public addException(exception: CTIException): void {
         switch (exception.getType()) {
             case CTIExceptionType.WARNING:
                 this.warnings.push(exception);
