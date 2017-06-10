@@ -4,11 +4,14 @@
   "description": "Nothing here yet",
   "main": "index.js",
   "scripts": {
-    "build": "gulp build",
+    "build": "concurrently \"gulp build\" \"cd cti-manager-web-ui && yarn build\"",
     "dev": "gulp dev --dev | bunyan",
     "test": "gulp qa",
     "version": "node version",
-    "postinstall": "cd cti-manager-server && yarn && cd ../cti-manager-web-ui && yarn && cd .."
+    "postinstall": "cd cti-manager-server && yarn && cd ../cti-manager-web-ui && yarn && cd ..",
+    "start": "yarn build && cd cti-manager-server && yarn start",
+    "stop": "cd cti-manager-server && yarn stop",
+    "restart": "yarn build && cd cti-manager-server && yarn restart"
   },
   "author": "",
   "license": "ISC",
@@ -20,5 +23,7 @@
     "gulp": "^3.9.1",
     "lodash": "^4.15.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "concurrently": "^3.4.0"
+  }
 }

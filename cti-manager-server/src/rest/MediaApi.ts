@@ -1,4 +1,4 @@
-import {Express, Response} from 'express';
+import {Express, Response, Router} from 'express';
 import CTIError from '../model/exception/CTIError';
 import ExceptionWrapper from '../model/exception/ExceptionWrapper';
 import FileStream from '../model/gridfs/FileStream';
@@ -25,8 +25,8 @@ export default class MediaApi implements RestApi {
         data.stream.pipe(res);
     }
 
-    public configure(app: Express): void {
-        app.post('/media', upload.fields([{name: 'media'}]), (req: Express.Request, res) => {
+    public configure(router: Router): void {
+        router.post('/media', upload.fields([{name: 'media'}]), (req: Express.Request, res) => {
             const files = req.files.media;
             logger.debug(`Media upload request received for ${files.length} files`);
             MediaCollection.addMedia(files)
@@ -35,7 +35,7 @@ export default class MediaApi implements RestApi {
                 });
         });
 
-        app.get('/media', (req, res) => {
+        router.get('/media', (req, res) => {
             logger.debug(`Media metadata requested`);
             const query = req.query,
                   skip  = Number(query.skip),
@@ -55,7 +55,7 @@ export default class MediaApi implements RestApi {
             });
         });
 
-        app.get('/media/:mediaIDHex', (req, res) => {
+        router.get('/media/:mediaIDHex', (req, res) => {
             const mediaIDHex = req.params.mediaIDHex;
             logger.debug(`Media metadata requested for media ID: ${mediaIDHex}`);
             MediaCollection.getMedia(mediaIDHex).then((metadata) => {
@@ -70,7 +70,7 @@ export default class MediaApi implements RestApi {
             });
         });
 
-        app.get('/media/:mediaIDHex/download', (req, res) => {
+        router.get('/media/:mediaIDHex/download', (req, res) => {
             const mediaIDHex = req.params.mediaIDHex;
             logger.debug(`Media download requested for media ID: ${mediaIDHex}`);
             MediaCollection.downloadMedia(mediaIDHex).then((data) => {
@@ -81,7 +81,7 @@ export default class MediaApi implements RestApi {
             });
         });
 
-        app.get('/media/:mediaIDHex/thumbnail', (req, res) => {
+        router.get('/media/:mediaIDHex/thumbnail', (req, res) => {
             const mediaIDHex = req.params.mediaIDHex;
             logger.debug(`Media thumbnail requested for media ID: ${mediaIDHex}`);
             MediaCollection.getThumbnail(mediaIDHex).then((thumbnail) => {
@@ -92,7 +92,7 @@ export default class MediaApi implements RestApi {
             });
         });
 
-        app.get('/media/:mediaIDHex/thumbnail/download', (req, res) => {
+        router.get('/media/:mediaIDHex/thumbnail/download', (req, res) => {
             const mediaIDHex = req.params.mediaIDHex;
             logger.debug(`Media thumbnail download requested for media ID: ${mediaIDHex}`);
             MediaCollection.downloadThumbnail(mediaIDHex)
@@ -105,7 +105,7 @@ export default class MediaApi implements RestApi {
                 });
         });
 
-        app.post('/media/:mediaIDHex/tags', (req, res) => {
+        router.post('/media/:mediaIDHex/tags', (req, res) => {
             const mediaIDHex = req.params.mediaIDHex,
                   tags       = req.body.tags;
             logger.debug(`Media tags update requested for media ID: ${mediaIDHex}`);
@@ -125,7 +125,7 @@ export default class MediaApi implements RestApi {
             });
         });
 
-        app.get('/mediatypes', (req, res) => {
+        router.get('/mediatypes', (req, res) => {
             res.status(200).send(MimeService.getSupportedMimeTypes());
         });
     }

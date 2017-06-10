@@ -9,9 +9,11 @@
     "db": "gulp server:db | bunyan",
     "db-dev": "gulp server:db --dev | bunyan",
     "dev": "gulp server:dev --dev | bunyan",
-    "prod": "yarn run build && yarn run serve",
+    "prod": "yarn build && yarn run serve",
     "test": "gulp server:qa",
-    "preversion": "yarn run build"
+    "start": "forever start index.js",
+    "stop": "forever stop index.js",
+    "restart": "forever restart index.js"
   },
   "author": "",
   "license": "ISC",
@@ -26,7 +28,8 @@
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "fluent-ffmpeg": "^2.1.0",
-    "lodash": "^4.14.1",
+    "forever": "^0.15.3",
+    "lodash": "^4.17.4",
     "lwip": "0.0.9",
     "mongodb": "^2.2.28",
     "morgan": "^1.7.0",
@@ -34,7 +37,7 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "stream-to-string": "^1.1.0",
-    "yargs": "^4.8.1"
+    "yargs": "^8.0.1"
   },
   "devDependencies": {
     "@types/bcrypt-nodejs": "^0.0.30",

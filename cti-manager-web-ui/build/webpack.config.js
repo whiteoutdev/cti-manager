@@ -2,21 +2,32 @@ import config from './config';
 import rules from './rules';
 import plugins from './plugins';
 
-export default {
-    context: config.app.path,
-    entry  : [
-        './index.jsx'
-    ],
-    output : {
-        path    : config.dist.path,
-        filename: 'cti-manager.js'
-    },
-    module : {
-        rules
-    },
-    plugins,
-    resolve: {
-        extensions: [".js", ".jsx", ".json"]
-    },
-    devtool: 'inline-source-map'
-};
+export default function(env) {
+    const prod = env === 'production';
+
+    const webpackConfig = {
+        context: config.app.path,
+        entry  : [
+            './index.jsx'
+        ],
+        output : {
+            path    : config.dist.path,
+            filename: 'cti-manager.js'
+        },
+        module : {
+            rules
+        },
+        plugins: plugins(prod),
+        resolve: {
+            extensions: [".js", ".jsx", ".json"]
+        },
+        devtool: prod ? 'source-map' : 'inline-source-map'
+    };
+
+    if (!prod) {
+        webpackConfig.entry.unshift(
+            `webpack-dev-server/client?http://${config.devServer.host}:${config.devServer.port}/`);
+    }
+
+    return webpackConfig;
+}

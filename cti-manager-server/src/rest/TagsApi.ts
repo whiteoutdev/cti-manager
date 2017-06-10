@@ -1,11 +1,11 @@
-import {Express} from 'express';
+import {Router} from 'express';
 import TagCollection from '../store/TagCollection';
 import logger from '../util/logger';
 import RestApi from './RestApi';
 
 export default class TagsApi implements RestApi {
-    public configure(app: Express): void {
-        app.get('/tags', (req, res) => {
+    public configure(router: Router): void {
+        router.get('/tags', (req, res) => {
             logger.debug('Tags requested');
             const query  = req.query,
                   search = query.query,
@@ -19,7 +19,7 @@ export default class TagsApi implements RestApi {
             });
         });
 
-        app.get('/tags/:tag', (req, res) => {
+        router.get('/tags/:tag', (req, res) => {
             const tagName = decodeURIComponent(req.params.tag);
             logger.debug(`Tag ${tagName} requested`);
             TagCollection.getTag(tagName)
@@ -36,7 +36,7 @@ export default class TagsApi implements RestApi {
                 });
         });
 
-        app.post('/tags', (req, res) => {
+        router.post('/tags', (req, res) => {
             logger.debug('Tag creation requested');
             const tags = req.body.tags.map((tag: string) => {
                 return decodeURIComponent(tag);
@@ -53,7 +53,7 @@ export default class TagsApi implements RestApi {
             });
         });
 
-        app.post('/tags/:tag', (req, res) => {
+        router.post('/tags/:tag', (req, res) => {
             const tagId   = decodeURIComponent(req.params.tag),
                   tagData = req.body;
             logger.debug(`Update of tag ${tagId} requested`);
@@ -66,7 +66,7 @@ export default class TagsApi implements RestApi {
             });
         });
 
-        app.get('/tagtypes', (req, res) => {
+        router.get('/tagtypes', (req, res) => {
             logger.debug('Tag types requested');
             res.status(200).send(TagCollection.getTagTypeNames());
         });

@@ -1,8 +1,8 @@
-import {Express} from 'express';
+import {Router} from 'express';
 import {Passport} from 'passport';
 
 interface RestApi {
-    configure(app: Express, passport?: Passport): void;
+    configure(router: Router, passport?: Passport): void;
 }
 
 export default RestApi;

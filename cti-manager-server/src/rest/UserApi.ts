@@ -1,10 +1,10 @@
-import {Express, NextFunction, Request, Response} from 'express';
+import {NextFunction, Request, Response, Router} from 'express';
 import {Passport} from 'passport';
 import RestApi from './RestApi';
 
 export default class UserApi implements RestApi {
-    public configure(app: Express, passport: Passport): void {
-        app.post('/login', passport.authenticate('local-login'), (req, res) => {
+    public configure(router: Router, passport: Passport): void {
+        router.post('/login', passport.authenticate('local-login'), (req, res) => {
             if (req.user) {
                 res.sendStatus(200);
             } else {
@@ -12,7 +12,7 @@ export default class UserApi implements RestApi {
             }
         });
 
-        app.get('/foo', isLoggedIn, (req, res) => {
+        router.get('/foo', isLoggedIn, (req, res) => {
             res.status(200).send({
                 foo: 'bar'
             });

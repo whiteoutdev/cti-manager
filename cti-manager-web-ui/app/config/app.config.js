@@ -7,7 +7,7 @@ export default {
         host: 'localhost',
         port: 3333,
         get path() {
-            return `http://${this.host}:${this.port}`;
+            return `http://${this.host}:${this.port}/api`;
         }
     },
     images : {
