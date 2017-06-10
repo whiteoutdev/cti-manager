@@ -1,0 +1,11 @@
+{
+  "api": {
+    "port": 3333
+  },
+  "db": {
+    "host": "localhost",
+    "port": 27017
+  },
+  "tmpDir": "tmp",
+  "thumbnailSize": 180
+}

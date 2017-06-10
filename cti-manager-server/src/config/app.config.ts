@@ -1,11 +1,13 @@
 import * as yargs from 'yargs';
+import * as _ from 'lodash';
 
-const packageJson = require('../../package.json');
+const packageJson = require('../../package.json'),
+      overrides   = require('../../appConfig.json');
 
 const argv = yargs.argv,
       dev  = !!argv.dev;
 
-export default {
+const appConfig = {
     dev,
     version      : packageJson.version,
     api          : {
@@ -22,3 +24,12 @@ export default {
     tmpDir       : 'tmp',
     thumbnailSize: 180
 };
+
+console.log(appConfig);
+console.log(overrides);
+
+_.merge(appConfig, overrides);
+
+console.log(appConfig);
+
+export default appConfig;
