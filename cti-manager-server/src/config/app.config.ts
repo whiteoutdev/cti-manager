@@ -1,5 +1,5 @@
-import * as yargs from 'yargs';
 import * as _ from 'lodash';
+import * as yargs from 'yargs';
 
 const packageJson = require('../../package.json'),
       overrides   = require('../../appConfig.json');
@@ -25,11 +25,6 @@ const appConfig = {
     thumbnailSize: 180
 };
 
-console.log(appConfig);
-console.log(overrides);
-
 _.merge(appConfig, overrides);
-
-console.log(appConfig);
 
 export default appConfig;

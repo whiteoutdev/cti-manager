@@ -1,9 +1,9 @@
 import {Router} from 'express';
 import {Passport} from 'passport';
 import MediaApi from './MediaApi';
+import RestApi from './RestApi';
 import TagsApi from './TagsApi';
 import UserApi from './UserApi';
-import RestApi from './RestApi';
 
 const apis: RestApi[] = [
     new MediaApi(),

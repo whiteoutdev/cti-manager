@@ -7,6 +7,6 @@ const logger = bunyan.createLogger({
 });
 
 logger.info(`CTI Manager version ${appConfig.version}`);
-appConfig.dev && logger.info('dev mode enabled');
+appConfig.dev && logger.info('Application running in development mode');
 
 export default logger;
