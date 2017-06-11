@@ -1,7 +1,14 @@
 import React from 'react';
 import {HotKeys} from 'react-hotkeys';
+import {Route, Switch} from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import keymap from '../../config/keymap.config';
+
+import LandingPage from '../LandingPage/LandingPage';
+import ImagesPage from '../ImagesPage/ImagesPage';
+import ImagePage from '../ImagePage/ImagePage';
+import TagsPage from '../TagsPage/TagsPage';
 
 import './App.scss';
 
@@ -10,7 +17,13 @@ class App extends React.Component {
         return (
             <HotKeys keyMap={keymap}>
                 <div className="App">
-                    {this.props.children}
+                    <Switch>
+                        <Route exact path="/" component={LandingPage}/>
+                        <Route exact path="/media" component={ImagesPage}/>
+                        <Route path="/media/:imageID" component={ImagePage}/>
+                        <Route exact path="/tags" component={TagsPage}/>
+                        <Route path="/tags/:tagID" component={TagsPage}/>
+                    </Switch>
                 </div>
             </HotKeys>
         );
@@ -18,7 +31,7 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-    children: React.PropTypes.node
+    children: PropTypes.node
 };
 
 export default App;

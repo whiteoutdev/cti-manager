@@ -1,9 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import './Panel.scss';
-
-const PropTypes = React.PropTypes;
 
 class Panel extends React.Component {
     render() {

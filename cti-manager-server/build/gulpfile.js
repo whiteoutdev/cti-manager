@@ -1,18 +1,19 @@
+import path from 'path';
 import gulp from 'gulp';
-import babel from 'gulp-babel';
 import gulpif from 'gulp-if';
 import del from 'del';
 import nodemon from 'gulp-nodemon';
-import eslint from 'gulp-eslint';
+import ts from 'gulp-typescript';
+import tslint from 'gulp-tslint';
 
 import config from './config';
 
-const isJs = function(file) {
-    return file.path.endsWith('.js');
+const isTs = function(file) {
+    return file.path.endsWith('.ts');
 };
 
 gulp.task('server:db', ['server:build'], (cb) => {
-    const rebuildDatabase = require('./scripts/rebuildDatabase').default;
+    const rebuildDatabase = require('../lib/scripts/rebuildDatabase').default;
     rebuildDatabase().then(cb);
 });
 
@@ -21,6 +22,7 @@ gulp.task('server:dev', ['server:db'], () => {
         script: `${config.root}/index.js`,
         args  : ['--dev'],
         tasks : 'server:build',
+        watch : [config.src],
         ignore: config.lib
     });
 });
@@ -32,16 +34,24 @@ gulp.task('server:clean', (cb) => {
 });
 
 gulp.task('server:build', ['server:clean'], () => {
+    const tsProject = ts.createProject(path.resolve(__dirname, '..', 'tsconfig.json'));
+
     return gulp.src(`${config.src}/**/*`)
-        .pipe(gulpif(isJs, babel()))
+        .pipe(gulpif(isTs, tsProject()))
         .pipe(gulp.dest(config.lib));
 });
 
 gulp.task('server:lint', () => {
-    return gulp.src([`${config.src}/**/*.js`, `${config.src}/**/*.jsx`])
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failAfterError());
+    return gulp.src([`${config.src}/**/*.ts`])
+        .pipe(tslint({
+            configuration: `${config.root}/tslint.json`,
+            fix          : true,
+            formatter    : 'stylish',
+        }))
+        .pipe(tslint.report({
+            emitError             : true,
+            summarizeFailureOutput: true
+        }));
 });
 
 gulp.task('server:qa', ['server:lint']);

@@ -1,6 +1,7 @@
 import React from 'react';
 import {HotKeys} from 'react-hotkeys';
 import uuid from 'uuid';
+import PropTypes from 'prop-types';
 
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
@@ -50,8 +51,8 @@ class TagsPage extends RefluxComponent {
 
     componentDidMount() {
         TagActions.updateTagTypes();
-        if (this.props.routeParams.tagID) {
-            this.loadTag(this.props.routeParams.tagID);
+        if (this.getTagID()) {
+            this.loadTag(this.getTagID());
         }
     }
 
@@ -62,9 +63,19 @@ class TagsPage extends RefluxComponent {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.routeParams.tagID !== this.props.routeParams.tagID) {
-            this.loadTag(nextProps.routeParams.tagID);
+        const newTagID = this.getTagID(nextProps);
+        if (!newTagID) {
+            this.setState({
+                tag: null
+            });
+        } else if (newTagID !== this.getTagID()) {
+            this.loadTag(newTagID);
         }
+    }
+
+    getTagID(props) {
+        props = props || this.props;
+        return props.match.params.tagID;
     }
 
     loadTag(tagId) {
@@ -308,7 +319,7 @@ class TagsPage extends RefluxComponent {
 }
 
 TagsPage.propTypes = {
-    routeParams: React.PropTypes.object
+    match: PropTypes.object
 };
 
 export default TagsPage;

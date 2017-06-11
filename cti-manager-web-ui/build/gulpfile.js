@@ -8,8 +8,7 @@ import config from './config';
 import webpackConfig from './webpack.config';
 
 gulp.task('ui:dev', () => {
-    webpackConfig.entry.unshift(`webpack-dev-server/client?http://${config.devServer.host}:${config.devServer.port}/`);
-    const compiler = webpack(webpackConfig);
+    const compiler = webpack(webpackConfig('production'));
 
     new WebpackDevServer(compiler, {}).listen(config.devServer.port, config.devServer.host, (err) => {
         if (err) {

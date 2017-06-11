@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
 import ImageSidebar from '../ImageSidebar/ImageSidebar.jsx';
@@ -19,7 +20,7 @@ class ImagePage extends React.Component {
     }
 
     updateTags(tags) {
-        MediaApi.setTags(this.props.routeParams.imageID, tags).then((media) => {
+        MediaApi.setTags(this.getImageID(), tags).then((media) => {
             this.setState({media}, () => {
                 TagActions.updateTags();
             });
@@ -27,10 +28,15 @@ class ImagePage extends React.Component {
     }
 
     getImage(props) {
-        const imageId = props.routeParams.imageID;
+        const imageId = this.getImageID(props);
         MediaApi.getMedia(imageId).then((media) => {
             this.setState({media});
         });
+    }
+
+    getImageID(props) {
+        props = props || this.props;
+        return props.match.params.imageID;
     }
 
     toggleMaximize() {
@@ -98,7 +104,7 @@ class ImagePage extends React.Component {
 }
 
 ImagePage.propTypes = {
-    routeParams: React.PropTypes.object
+    match: PropTypes.object
 };
 
 export default ImagePage;

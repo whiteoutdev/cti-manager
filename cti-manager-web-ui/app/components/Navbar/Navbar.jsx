@@ -1,7 +1,5 @@
 import React from 'react';
-import {Link} from 'react-router';
-
-import NavLink from '../NavLink/NavLink.jsx';
+import {Link, NavLink} from 'react-router-dom';
 
 import appConfig from '../../config/app.config';
 
@@ -16,10 +14,10 @@ class Navbar extends React.Component {
                 </Link>
                 <ul className="nav-link-list">
                     <li className="nav-link-list-item">
-                        <NavLink to="/media" className="nav-link">Media</NavLink>
+                        <NavLink to="/media" className="nav-link" activeClassName="active">Media</NavLink>
                     </li>
                     <li className="nav-link-list-item">
-                        <NavLink className="nav-link" to="/tags">Tags</NavLink>
+                        <NavLink className="nav-link" to="/tags" activeClassName="active">Tags</NavLink>
                     </li>
                 </ul>
             </div>

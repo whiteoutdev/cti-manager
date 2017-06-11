@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import queryString from 'query-string';
 
 export default class UrlService {
     static createQueryString(parameterMap) {
@@ -12,6 +13,10 @@ export default class UrlService {
             }
         });
         return queryString === '?' ? '' : queryString;
+    }
+
+    static parseQueryString(search) {
+        return queryString.parse(search);
     }
 
     static createAbsoluteUrl(url) {

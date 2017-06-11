@@ -1,10 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import {HotKeys} from 'react-hotkeys';
+import PropTypes from 'prop-types';
 
 import './EditableLink.scss';
-
-const PropTypes = React.PropTypes;
 
 class EditableLink extends React.Component {
     constructor() {

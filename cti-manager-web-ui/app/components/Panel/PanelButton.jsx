@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-
-const PropTypes = React.PropTypes;
+import PropTypes from 'prop-types';
 
 class PanelButton extends React.Component {
     render() {

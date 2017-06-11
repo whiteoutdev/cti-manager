@@ -1,8 +1,9 @@
 import React from 'react';
-import {Link} from 'react-router';
+import {Link, withRouter} from 'react-router-dom';
 import uuid from 'uuid';
 import {HotKeys} from 'react-hotkeys';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Spinner from '../Spinner/Spinner.jsx';
@@ -14,7 +15,6 @@ import PanelBody from '../Panel/PanelBody.jsx';
 import PanelList from '../Panel/PanelList.jsx';
 import PanelListItem from '../Panel/PanelListItem.jsx';
 
-import history from '../../services/history';
 import TagService from '../../services/TagService';
 import TagStore from '../../stores/TagStore';
 import TagActions from '../../actions/TagActions';
@@ -22,8 +22,6 @@ import MediaTypeStore from '../../stores/MediaTypeStore';
 import MediaApi from '../../api/MediaApi';
 
 import './ImageSidebar.scss';
-
-const PropTypes = React.PropTypes;
 
 class ImageSidebar extends RefluxComponent {
     constructor(props) {
@@ -81,7 +79,7 @@ class ImageSidebar extends RefluxComponent {
               tagsString = tags.map((tag) => {
                   return encodeURIComponent(tag);
               }).join();
-        history.push(`/media?tags=${tagsString}`);
+        this.props.history.push(`/media?tags=${tagsString}`);
     }
 
     canUpload() {
@@ -280,7 +278,10 @@ ImageSidebar.propTypes = {
     uploadDisabled  : PropTypes.bool,
     tagsEditable    : PropTypes.bool,
     images          : PropTypes.arrayOf(PropTypes.object),
-    tagLimit        : PropTypes.number
+    tagLimit        : PropTypes.number,
+    history         : PropTypes.shape({
+        push: PropTypes.func.isRequired
+    }).isRequired
 };
 
 ImageSidebar.defaultProps = {
@@ -292,4 +293,4 @@ ImageSidebar.defaultProps = {
     tagLimit        : Infinity
 };
 
-export default ImageSidebar;
+export default withRouter(ImageSidebar);

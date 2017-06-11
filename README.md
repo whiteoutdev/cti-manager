@@ -16,22 +16,14 @@ The server-side app does a small amount of video processing, for which it uses a
 
 ### Running the app
 
-To run the application in development mode, ensure that the external dependencies above are installed, and that Node.js and npm are both installed. Unless stated otherwise, all console commands should be run from the base directory of the repository (containing this README).
-
-Install global npm dependencies:
+To run the application in development mode, ensure that the external dependencies above are installed. Then install dependencies with:
 
 ```
-npm install -g gulp
-```
-
-Install npm dependencies (note that this will install dependencies in all subdirectories):
-
-```
-npm install
+yarn
 ```
 
 Run the app:
 
 ```
-npm run dev
+yarn run dev
 ```

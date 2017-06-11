@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 
 import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
@@ -9,8 +10,6 @@ import TagStore from '../../stores/TagStore';
 import TagActions from '../../actions/TagActions';
 
 import './TagEditor.scss';
-
-const PropTypes = React.PropTypes;
 
 class TagEditor extends RefluxComponent {
     constructor(props) {
