@@ -3,3 +3,4 @@ tmp/**
 lib/**
 /public/
 /appConfig.json
+/secrets.json

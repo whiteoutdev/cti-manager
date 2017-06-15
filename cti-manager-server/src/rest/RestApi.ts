@@ -1,8 +1,7 @@
-import {Router} from 'express';
-import {Passport} from 'passport';
+import {RequestHandler, Router} from 'express';
 
 interface RestApi {
-    configure(router: Router, passport?: Passport): void;
+    configure(router: Router, authenticate: RequestHandler): Promise<any>;
 }
 
 export default RestApi;

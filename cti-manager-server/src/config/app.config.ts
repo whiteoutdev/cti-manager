@@ -19,8 +19,13 @@ const appConfig = {
         name           : dev ? 'cti-dev' : 'cti',
         filesCollection: 'fs.files',
         tagsCollection : 'tags',
-        userCollection : 'users'
+        userCollection : 'users',
+        admin          : {
+            username: 'admin',
+            password: 'admin'
+        }
     },
+    secretsFile  : 'secrets.json',
     tmpDir       : 'tmp',
     thumbnailSize: 180
 };

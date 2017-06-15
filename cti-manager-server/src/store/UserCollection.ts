@@ -1,3 +1,4 @@
+import {ObjectID} from 'bson';
 import appConfig from '../config/app.config';
 import User from '../model/user/User';
 import CryptoService from '../util/CryptoService';
@@ -6,19 +7,18 @@ import DBConnectionService from './DBConnectionService';
 
 export default class UserCollection {
     public static init(): Promise<any> {
-        // TODO: Don't hardcode this
         return UserCollection.createUser({
-            username: 'dev',
-            password: 'password'
+            username: appConfig.db.admin.username,
+            password: appConfig.db.admin.password,
+            admin   : true
         });
     }
 
-    public static createUser(userData: {username: string, password: string}): Promise<any> {
-        const username = userData.username,
-              password = CryptoService.hashPassword(userData.password),
-              user     = new User(username, password);
+    public static createUser(userData: {username: string, password: string, admin: boolean}): Promise<any> {
+        const password = CryptoService.hashPassword(userData.password),
+              user     = new User(userData.username, password, userData.admin);
 
-        logger.info('User creation requested: ${username}');
+        logger.info(`User creation requested: ${user.getUsername()}`);
 
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.userCollection)
@@ -26,10 +26,20 @@ export default class UserCollection {
         });
     }
 
-    public static findUser(username: string): Promise<User> {
+    public static findById(id: string): Promise<User> {
         return DBConnectionService.getDB().then((db) => {
             return db.collection(appConfig.db.userCollection)
-                .findOne({_id: username})
+                .findOne({_id: ObjectID.createFromHexString(id)})
+                .then((doc) => {
+                    return doc ? User.fromDatabase(doc) : null;
+                });
+        });
+    }
+
+    public static findByUsername(username: string): Promise<User> {
+        return DBConnectionService.getDB().then((db) => {
+            return db.collection(appConfig.db.userCollection)
+                .findOne({u: username})
                 .then((doc) => {
                     return doc ? User.fromDatabase(doc) : null;
                 });

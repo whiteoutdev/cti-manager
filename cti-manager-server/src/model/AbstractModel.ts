@@ -1,9 +1,6 @@
-export default class AbstractModel {
-    public serialiseToDatabase(): any {
-        return this;
-    }
-
-    public serialiseToApi(): any {
-        return this;
-    }
+interface AbstractModel {
+    serialiseToDatabase(): any;
+    serialiseToApi(): any;
 }
+
+export default AbstractModel;

@@ -3,12 +3,10 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as del from 'del';
 import * as express from 'express';
-import * as session from 'express-session';
 import * as morgan from 'morgan';
 import {Passport} from 'passport';
 import * as path from 'path';
 
-import {Request, Response} from 'express';
 import appConfig from './config/app.config';
 import Hooks from './config/Hooks';
 import configurePassport from './config/passport.config';
@@ -41,15 +39,9 @@ app.use(bodyParser.json());
 
 app.use(cookieParser());
 
-app.use(session({
-    secret           : 'dev mode secret',
-    resave           : false,
-    saveUninitialized: false
-}));
 app.use(passport.initialize());
-app.use(passport.session());
 
-RestConfig.configure(apiRouter, passport);
+RestConfig.configure(apiRouter, passport.authenticate('jwt', {session: false}));
 app.use('/api', apiRouter);
 
 app.listen(appConfig.api.port, () => {

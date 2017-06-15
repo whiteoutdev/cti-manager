@@ -1,15 +1,13 @@
 import AbstractModel from '../AbstractModel';
 import FileType from './FileType';
 
-export default class AbstractFile extends AbstractModel {
+export default class AbstractFile implements AbstractModel {
     protected id: string;
     protected fileType: FileType;
     protected name: string;
     protected mimeType: string;
 
     constructor(fileType: FileType, name: string, mimeType: string, id?: string) {
-        super();
-
         this.fileType = fileType;
         this.name = name;
         this.mimeType = mimeType;

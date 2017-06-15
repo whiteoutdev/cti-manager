@@ -1,6 +1,6 @@
 import AbstractModel from '../AbstractModel';
 
-export default class TagMetadata extends AbstractModel {
+export default class TagMetadata implements AbstractModel {
     public static fromDatabase(doc: any): TagMetadata {
         return new TagMetadata(doc.u, doc.p, doc.g, doc.d);
     }
@@ -15,7 +15,6 @@ export default class TagMetadata extends AbstractModel {
     private danbooruTag: string;
 
     constructor(urls?: string[], pixivId?: string, gelbooruTag?: string, danbooruTag?: string) {
-        super();
         this.urls = urls || [];
         this.pixivId = pixivId || null;
         this.gelbooruTag = gelbooruTag || '';

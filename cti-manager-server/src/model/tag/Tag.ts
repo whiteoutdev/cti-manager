@@ -2,7 +2,7 @@ import AbstractModel from '../AbstractModel';
 import TagMetadata from './TagMetadata';
 import TagType from './TagType';
 
-export default class Tag extends AbstractModel {
+export default class Tag implements AbstractModel {
     public static fromDatabase(doc: any): Tag {
         return new Tag(doc._id, TagType.fromCode(doc.t), doc.d, TagMetadata.fromDatabase(doc.m));
     }
@@ -26,7 +26,6 @@ export default class Tag extends AbstractModel {
     private metadata: TagMetadata;
 
     constructor(name: string, type?: TagType, derivedTags?: string[], metadata?: TagMetadata) {
-        super();
         this.id = Tag.encode(name);
         this.type = type || TagType.GENERAL;
         this.derivedTags = (derivedTags || []).filter((tag) => tag);
