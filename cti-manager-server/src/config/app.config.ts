@@ -9,11 +9,11 @@ const argv = yargs.argv,
 
 const appConfig = {
     dev,
-    version      : packageJson.version,
-    api          : {
+    version       : packageJson.version,
+    api           : {
         port: 3333
     },
-    db           : {
+    db            : {
         host           : 'localhost',
         port           : 27017,
         name           : dev ? 'cti-dev' : 'cti',
@@ -25,9 +25,10 @@ const appConfig = {
             password: 'admin'
         }
     },
-    secretsFile  : 'secrets.json',
-    tmpDir       : 'tmp',
-    thumbnailSize: 180
+    secretsFile   : 'secrets.json',
+    tmpDir        : 'tmp',
+    thumbnailSize : 180,
+    authCookieName: `cti-${packageJson.version}`
 };
 
 _.merge(appConfig, overrides);

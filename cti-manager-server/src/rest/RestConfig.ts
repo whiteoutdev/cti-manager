@@ -12,7 +12,7 @@ const apis: RestApi[] = [
 
 export default class RestConfig {
     public static configure(router: Router, authenticate: RequestHandler): Promise<any> {
-        return Promise.all(apis.map((api) => {
+        return Promise.all(apis.map(api => {
             return api.configure(router, authenticate);
         }));
     }

@@ -4,11 +4,12 @@
   "description": "Nothing here yet",
   "main": "index.js",
   "scripts": {
-    "build": "concurrently \"gulp build\" \"cd cti-manager-web-ui && yarn build\"",
-    "dev": "gulp dev --dev | bunyan",
-    "test": "gulp qa",
+    "build": "concurrently \"cd cti-manager-server && yarn build\" \"cd cti-manager-web-ui && yarn build\"",
+    "dev": "concurrently \"cd cti-manager-server && yarn dev\" \"cd cti-manager-web-ui && yarn dev\"",
+    "test": "concurrently \"yarn depcheck\" \"cd cti-manager-server && yarn test\" \"cd cti-manager-web-ui && yarn test\"",
     "version": "node version",
-    "postinstall": "cd cti-manager-server && yarn && cd ../cti-manager-web-ui && yarn && cd ..",
+    "postinstall": "concurrently \"cd cti-manager-server && yarn\" \"cd cti-manager-web-ui && yarn\"",
+    "depcheck": "babel-node build/depcheck",
     "start": "yarn build && cd cti-manager-server && yarn start",
     "stop": "cd cti-manager-server && yarn stop",
     "restart": "yarn build && cd cti-manager-server && yarn restart"
@@ -16,12 +17,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "babel-core": "^6.14.0",
-    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-es2015": "^6.24.1",
     "bunyan": "^1.8.1",
-    "eslint": "^3.19.0",
-    "gulp": "^3.9.1",
-    "lodash": "^4.15.0"
+    "chalk": "^1.1.3",
+    "depcheck": "^0.6.7"
   },
   "dependencies": {
     "concurrently": "^3.4.0"

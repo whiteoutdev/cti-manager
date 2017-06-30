@@ -7,7 +7,7 @@ export default class FileType {
     public static VIDEO = new FileType('video', FileCode.VIDEO);
 
     public static fromCode(code: FileCode): FileType {
-        return _.find(FileType.TYPES, (fileType) => {
+        return _.find(FileType.TYPES, fileType => {
             return fileType.code === code;
         });
     }

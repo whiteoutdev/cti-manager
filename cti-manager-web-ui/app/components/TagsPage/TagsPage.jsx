@@ -57,8 +57,11 @@ class TagsPage extends RefluxComponent {
     }
 
     componentDidUpdate() {
-        if (this.refs.pixivIdInput) {
-            this.refs.pixivIdInput.select();
+        // TODO: Look into this
+        // eslint-disable-next-line no-console
+        console.log(this.pixivIdInput);
+        if (this.pixivIdInput) {
+            this.pixivIdInput.select();
         }
     }
 
@@ -100,12 +103,12 @@ class TagsPage extends RefluxComponent {
             tag.derivedTags.push(derivedTag);
         }
 
-        this.refs.tagInput.value = '';
+        this.tagInput.value = '';
         TagsApi.updateTag(tag.id, tag);
     }
 
     addDerivedTagFromInput() {
-        const derivedTag = this.refs.tagInput.value;
+        const derivedTag = this.tagInput.value;
         this.addDerivedTagAndClear(derivedTag);
     }
 
@@ -126,7 +129,7 @@ class TagsPage extends RefluxComponent {
 
     addTagUrl() {
         const tag = this.state.tag;
-        tag.metadata.urls.push(this.refs.tagUrlInput.value);
+        tag.metadata.urls.push(this.tagUrlInput.value);
         TagsApi.updateTag(tag.id, tag);
     }
 
@@ -154,7 +157,7 @@ class TagsPage extends RefluxComponent {
             const className = `tag-type-button ${tagType} ${tagType === tag.type ? 'selected' : ''}`;
             return (
                 <li key={tagType} className="tag-type">
-                    <button className={className} onClick={() => {this.setTagType(tagType)}}>
+                    <button className={className} onClick={() => this.setTagType(tagType)}>
                         {tagType}
                     </button>
                 </li>
@@ -183,7 +186,7 @@ class TagsPage extends RefluxComponent {
             return (
                 <li key={derivedTagId} className={`derived-tag ${derivedTagType}`}>
                     <span>{TagService.toDisplayName(derivedTagId)}</span>
-                    <i className="delete-icon material-icons" onClick={() => {this.removeDerivedTag(derivedTagId)}}>
+                    <i className="delete-icon material-icons" onClick={() => this.removeDerivedTag(derivedTagId)}>
                         delete
                     </i>
                 </li>
@@ -197,7 +200,7 @@ class TagsPage extends RefluxComponent {
                 </div>
                 <div className="right-col">
                     <div className="tag-search-section">
-                        <AutocompleteInput ref="tagInput"
+                        <AutocompleteInput ref={input => this.tagInput = input}
                                            className="with-addon"
                                            items={this.state.allTags.map(tag => tag.id)}
                                            onAutocomplete={this.addDerivedTagAndClear.bind(this)}
@@ -228,7 +231,7 @@ class TagsPage extends RefluxComponent {
                 <div className="right-col">
                     <EditableLink display={pixivId}
                                   link={`http://www.pixiv.net/member.php?id=${pixivId}`}
-                                  onSave={(newPixivId) => {this.setMetadata('pixivId', newPixivId)}}/>
+                                  onSave={(newPixivId) => this.setMetadata('pixivId', newPixivId)}/>
                 </div>
             </div>
         );
@@ -244,7 +247,7 @@ class TagsPage extends RefluxComponent {
                 <div className="right-col">
                     <EditableLink display={tag.metadata.gelbooruTag}
                                   link={gelbooruLink}
-                                  onSave={(newTag) => {this.setMetadata('gelbooruTag', newTag)}}/>
+                                  onSave={(newTag) => this.setMetadata('gelbooruTag', newTag)}/>
                 </div>
             </div>,
             <div key="danbooru" className="tag-fact danbooru-link-section">
@@ -252,7 +255,7 @@ class TagsPage extends RefluxComponent {
                 <div className="right-col">
                     <EditableLink display={tag.metadata.danbooruTag}
                                   link={danbooruLink}
-                                  onSave={(newTag) => {this.setMetadata('danbooruTag', newTag)}}/>
+                                  onSave={(newTag) => this.setMetadata('danbooruTag', newTag)}/>
                 </div>
             </div>
         ];
@@ -263,7 +266,7 @@ class TagsPage extends RefluxComponent {
             return (
                 <li key={uuid.v4()} className="url-list-item">
                     <a href={UrlService.createAbsoluteUrl(url)}>{url}</a>
-                    <i className="material-icons delete-icon" onClick={() => {this.removeUrl(index)}}>delete</i>
+                    <i className="material-icons delete-icon" onClick={() => this.removeUrl(index)}>delete</i>
                 </li>
             );
         });
@@ -273,7 +276,7 @@ class TagsPage extends RefluxComponent {
                 <div className="left-col">Links:</div>
                 <div className="right-col">
                     <HotKeys className="tag-url-input-form" handlers={{enter: this.addTagUrl.bind(this)}}>
-                        <input ref="tagUrlInput" type="text" className="with-addon"/>
+                        <input ref={input => this.tagUrlInput = input} type="text" className="with-addon"/>
                         <button className="accent" onClick={this.addTagUrl.bind(this)}>
                             <i className="material-icons">add</i>
                         </button>

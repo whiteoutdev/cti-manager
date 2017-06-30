@@ -20,7 +20,7 @@ export default class UrlService {
     }
 
     static createAbsoluteUrl(url) {
-        const schemeRegex = /^https?\:\/\//;
+        const schemeRegex = /^https?:\/\//;
         return schemeRegex.test(url) ? url : `http://${url}`;
     }
 }

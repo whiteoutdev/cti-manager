@@ -19,9 +19,9 @@ configurePassport(passport);
 
 del([
     `${appConfig.tmpDir}/**`, `!${appConfig.tmpDir}`
-]).then((paths) => {
+]).then(paths => {
     if (paths.length) {
-        paths.forEach((path) => {
+        paths.forEach(path => {
             logger.debug(`Removed temporary file: ${path}`);
         });
         logger.info(`Cleaned up ${paths.length} temporary files`);
@@ -32,7 +32,15 @@ const app       = express(),
       apiRouter = express.Router();
 
 app.use(morgan(appConfig.dev ? 'dev' : 'combined'));
-app.use(cors());
+
+const corsOptions = {
+    credentials: true,
+    origin     : (origin: string, cb: (err: any, allowed: boolean) => any) => {
+        cb(null, true);
+    }
+};
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -53,8 +61,8 @@ app.use((req, res) => {
     res.sendFile(path.resolve(__dirname, '..', 'public', 'index.html'));
 });
 
-Hooks.onUncaughtException((e) => {
+Hooks.onUncaughtException(err => {
     logger.error('Uncaught Exception:');
-    logger.error(e.message);
-    logger.error(e.stack);
+    logger.error(err.message);
+    logger.error(err.stack);
 });

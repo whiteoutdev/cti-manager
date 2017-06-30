@@ -1,13 +1,13 @@
-import path from 'path';
+const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 
-export default {
+module.exports = {
     root,
     app      : {
         path: path.join(root, 'app'),
         get indexEjs() {
-            return path.join(this.path, 'index.ejs')
+            return path.join(this.path, 'index.ejs');
         }
     },
     dist     : {

@@ -3,14 +3,16 @@ import _ from 'lodash';
 
 import TagActions from '../actions/TagActions';
 import TagsApi from '../api/TagsApi';
+import UserStore from './UserStore';
 
 export default Reflux.createStore({
     init() {
-        this.listenTo(TagActions.updateTags, this.onUpdateTags);
-        this.listenTo(TagActions.updateTag, this.onUpdateTag);
         this.tags = [];
         this.tagIndex = {};
-        this.onUpdateTags();
+        this.user = null;
+        this.listenTo(TagActions.updateTags, this.onUpdateTags);
+        this.listenTo(TagActions.updateTag, this.onUpdateTag);
+        this.listenTo(UserStore, this.onUpdateTags, this.onUpdateTags);
     },
 
     getInitialState() {
@@ -27,11 +29,19 @@ export default Reflux.createStore({
         });
     },
 
-    onUpdateTags() {
+    onUpdateTags(user) {
+        this.user = this.user || user;
+
+        if (!this.user) {
+            return;
+        }
+
         TagsApi.getTags().then((tags) => {
-            this.tags = tags;
-            this.buildTagIndex();
-            this.trigger(this.tags, this.tagIndex);
+            if (tags instanceof Array) {
+                this.tags = tags;
+                this.buildTagIndex();
+                this.trigger(this.tags, this.tagIndex);
+            }
         });
     },
 

@@ -1,33 +1,32 @@
 import appConfig from '../config/app.config';
-import http from '../services/http';
 import UrlService from '../services/UrlService';
 import TagActions from '../actions/TagActions';
+import AbstractApi from './AbstractApi';
 
 const apiPath = appConfig.api.path;
 
-export default class TagsApi {
-    static getTags(query, skip, limit) {
+class TagsApi extends AbstractApi {
+    getTags(query, skip, limit) {
         let url = `${apiPath}/tags`;
         url += UrlService.createQueryString({query, skip, limit});
-        return http.get(url)
-            .then(res => res.data);
+        return this.getData(url);
     }
 
-    static getTag(tagId) {
-        return http.get(`${apiPath}/tags/${tagId}`)
-            .then(res => res.data);
+    getTag(tagId) {
+        return this.getData(`${apiPath}/tags/${tagId}`);
     }
 
-    static getTagTypes() {
-        return http.get(`${apiPath}/tagtypes`)
-            .then(res => res.data);
+    getTagTypes() {
+        return this.getData(`${apiPath}/tagtypes`);
     }
 
-    static updateTag(tagId, updatedTag) {
-        return http.post(`${apiPath}/tags/${tagId}`, updatedTag)
-            .then((res) => {
+    updateTag(tagId, updatedTag) {
+        return this.postData(`${apiPath}/tags/${tagId}`, updatedTag)
+            .then(data => {
                 TagActions.updateTag(tagId);
-                return res;
+                return data;
             });
     }
 }
+
+export default new TagsApi();

@@ -74,7 +74,7 @@ class ImageSidebar extends RefluxComponent {
     }
 
     search() {
-        const searchText = this.refs.searchInput.value.trim(),
+        const searchText = this.searchInput.value.trim(),
               tags       = searchText.split(/\s+/),
               tagsString = tags.map((tag) => {
                   return encodeURIComponent(tag);
@@ -83,11 +83,11 @@ class ImageSidebar extends RefluxComponent {
     }
 
     canUpload() {
-        return !this.refs.fileInput || !this.refs.fileInput.files.length;
+        return !this.fileInput || !this.fileInput.files.length;
     }
 
     uploadImages() {
-        const files = this.refs.fileInput.files;
+        const files = this.fileInput.files;
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             const file   = files[i],
@@ -120,7 +120,7 @@ class ImageSidebar extends RefluxComponent {
 
                     <PanelBody>
                         <div className="search-form">
-                            <AutocompleteInput ref="searchInput" tokenize
+                            <AutocompleteInput ref={input => this.searchInput = input} tokenize
                                                items={this.state.allTags.map(tag => tag.id)}
                                                onEnter={this.search.bind(this)}/>
                             <button className="search-button accent" onClick={this.search.bind(this)}>
@@ -136,8 +136,8 @@ class ImageSidebar extends RefluxComponent {
     renderUploadSection() {
         if (!this.props.uploadDisabled) {
             let uploadText = 'Choose a file...';
-            if (this.refs.fileInput && this.refs.fileInput.files.length) {
-                uploadText = `${this.refs.fileInput.files.length} files selected`;
+            if (this.fileInput && this.fileInput.files.length) {
+                uploadText = `${this.fileInput.files.length} files selected`;
             }
             return (
                 <Panel className="upload-section">
@@ -148,12 +148,12 @@ class ImageSidebar extends RefluxComponent {
                         <div className={`upload-form ${this.state.uploadPending ? 'upload-pending' : ''}`}>
                             <div className="input-container">
                                 <input id={`${this.id}-upload-input`}
-                                       ref="fileInput"
+                                       ref={input => this.fileInput = input}
                                        className="upload-input"
                                        type="file"
                                        multiple
                                        accept={this.state.supportedMimeTypes.join(', ')}
-                                       onChange={() => {this.forceUpdate()}}/>
+                                       onChange={() => this.forceUpdate()}/>
                                 <label htmlFor={`${this.id}-upload-input`} className="button upload-input-label">
                                     <i className="material-icons">file_upload</i>
                                     {uploadText}

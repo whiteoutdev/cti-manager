@@ -4,5 +4,6 @@ const root = path.resolve(__dirname, '..');
 
 module.exports = {
     root,
-    src: path.join(root, 'src')
+    ui    : path.join(root, 'cti-manager-web-ui'),
+    server: path.join(root, 'cti-manager-server')
 };

@@ -5,7 +5,7 @@ import plugins from './plugins';
 export default function(env) {
     const prod = env === 'production';
 
-    const webpackConfig = {
+    return {
         context: config.app.path,
         entry  : [
             './index.jsx'
@@ -19,15 +19,8 @@ export default function(env) {
         },
         plugins: plugins(prod),
         resolve: {
-            extensions: [".js", ".jsx", ".json"]
+            extensions: ['.js', '.jsx', '.json']
         },
         devtool: prod ? 'source-map' : 'inline-source-map'
     };
-
-    if (!prod) {
-        webpackConfig.entry.unshift(
-            `webpack-dev-server/client?http://${config.devServer.host}:${config.devServer.port}/`);
-    }
-
-    return webpackConfig;
 }

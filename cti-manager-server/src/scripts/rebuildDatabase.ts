@@ -4,10 +4,10 @@ import TagCollection from '../store/TagCollection';
 import UserCollection from '../store/UserCollection';
 import logger from '../util/logger';
 
-export default function(): Promise<any> {
-    return DBConnectionService.getDB().then((db) => {
-        return db.listCollections({}).toArray().then((collections) => {
-            const dropPromises = collections.map((collection) => {
+function rebuildDatabase(): Promise<any> {
+    return DBConnectionService.getDB().then(db => {
+        return db.listCollections({}).toArray().then(collections => {
+            const dropPromises = collections.map(collection => {
                 return db.collection(collection.name)
                     .drop()
                     .then(() => {
@@ -29,3 +29,5 @@ export default function(): Promise<any> {
         });
     });
 }
+
+rebuildDatabase();

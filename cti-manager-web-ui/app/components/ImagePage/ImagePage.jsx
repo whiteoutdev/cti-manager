@@ -46,7 +46,7 @@ class ImagePage extends React.Component {
     }
 
     toggleVideoPause() {
-        const player = this.refs.videoPlayer;
+        const player = this.videoPlayer;
         if (player.paused) {
             player.play();
         } else {
@@ -65,7 +65,7 @@ class ImagePage extends React.Component {
             const downloadUrl = `${appConfig.api.path}/media/${media.id}/download`;
             if (media.type === 'video') {
                 return (
-                    <video ref="videoPlayer"
+                    <video ref={video => this.videoPlayer = video}
                            src={downloadUrl}
                            autoPlay
                            controls

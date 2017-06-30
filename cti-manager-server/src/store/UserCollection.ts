@@ -20,27 +20,27 @@ export default class UserCollection {
 
         logger.info(`User creation requested: ${user.getUsername()}`);
 
-        return DBConnectionService.getDB().then((db) => {
+        return DBConnectionService.getDB().then(db => {
             return db.collection(appConfig.db.userCollection)
                 .insertOne(user.serialiseToDatabase());
         });
     }
 
     public static findById(id: string): Promise<User> {
-        return DBConnectionService.getDB().then((db) => {
+        return DBConnectionService.getDB().then(db => {
             return db.collection(appConfig.db.userCollection)
                 .findOne({_id: ObjectID.createFromHexString(id)})
-                .then((doc) => {
+                .then(doc => {
                     return doc ? User.fromDatabase(doc) : null;
                 });
         });
     }
 
     public static findByUsername(username: string): Promise<User> {
-        return DBConnectionService.getDB().then((db) => {
+        return DBConnectionService.getDB().then(db => {
             return db.collection(appConfig.db.userCollection)
                 .findOne({u: username})
-                .then((doc) => {
+                .then(doc => {
                     return doc ? User.fromDatabase(doc) : null;
                 });
         });

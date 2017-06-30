@@ -47,7 +47,7 @@ class TagsSidebar extends RefluxComponent {
     }
 
     search() {
-        const query = this.refs.searchInput.value;
+        const query = this.searchInput.value;
         if (!query) {
             return;
         }
@@ -82,7 +82,7 @@ class TagsSidebar extends RefluxComponent {
                 </PanelHeader>
                 <PanelBody className="search-panel-body">
                     <HotKeys className="search-container" handlers={{enter: this.search.bind(this)}}>
-                        <input ref="searchInput" type="text"/>
+                        <input ref={input => this.searchInput = input} type="text"/>
                         <button className="search-button accent" onClick={this.search.bind(this)}>
                             <i className="material-icons">search</i>
                         </button>
@@ -90,11 +90,11 @@ class TagsSidebar extends RefluxComponent {
                 </PanelBody>
                 <PanelButtons>
                     <PanelButton className={this.state.regexMode ? '' : 'accent'}
-                                 onClick={() => {this.setRegexMode(false)}}>
+                                 onClick={() => this.setRegexMode(false)}>
                         Simple
                     </PanelButton>
                     <PanelButton className={this.state.regexMode ? 'accent' : ''}
-                                 onClick={() => {this.setRegexMode(true)}}>
+                                 onClick={() => this.setRegexMode(true)}>
                         Regex
                     </PanelButton>
                 </PanelButtons>
@@ -107,7 +107,7 @@ class TagsSidebar extends RefluxComponent {
             const tag      = this.state.tagIndex[result.id] || result,
                   selected = this.state.selectedTag ? tag.id === this.state.selectedTag.id : false;
             return (
-                <PanelListItem key={tag.id} onClick={() => {this.selectTag(tag)}}
+                <PanelListItem key={tag.id} onClick={() => this.selectTag(tag)}
                                className={`search-result-item ${tag.type} ${selected ? 'selected' : ''}`}>
                     {TagService.toDisplayName(tag.id)}
                 </PanelListItem>

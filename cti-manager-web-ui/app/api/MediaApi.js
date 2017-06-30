@@ -1,44 +1,40 @@
 import appConfig from '../config/app.config';
-import http from '../services/http';
 import UrlService from '../services/UrlService';
+import AbstractApi from './AbstractApi';
 
 const apiPath   = appConfig.api.path,
       mediaPath = `${apiPath}/media`;
 
-export default class MediaApi {
-    static findMedia(tags, skip, limit) {
+class MediaApi extends AbstractApi {
+    findMedia(tags, skip, limit) {
         let url = `${mediaPath}`;
         url += UrlService.createQueryString({
             tags: tags instanceof Array ? tags.join() : null,
             skip,
             limit
         });
-        return http.get(url).then(res => res.data);
+        return this.getData(url);
     }
 
-    static getMedia(id) {
-        return http.get(`${mediaPath}/${id}`)
-            .then(res => res.data);
+    getMedia(id) {
+        return this.getData(`${mediaPath}/${id}`);
     }
 
-    static getMediaThumbnail(id) {
-        return http.get(`${mediaPath}/${id}/thumbnail`)
-            .then(res => res.data);
+    getMediaThumbnail(id) {
+        return this.getData(`${mediaPath}/${id}/thumbnail`);
     }
 
-    static uploadFiles(formData) {
-        const url = `${mediaPath}`;
-        return http.post(url, formData);
+    uploadFiles(formData) {
+        return this.postData(mediaPath, formData);
     }
 
-    static setTags(id, tags) {
-        const url = `${mediaPath}/${id}/tags`;
-        return http.post(url, {tags})
-            .then(res => res.data);
+    setTags(id, tags) {
+        return this.postData(`${mediaPath}/${id}/tags`, {tags});
     }
 
-    static getSupportedMimeTypes() {
-        return http.get(`${apiPath}/mediatypes`)
-            .then(res => res.data);
+    getSupportedMimeTypes() {
+        return this.getData(`${apiPath}/mediatypes`);
     }
 }
+
+export default new MediaApi();

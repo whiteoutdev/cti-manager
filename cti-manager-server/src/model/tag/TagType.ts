@@ -8,13 +8,13 @@ export default class TagType {
     public static ARTIST = new TagType('artist', TagCode.ARTIST);
 
     public static fromCode(code: TagCode): TagType {
-        return _.find(TagType.TYPES, (tagType) => {
+        return _.find(TagType.TYPES, tagType => {
             return tagType.code === code;
         });
     }
 
     public static fromName(name: string): TagType {
-        return _.find(TagType.TYPES, (tagType) => {
+        return _.find(TagType.TYPES, tagType => {
             return tagType.name === name;
         });
     }

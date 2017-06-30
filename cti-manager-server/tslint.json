@@ -5,6 +5,10 @@
   ],
   "jsRules": {},
   "rules": {
+    "arrow-parens": [
+      true,
+      "ban-single-arg-parens"
+    ],
     "interface-name": false,
     "no-bitwise": false,
     "no-unused-expression": [

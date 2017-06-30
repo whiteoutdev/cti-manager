@@ -17,7 +17,7 @@ export default class MediaApi implements RestApi {
         });
 
         const downloadStream = data.stream;
-        downloadStream.on('error', (err) => {
+        downloadStream.on('error', err => {
             const exception        = new CTIError('Download failed', err),
                   exceptionWrapper = new ExceptionWrapper(undefined, undefined, [exception]);
             res.status(500).send(exceptionWrapper);
@@ -30,7 +30,7 @@ export default class MediaApi implements RestApi {
             const files = req.files.media;
             logger.debug(`Media upload request received for ${files.length} files`);
             MediaCollection.addMedia(files)
-                .then((exceptionWrapper) => {
+                .then(exceptionWrapper => {
                     res.status(200).send(exceptionWrapper);
                 });
         });
@@ -40,66 +40,77 @@ export default class MediaApi implements RestApi {
             const query = req.query,
                   skip  = Number(query.skip),
                   limit = Number(query.limit);
+
             let tags = null;
+
             if (query.tags) {
                 const tagsString = req.url.match(/tags=([^&]+)/)[1];
-                tags = tagsString.split(',').map((encodedTag) => {
+                tags = tagsString.split(',').map(encodedTag => {
                     return decodeURIComponent(encodedTag);
                 });
             }
-            MediaCollection.findMedia(tags, skip, limit).then((info) => {
-                res.status(200).send(info);
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+
+            MediaCollection.findMedia(tags, skip, limit)
+                .then(info => {
+                    res.status(200).send(info);
+                })
+                .catch(err => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         router.get('/media/:mediaIDHex', authenticate, (req, res) => {
             const mediaIDHex = req.params.mediaIDHex;
             logger.debug(`Media metadata requested for media ID: ${mediaIDHex}`);
-            MediaCollection.getMedia(mediaIDHex).then((metadata) => {
-                if (metadata) {
-                    res.status(200).send(metadata);
-                } else {
-                    res.sendStatus(404);
-                }
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+            MediaCollection.getMedia(mediaIDHex)
+                .then(metadata => {
+                    if (metadata) {
+                        res.status(200).send(metadata);
+                    } else {
+                        res.sendStatus(404);
+                    }
+                })
+                .catch(err => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         router.get('/media/:mediaIDHex/download', authenticate, (req, res) => {
             const mediaIDHex = req.params.mediaIDHex;
             logger.debug(`Media download requested for media ID: ${mediaIDHex}`);
-            MediaCollection.downloadMedia(mediaIDHex).then((data) => {
-                MediaApi.downloadFromFileInfo(res, data);
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+            MediaCollection.downloadMedia(mediaIDHex)
+                .then(data => {
+                    MediaApi.downloadFromFileInfo(res, data);
+                })
+                .catch(err => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         router.get('/media/:mediaIDHex/thumbnail', authenticate, (req, res) => {
             const mediaIDHex = req.params.mediaIDHex;
             logger.debug(`Media thumbnail requested for media ID: ${mediaIDHex}`);
-            MediaCollection.getThumbnail(mediaIDHex).then((thumbnail) => {
-                res.status(200).send(thumbnail);
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+            MediaCollection.getThumbnail(mediaIDHex)
+                .then(thumbnail => {
+                    res.status(200).send(thumbnail);
+                })
+                .catch(err => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         router.get('/media/:mediaIDHex/thumbnail/download', authenticate, (req, res) => {
             const mediaIDHex = req.params.mediaIDHex;
             logger.debug(`Media thumbnail download requested for media ID: ${mediaIDHex}`);
             MediaCollection.downloadThumbnail(mediaIDHex)
-                .then((data) => {
+                .then(data => {
                     MediaApi.downloadFromFileInfo(res, data);
                 })
-                .catch((err) => {
+                .catch(err => {
                     logger.error(err);
                     res.status(500).send(err);
                 });
@@ -112,17 +123,19 @@ export default class MediaApi implements RestApi {
             Promise.all([
                 MediaCollection.setTags(mediaIDHex, tags),
                 TagCollection.createTags(tags)
-            ]).then((results) => {
-                const media = results[0];
-                if (media) {
-                    res.status(200).send(media);
-                } else {
-                    res.sendStatus(404);
-                }
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+            ])
+                .then(results => {
+                    const media = results[0];
+                    if (media) {
+                        res.status(200).send(media);
+                    } else {
+                        res.sendStatus(404);
+                    }
+                })
+                .catch(err => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         router.get('/mediatypes', authenticate, (req, res) => {

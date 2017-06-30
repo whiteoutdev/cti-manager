@@ -61,12 +61,12 @@ class TagEditor extends RefluxComponent {
 
     addTagAndClear(tag) {
         this.addTag(tag, () => {
-            this.refs.addTagInput.value = '';
+            this.addTagInput.value = '';
         });
     }
 
     addTagFromInput() {
-        const newTag = this.refs.addTagInput.value;
+        const newTag = this.addTagInput.value;
         this.addTagAndClear(newTag);
     }
 
@@ -86,17 +86,17 @@ class TagEditor extends RefluxComponent {
     }
 
     componentDidMount() {
-        this.refs.addTagInput.focus();
+        this.addTagInput.focus();
     }
 
     componentDidUpdate() {
-        this.refs.addTagInput.focus();
+        this.addTagInput.focus();
     }
 
     renderAddTagInput() {
         return (
             <div className="add-tag-section">
-                <AutocompleteInput ref="addTagInput"
+                <AutocompleteInput ref={input => this.addTagInput = input}
                                    items={this.state.allTags}
                                    onAutocomplete={this.addTagAndClear.bind(this)}
                                    onEnter={this.addTagFromInput.bind(this)}/>
@@ -120,12 +120,12 @@ class TagEditor extends RefluxComponent {
     renderTagButton(tag) {
         if (~this.state.deletedTags.indexOf(tag)) {
             return (
-                <i className="material-icons" onClick={() => {this.addTag(tag)}}>undo</i>
+                <i className="material-icons" onClick={() => this.addTag(tag)}>undo</i>
             );
         }
 
         return (
-            <i className="material-icons" onClick={() => {this.deleteTag(tag)}}>delete</i>
+            <i className="material-icons" onClick={() => this.deleteTag(tag)}>delete</i>
         );
     }
 

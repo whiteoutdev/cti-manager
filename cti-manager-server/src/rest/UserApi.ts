@@ -1,6 +1,7 @@
 import {RequestHandler, Response, Router} from 'express';
 import * as jwt from 'jsonwebtoken';
 import * as moment from 'moment';
+import appConfig from '../config/app.config';
 import CTIError from '../model/exception/CTIError';
 import User from '../model/user/User';
 import UserCollection from '../store/UserCollection';
@@ -54,8 +55,18 @@ export default class UserApi implements RestApi {
                           },
                           token   = jwt.sign(payload, secret);
 
-                    return res.status(200).send({token});
+                    res.cookie(appConfig.authCookieName, token)
+                        .status(200)
+                        .end();
                 });
+        });
+
+        router.get('/user', authenticate, (req, res) => {
+            if (!req.user) {
+                return res.status(500).end();
+            }
+
+            res.status(200).send(req.user.serialiseToApi());
         });
 
         return Promise.resolve();

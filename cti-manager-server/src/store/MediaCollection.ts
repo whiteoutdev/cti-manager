@@ -37,7 +37,7 @@ interface ThumbnailData {
 export default class MediaCollection {
     public static init(): Promise<any> {
         return DBConnectionService.getDB()
-            .then((db) => {
+            .then(db => {
                 return db.collection(appConfig.db.filesCollection).createIndex({'metadata.ta': 1});
             });
     }
@@ -47,8 +47,8 @@ export default class MediaCollection {
 
         const exceptionWrapper = new ExceptionWrapper();
 
-        return DBConnectionService.getDB().then((db) => {
-            const promises = files.filter((file) => {
+        return DBConnectionService.getDB().then(db => {
+            const promises = files.filter(file => {
                 if (!~supportedMimeTypes.indexOf(file.mimetype)) {
                     const message = `MIME type ${file.mimetype} not supported`;
                     exceptionWrapper.addException(new CTIWarning(message));
@@ -56,14 +56,14 @@ export default class MediaCollection {
                     return false;
                 }
                 return true;
-            }).map((file) => {
+            }).map(file => {
                 const isVideo = !!~videoMimeTypes.indexOf(file.mimetype);
 
-                return new Promise((resolve) => {
+                return new Promise(resolve => {
                     CryptoService.getHash(file.path)
-                        .then((hash) => {
+                        .then(hash => {
                             return MediaCollection.createThumbnail(db, file, hash)
-                                .then((thumbnailData) => {
+                                .then(thumbnailData => {
                                     const thumbnailID = thumbnailData.thumbnailID,
                                           width       = thumbnailData.width,
                                           height      = thumbnailData.height,
@@ -73,7 +73,7 @@ export default class MediaCollection {
 
                                     this.storeFile(db, media, file.path).then(() => resolve());
                                 })
-                                .catch((exception) => {
+                                .catch(exception => {
                                     exceptionWrapper.addException(exception);
                                     resolve();
                                 });
@@ -97,7 +97,7 @@ export default class MediaCollection {
     }
 
     public static findMedia(tags: string[], skip: number, limit: number): Promise<MediaList> {
-        return DBConnectionService.getDB().then((db) => {
+        return DBConnectionService.getDB().then(db => {
             const bucket = new GridFSBucket(db);
             const baseQuery = {
                 $or: [
@@ -108,13 +108,13 @@ export default class MediaCollection {
             let queryPromise = null;
 
             if (tags && tags.length) {
-                const queryPromises = tags.map((tag) => {
+                const queryPromises = tags.map(tag => {
                     return TagCollection.getDerivingTags(tag)
-                        .then((derivingTags) => {
-                            const tagIds = derivingTags.map((derivingTag) => derivingTag.id);
+                        .then(derivingTags => {
+                            const tagIds = derivingTags.map(derivingTag => derivingTag.id);
                             tagIds.unshift(tag);
                             return {
-                                $or: tagIds.map((tagId) => {
+                                $or: tagIds.map(tagId => {
                                     return {'metadata.ta': tagId};
                                 })
                             };
@@ -122,14 +122,14 @@ export default class MediaCollection {
                 });
 
                 queryPromise = Promise.all(queryPromises)
-                    .then((queries) => {
+                    .then(queries => {
                         return _.extend(baseQuery, {$and: queries});
                     });
             } else {
                 queryPromise = Promise.resolve(baseQuery);
             }
 
-            return queryPromise.then((query) => {
+            return queryPromise.then(query => {
                 const cursor = bucket.find(query);
                 return cursor.count(false)
                     .then((count: number) => {
@@ -137,9 +137,9 @@ export default class MediaCollection {
                             .limit(limit || 0)
                             .sort({uploadDate: -1})
                             .toArray()
-                            .then((mediaList) => {
+                            .then(mediaList => {
                                 return {
-                                    media: mediaList.map((media) => {
+                                    media: mediaList.map(media => {
                                         return Media.fromDatabase(media).serialiseToApi();
                                     }),
                                     count
@@ -152,20 +152,20 @@ export default class MediaCollection {
 
     public static getThumbnail(mediaIDHex: string): Promise<any> {
         return this.getMedia(mediaIDHex)
-            .then((media) => {
+            .then(media => {
                 return this.getFile(media.thumbnailID, Thumbnail.fromDatabase);
             });
     }
 
     public static downloadThumbnail(mediaIDHex: string): Promise<FileStream<Thumbnail>> {
         return this.getMedia(mediaIDHex)
-            .then((media) => {
+            .then(media => {
                 return MediaCollection.downloadFile(media.thumbnailID, Thumbnail.fromDatabase);
             });
     }
 
     public static setTags(mediaIDHex: string, tags: string[]): Promise<any> {
-        return DBConnectionService.getDB().then((db) => {
+        return DBConnectionService.getDB().then(db => {
             const oid = ObjectID.createFromHexString(mediaIDHex);
             return db.collection(appConfig.db.filesCollection)
                 .update({
@@ -175,7 +175,7 @@ export default class MediaCollection {
                         'metadata.ta': tags
                     }
                 })
-                .then((data) => {
+                .then(data => {
                     const result = data.result;
                     if (result.nModified) {
                         logger.debug(`Tags updated for ${result.nModified} file${result.nModified > 1 ? 's' : ''}`);
@@ -209,21 +209,21 @@ export default class MediaCollection {
 
                 image.batch()
                     .scale(scale)
-                    .writeFile(thumbnailPath, (err1) => {
+                    .writeFile(thumbnailPath, err1 => {
                         if (err1) {
                             const message = `Failed to create thumbnail for file ${file.originalname}`;
                             logger.warn(message);
                             reject(new CTIWarning(message, err1));
                         }
                         this.storeFile(db, thumbnailModel, thumbnailPath)
-                            .then((thumbnailID) => {
+                            .then(thumbnailID => {
                                 resolve({
                                     thumbnailID,
                                     width : originalWidth,
                                     height: originalHeight
                                 });
                             })
-                            .catch((err2) => {
+                            .catch(err2 => {
                                 const message = `Failed to store thumbnail for file ${file.originalname}`;
                                 logger.warn(message);
                                 reject(new CTIWarning(message, err2));
@@ -297,7 +297,7 @@ export default class MediaCollection {
             const uploadStream = bucket.openUploadStreamWithId(thumbnailID, file.getName(), options);
             fs.createReadStream(path)
                 .pipe(uploadStream)
-                .on('error', (err) => {
+                .on('error', err => {
                     reject(err);
                 })
                 .on('finish', () => {
@@ -312,12 +312,12 @@ export default class MediaCollection {
 
     private static downloadFile<F extends AbstractFile>(fileIDHex: string,
                                                         deserialise: (doc: any) => F): Promise<FileStream<F>> {
-        return DBConnectionService.getDB().then((db) => {
+        return DBConnectionService.getDB().then(db => {
             const oid    = ObjectID.createFromHexString(fileIDHex),
                   bucket = new GridFSBucket(db);
             return bucket.find({_id: oid})
                 .toArray()
-                .then((arr) => {
+                .then(arr => {
                     if (arr.length) {
                         return {
                             doc   : deserialise(arr[0]).serialiseToApi(),
@@ -329,12 +329,12 @@ export default class MediaCollection {
     }
 
     private static getFile(fileIDHex: string, deserialize: (doc: any) => any): Promise<any> {
-        return DBConnectionService.getDB().then((db) => {
+        return DBConnectionService.getDB().then(db => {
             const oid    = ObjectID.createFromHexString(fileIDHex),
                   bucket = new GridFSBucket(db);
             return bucket.find({_id: oid})
                 .toArray()
-                .then((arr) => {
+                .then(arr => {
                     if (arr.length) {
                         return deserialize(arr[0]).serialiseToApi();
                     }

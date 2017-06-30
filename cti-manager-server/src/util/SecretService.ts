@@ -15,7 +15,7 @@ class SecretService {
             this.secretsPromise = Promise.resolve(this.secrets);
         } catch (err) {
             this.secretsPromise = new Promise((resolve, reject) => {
-                fs.writeFile(this.secretsPath, JSON.stringify(this.secrets), (err1) => {
+                fs.writeFile(this.secretsPath, JSON.stringify(this.secrets), err1 => {
                     if (err1) {
                         reject(err1);
                     }
@@ -32,7 +32,7 @@ class SecretService {
 
     public getJwtSecret(): Promise<Buffer> {
         return this.secretsPromise
-            .then((secrets) => {
+            .then(secrets => {
                 if (secrets.jwt) {
                     return Buffer.from(secrets.jwt, 'hex');
                 } else {
@@ -44,7 +44,7 @@ class SecretService {
 
                             this.secrets.jwt = buffer.toString('hex');
 
-                            fs.writeFile(this.secretsPath, JSON.stringify(this.secrets), (err1) => {
+                            fs.writeFile(this.secretsPath, JSON.stringify(this.secrets), err1 => {
                                 if (err1) {
                                     reject(err1);
                                 }

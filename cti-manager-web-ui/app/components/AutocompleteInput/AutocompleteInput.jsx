@@ -23,23 +23,23 @@ class AutocompleteInput extends React.Component {
     }
 
     get value() {
-        return this.refs.input.value;
+        return this.input.value;
     }
 
     set value(value) {
-        this.refs.input.value = value;
+        this.input.value = value;
     }
 
     focus() {
-        this.refs.input.focus();
+        this.input.focus();
     }
 
     blur() {
-        this.refs.input.blur();
+        this.input.blur();
     }
 
     componentDidUpdate() {
-        this.refs.input.focus();
+        this.input.focus();
     }
 
     completeSuggestion(index) {
@@ -56,16 +56,16 @@ class AutocompleteInput extends React.Component {
 
         if (this.props.tokenize) {
 
-            const cursorPosition      = this.refs.input.selectionStart,
-                  beforeCursor        = this.refs.input.value.substring(0, cursorPosition),
-                  afterCursor         = this.refs.input.value.substr(cursorPosition),
+            const cursorPosition      = this.input.selectionStart,
+                  beforeCursor        = this.input.value.substring(0, cursorPosition),
+                  afterCursor         = this.input.value.substr(cursorPosition),
                   queriesBeforeCursor = beforeCursor.split(' ');
 
             queriesBeforeCursor[queriesBeforeCursor.length - 1] = suggestion;
 
-            this.refs.input.value = `${queriesBeforeCursor.join(' ')}${afterCursor || ' '}`;
+            this.input.value = `${queriesBeforeCursor.join(' ')}${afterCursor || ' '}`;
         } else {
-            this.refs.input.value = suggestion;
+            this.input.value = suggestion;
         }
 
         this.closeSuggestions().then(() => {
@@ -105,14 +105,14 @@ class AutocompleteInput extends React.Component {
     }
 
     fireEnter() {
-        this.props.onEnter(this.refs.input.value);
+        this.props.onEnter(this.input.value);
     }
 
     updateSuggestions() {
         if (this.props.tokenize) {
-            const cursorPosition = this.refs.input.selectionStart,
-                  beforeCursor   = this.refs.input.value.substring(0, cursorPosition),
-                  afterCursor    = this.refs.input.value.substr(cursorPosition);
+            const cursorPosition = this.input.selectionStart,
+                  beforeCursor   = this.input.value.substring(0, cursorPosition),
+                  afterCursor    = this.input.value.substr(cursorPosition);
             if (/(^\s)|^$/.test(afterCursor)) {
                 const queriesBeforeCursor = beforeCursor.split(' '),
                       currentQuery        = queriesBeforeCursor[queriesBeforeCursor.length - 1];
@@ -121,7 +121,7 @@ class AutocompleteInput extends React.Component {
                 this.closeSuggestions();
             }
         } else {
-            this.filterSuggestions(this.refs.input.value);
+            this.filterSuggestions(this.input.value);
         }
     }
 
@@ -175,8 +175,8 @@ class AutocompleteInput extends React.Component {
                 return (
                     <li key={suggestion}
                         className={className}
-                        onMouseOver={() => {this.setSuggestionIndex(index)}}
-                        onClick={() => {this.completeSuggestion(index)}}>
+                        onMouseOver={() => this.setSuggestionIndex(index)}
+                        onClick={() => this.completeSuggestion(index)}>
                         {suggestion}
                     </li>
                 );
@@ -195,7 +195,9 @@ class AutocompleteInput extends React.Component {
         return (
             <div className="AutocompleteInput">
                 <HotKeys handlers={this.keyHandlers}>
-                    <input type="text" ref="input" {...this.trimProps()} onChange={this.onChange.bind(this)}/>
+                    <input type="text"
+                           ref={input => this.input = input} {...this.trimProps()}
+                           onChange={this.onChange.bind(this)}/>
                     <div className="dropdown-box">
                         {this.renderSuggestionList()}
                     </div>

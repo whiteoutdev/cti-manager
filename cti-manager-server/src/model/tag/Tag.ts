@@ -28,7 +28,7 @@ export default class Tag implements AbstractModel {
     constructor(name: string, type?: TagType, derivedTags?: string[], metadata?: TagMetadata) {
         this.id = Tag.encode(name);
         this.type = type || TagType.GENERAL;
-        this.derivedTags = (derivedTags || []).filter((tag) => tag);
+        this.derivedTags = (derivedTags || []).filter(Boolean);
         this.metadata = metadata || new TagMetadata(null, null, this.id, this.id);
     }
 

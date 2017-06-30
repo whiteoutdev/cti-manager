@@ -12,7 +12,7 @@ class DBConnectionService {
 
     constructor() {
         this.connectionPromise = MongoClient.connect(url)
-            .then((db) => {
+            .then(db => {
                 logger.info(`Database connection to ${url} established`);
                 this.db = db;
                 return db;

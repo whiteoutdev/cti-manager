@@ -24,7 +24,7 @@ class EditableLink extends React.Component {
     }
 
     fireSave() {
-        const newValue = this.refs.editableInput.value;
+        const newValue = this.editableInput.value;
         this.toggleEditMode().then(() => {
             this.props.onSave(newValue);
         });
@@ -32,7 +32,7 @@ class EditableLink extends React.Component {
 
     componentDidUpdate() {
         if (this.state.editMode) {
-            this.refs.editableInput.select();
+            this.editableInput.select();
         }
     }
 
@@ -41,7 +41,7 @@ class EditableLink extends React.Component {
             <HotKeys className="link-form" handlers={{enter: this.fireSave.bind(this)}}>
                 <input type="text"
                        className="link-input with-addon"
-                       ref="editableInput"
+                       ref={input => this.editableInput = input}
                        defaultValue={this.props.display}
                        onBlur={this.toggleEditMode.bind(this)}/>
                 <button className="accent" onClick={this.fireSave.bind(this)}>

@@ -11,26 +11,28 @@ export default class TagsApi implements RestApi {
                   search = query.query,
                   skip   = Number(query.skip),
                   limit  = Number(query.limit);
-            TagCollection.getTags(search, skip, limit).then((tags) => {
-                res.status(200).send(tags);
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+            TagCollection.getTags(search, skip, limit)
+                .then(tags => {
+                    res.status(200).send(tags);
+                })
+                .catch(err => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         router.get('/tags/:tag', authenticate, (req, res) => {
             const tagName = decodeURIComponent(req.params.tag);
             logger.debug(`Tag ${tagName} requested`);
             TagCollection.getTag(tagName)
-                .then((tag) => {
+                .then(tag => {
                     if (tag) {
                         res.status(200).send(tag);
                     } else {
                         res.sendStatus(404);
                     }
                 })
-                .catch((err) => {
+                .catch(err => {
                     logger.error(err);
                     res.status(500).send(err);
                 });
@@ -41,16 +43,18 @@ export default class TagsApi implements RestApi {
             const tags = req.body.tags.map((tag: string) => {
                 return decodeURIComponent(tag);
             });
-            TagCollection.createTags(tags).then((tagsCreated) => {
-                if (tagsCreated) {
-                    res.status(201).send(tagsCreated);
-                } else {
-                    res.sendStatus(200);
-                }
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+            TagCollection.createTags(tags)
+                .then(tagsCreated => {
+                    if (tagsCreated) {
+                        res.status(201).send(tagsCreated);
+                    } else {
+                        res.sendStatus(200);
+                    }
+                })
+                .catch(err => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         router.post('/tags/:tag', authenticate, (req, res) => {
@@ -58,12 +62,12 @@ export default class TagsApi implements RestApi {
                   tagData = req.body;
             logger.debug(`Update of tag ${tagId} requested`);
             tagData.id = tagId;
-            TagCollection.updateTag(tagData).then(() => {
-                res.sendStatus(200);
-            }).catch((err) => {
-                logger.error(err);
-                res.status(500).send(err);
-            });
+            TagCollection.updateTag(tagData)
+                .then(() => res.sendStatus(200))
+                .catch(err => {
+                    logger.error(err);
+                    res.status(500).send(err);
+                });
         });
 
         router.get('/tagtypes', authenticate, (req, res) => {

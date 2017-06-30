@@ -1,7 +1,7 @@
 @import 'constants';
 @import 'colours';
 
-input[type='search'], input[type='text'] {
+input[type='search'], input[type='text'], input[type='password'] {
     font-size: 1em;
     line-height: $form-control-height;
     padding: 0 .5em;
