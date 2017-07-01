@@ -57,3 +57,8 @@
         }
     }
 }
+
+@mixin tile {
+    background-color: $off-white;
+    box-shadow: 1px 1px 16px 0 rgba($black, .25);
+}

@@ -1,5 +1,6 @@
 @import 'constants';
 @import 'colours';
+@import 'mixins';
 
 input[type='search'], input[type='text'], input[type='password'] {
     font-size: 1em;
@@ -22,5 +23,22 @@ input[type='search'], input[type='text'], input[type='password'] {
 
     &.with-addon {
         border-right: 0 !important;
+    }
+}
+
+.form-row {
+    @include flex-row-wrap;
+    align-items: center;
+    margin-bottom: 1em;
+
+    label {
+        flex: 0 1 25%;
+        padding-right: 1em;
+        text-align: right;
+        font-weight: 700;
+    }
+
+    input {
+        flex: 1 1 75%;
     }
 }
