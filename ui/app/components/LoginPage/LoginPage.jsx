@@ -14,10 +14,6 @@ export default class LoginPage extends Reflux.Component {
         this.store = UserStore;
     }
 
-    componentDidMount() {
-        this.checkUser();
-    }
-
     componentDidUpdate() {
         this.checkUser();
     }
