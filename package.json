@@ -4,15 +4,15 @@
   "description": "Nothing here yet",
   "main": "index.js",
   "scripts": {
-    "build": "concurrently \"cd cti-manager-server && yarn build\" \"cd cti-manager-web-ui && yarn build\"",
-    "dev": "concurrently \"cd cti-manager-server && yarn dev\" \"cd cti-manager-web-ui && yarn dev\"",
-    "test": "concurrently \"yarn depcheck\" \"cd cti-manager-server && yarn test\" \"cd cti-manager-web-ui && yarn test\"",
+    "build": "concurrently \"cd service && yarn build\" \"cd ui && yarn build\"",
+    "dev": "concurrently \"cd service && yarn dev\" \"cd ui && yarn dev\"",
+    "test": "concurrently \"yarn depcheck\" \"cd service && yarn test\" \"cd ui && yarn test\"",
     "version": "node version",
-    "postinstall": "concurrently \"cd cti-manager-server && yarn\" \"cd cti-manager-web-ui && yarn\"",
+    "postinstall": "concurrently \"cd service && yarn\" \"cd ui && yarn\"",
     "depcheck": "babel-node build/depcheck",
-    "start": "yarn build && cd cti-manager-server && yarn start",
-    "stop": "cd cti-manager-server && yarn stop",
-    "restart": "yarn build && cd cti-manager-server && yarn restart"
+    "start": "yarn build && cd service && yarn start",
+    "stop": "cd service && yarn stop",
+    "restart": "yarn build && cd service && yarn restart"
   },
   "author": "",
   "license": "ISC",

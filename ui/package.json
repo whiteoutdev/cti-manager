@@ -1,10 +1,10 @@
 {
-  "name": "cti-manager-web-ui",
+  "name": "cti-manager-ui",
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack -p --env=production && cp -rT dist ../cti-manager-server/public",
+    "build": "webpack -p --env=production && cp -rT dist ../service/public",
     "dev": "webpack-dev-server --hot --inline",
     "test": "concurrently \"yarn lint\" \"yarn depcheck\"",
     "lint": "eslint --ext .js,.jsx --ignore-pattern dist/* .",

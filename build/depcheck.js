@@ -10,8 +10,8 @@ function check() {
     const options = {
         ignoreDirs: [
             'node_modules',
-            'cti-manager-server',
-            'cti-manager-web-ui',
+            'service',
+            'ui',
             'tmp'
         ],
         detectors : depcheckDetectors,

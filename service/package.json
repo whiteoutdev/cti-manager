@@ -1,5 +1,5 @@
 {
-  "name": "cti-manager-server",
+  "name": "cti-manager-service",
   "version": "2.0.0",
   "description": "",
   "main": "index.js",
