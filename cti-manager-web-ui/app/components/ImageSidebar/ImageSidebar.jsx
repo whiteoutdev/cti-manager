@@ -1,11 +1,11 @@
 import React from 'react';
+import Reflux from 'reflux';
 import {Link, withRouter} from 'react-router-dom';
 import uuid from 'uuid';
 import {HotKeys} from 'react-hotkeys';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Spinner from '../Spinner/Spinner.jsx';
 import TagEditor from '../TagEditor/TagEditor.jsx';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
@@ -23,42 +23,23 @@ import MediaApi from '../../api/MediaApi';
 
 import './ImageSidebar.scss';
 
-class ImageSidebar extends RefluxComponent {
+class ImageSidebar extends Reflux.Component {
     constructor(props) {
         super(props);
         this.id = `ImageSidebar-${uuid.v1()}`;
         this.state = {
-            uploadPending     : false,
-            tagEditMode       : false,
-            allTags           : [],
-            supportedMimeTypes: []
+            uploadPending: false,
+            tagEditMode  : false
         };
-        this.listenTo(TagStore, this.onTagsUpdated, (data) => {
-            this.state.allTags = data.tags;
-        });
-        this.listenTo(MediaTypeStore, this.onMediaTypesUpdated, (mimeTypes) => {
-            this.state.supportedMimeTypes = mimeTypes;
-        });
+        this.stores = [TagStore, MediaTypeStore];
         TagActions.updateTags();
     }
 
     getTagType(tag) {
-        const tagData = _.find(this.state.allTags, (tagData) => {
+        const tagData = _.find(this.state.tags, (tagData) => {
             return tagData.id === TagService.toTagId(tag);
         });
         return tagData ? tagData.type : '';
-    }
-
-    onTagsUpdated(tags) {
-        this.setState({
-            allTags: tags
-        });
-    }
-
-    onMediaTypesUpdated(mimeTypes) {
-        this.setState({
-            supportedMimeTypes: mimeTypes
-        });
     }
 
     fireUploadComplete() {
@@ -121,7 +102,7 @@ class ImageSidebar extends RefluxComponent {
                     <PanelBody>
                         <div className="search-form">
                             <AutocompleteInput ref={input => this.searchInput = input} tokenize
-                                               items={this.state.allTags.map(tag => tag.id)}
+                                               items={this.state.tags.map(tag => tag.id)}
                                                onEnter={this.search.bind(this)}/>
                             <button className="search-button accent" onClick={this.search.bind(this)}>
                                 <i className="material-icons">search</i>
@@ -152,7 +133,7 @@ class ImageSidebar extends RefluxComponent {
                                        className="upload-input"
                                        type="file"
                                        multiple
-                                       accept={this.state.supportedMimeTypes.join(', ')}
+                                       accept={this.state.mimeTypes.join(', ')}
                                        onChange={() => this.forceUpdate()}/>
                                 <label htmlFor={`${this.id}-upload-input`} className="button upload-input-label">
                                     <i className="material-icons">file_upload</i>

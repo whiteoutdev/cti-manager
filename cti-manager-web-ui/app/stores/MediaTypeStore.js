@@ -1,30 +1,23 @@
-import Reflux from 'reflux';
-
-import UserStore from './UserStore';
+import StoreWithUser from './StoreWithUser';
 import MediaApi from '../api/MediaApi';
 
-export default Reflux.createStore({
-    init() {
-        this.mimeTypes = [];
-        this.user = null;
-        this.listenTo(UserStore, this.getSupportedMimeTypes, this.getSupportedMimeTypes);
-    },
+class MediaTypeStore extends StoreWithUser {
+    constructor() {
+        super();
+        this.state = Object.assign({}, this.state, {
+            mimeTypes: []
+        });
+    }
 
-    getSupportedMimeTypes(user) {
-        this.user = this.user || user;
-
+    getSupportedMimeTypes() {
         if (!this.user) {
             return;
         }
 
         MediaApi.getSupportedMimeTypes()
-            .then((mimeTypes) => {
-                this.mimeTypes = mimeTypes;
-                this.trigger(this.mimeTypes);
-            });
-    },
-
-    getInitialState() {
-        return this.mimeTypes;
+            .then(mimeTypes => this.setState({mimeTypes}));
     }
-});
+}
+
+const store = new MediaTypeStore();
+export {store as default, store as MediaTypeStore};

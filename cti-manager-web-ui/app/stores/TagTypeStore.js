@@ -1,30 +1,29 @@
-import Reflux from 'reflux';
-
+import StoreWithUser from './StoreWithUser';
 import TagActions from '../actions/TagActions';
 import TagsApi from '../api/TagsApi';
-import UserStore from './UserStore';
 
-export default Reflux.createStore({
-    init() {
-        this.tagTypes = [];
-        this.listenTo(TagActions.updateTagTypes, this.onUpdateTagTypes);
-        this.listenTo(UserStore, this.onUpdateTagTypes, this.onUpdateTagTypes);
-    },
+class TagTypeStore extends StoreWithUser {
+    constructor() {
+        super();
+        this.state = Object.assign({}, this.state, {
+            tagTypes: []
+        });
+        this.listenTo(TagActions.updateTagTypes, this.onUpdateTagTypes, this.onUpdateTagTypes);
+    }
 
-    getInitialState() {
-        return this.tagTypes;
-    },
+    onUserSet() {
+        this.onUpdateTagTypes();
+    }
 
-    onUpdateTagTypes(user) {
-        this.user = this.user || user;
-
+    onUpdateTagTypes() {
         if (!this.user) {
             return;
         }
 
-        TagsApi.getTagTypes().then((tagTypes) => {
-            this.tagTypes = tagTypes;
-            this.trigger(this.tagTypes);
-        });
+        TagsApi.getTagTypes()
+            .then(tagTypes => this.setState({tagTypes}));
     }
-});
+}
+
+const store = new TagTypeStore();
+export {store as default, store as TagTypeStore};

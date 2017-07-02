@@ -1,18 +1,36 @@
 import React from 'react';
+import Reflux from 'reflux';
 
 import appConfig from '../../config/app.config';
-import UserApi from '../../api/UserApi';
 import history from '../../services/history';
+import {UserStore, UserActions} from '../../stores/UserStore';
 
 import './LoginPage.scss';
 
-export default class LoginPage extends React.Component {
+export default class LoginPage extends Reflux.Component {
+    constructor(props) {
+        super(props);
+        this.state = {};
+        this.store = UserStore;
+    }
+
+    componentDidMount() {
+        this.checkUser();
+    }
+
+    componentDidUpdate() {
+        this.checkUser();
+    }
+
+    checkUser() {
+        if (this.state.user) {
+            history.push('/');
+        }
+    }
+
     login(e) {
         e.preventDefault();
-        UserApi.login(this.usernameInput.value, this.passwordInput.value)
-            .then(() => {
-                history.push('/');
-            });
+        UserActions.login(this.usernameInput.value, this.passwordInput.value);
     }
 
     render() {

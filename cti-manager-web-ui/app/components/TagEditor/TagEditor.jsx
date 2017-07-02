@@ -1,8 +1,8 @@
 import React from 'react';
+import Reflux from 'reflux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
 
 import TagService from '../../services/TagService';
@@ -11,24 +11,21 @@ import TagActions from '../../actions/TagActions';
 
 import './TagEditor.scss';
 
-class TagEditor extends RefluxComponent {
+class TagEditor extends Reflux.Component {
     constructor(props) {
         super();
         this.state = {
             tags       : props.tags.slice(),
-            deletedTags: [],
-            allTags    : []
+            deletedTags: []
         };
-        this.listenTo(TagStore, this.updateTags, (data) => {
-            this.state.allTags = data.tags.map(tag => TagService.toDisplayName(tag.id));
-        });
-        TagActions.updateTags();
-    }
 
-    updateTags(tags) {
-        this.setState({
-            allTags: tags.map(tag => TagService.toDisplayName(tag.id))
+        this.mapStoreToState(TagStore, (fromStore) => {
+            return {
+                allTags: fromStore.tags.map(tag => TagService.toDisplayName(tag.id))
+            };
         });
+
+        TagActions.updateTags();
     }
 
     fireSave() {

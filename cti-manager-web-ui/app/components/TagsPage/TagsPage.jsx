@@ -1,9 +1,9 @@
 import React from 'react';
+import Reflux from 'reflux';
 import {HotKeys} from 'react-hotkeys';
 import uuid from 'uuid';
 import PropTypes from 'prop-types';
 
-import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import NavbarredPage from '../NavbarredPage/NavbarredPage.jsx';
 import TagsSidebar from '../TagsSidebar/TagsSidebar.jsx';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput.jsx';
@@ -18,28 +18,13 @@ import UrlService from '../../services/UrlService';
 
 import './TagsPage.scss';
 
-class TagsPage extends RefluxComponent {
+class TagsPage extends Reflux.Component {
     constructor() {
         super();
         this.state = {
-            tag     : null,
-            tagTypes: []
+            tag: null
         };
-        this.listenTo(TagTypeStore, this.onTagTypesChange, (tagTypes) => {
-            this.state.tagTypes = tagTypes;
-        });
-        this.listenTo(TagStore, this.onTagsChange, (data) => {
-            this.state.allTags = data.tags;
-            this.state.tagIndex = data.tagIndex;
-        });
-    }
-
-    onTagTypesChange(tagTypes) {
-        this.setState({tagTypes});
-    }
-
-    onTagsChange(allTags, tagIndex) {
-        this.setState({allTags, tagIndex});
+        this.stores = [TagTypeStore, TagStore];
     }
 
     onTagSelect(tag) {
@@ -202,7 +187,7 @@ class TagsPage extends RefluxComponent {
                     <div className="tag-search-section">
                         <AutocompleteInput ref={input => this.tagInput = input}
                                            className="with-addon"
-                                           items={this.state.allTags.map(tag => tag.id)}
+                                           items={this.state.tags.map(tag => tag.id)}
                                            onAutocomplete={this.addDerivedTagAndClear.bind(this)}
                                            onEnter={this.addDerivedTagFromInput.bind(this)}/>
                         <button className="accent">

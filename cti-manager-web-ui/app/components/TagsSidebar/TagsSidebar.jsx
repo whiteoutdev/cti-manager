@@ -1,10 +1,10 @@
 import React from 'react';
+import Reflux from 'reflux';
 import _ from 'lodash';
 import {HotKeys} from 'react-hotkeys';
 import escapeRegex from 'escape-string-regexp';
 import PropTypes from 'prop-types';
 
-import RefluxComponent from '../RefluxComponent/RefluxComponent';
 import Panel from '../Panel/Panel.jsx';
 import PanelHeader from '../Panel/PanelHeader.jsx';
 import PanelBody from '../Panel/PanelBody.jsx';
@@ -19,7 +19,7 @@ import TagStore from '../../stores/TagStore';
 
 import './TagsSidebar.scss';
 
-class TagsSidebar extends RefluxComponent {
+class TagsSidebar extends Reflux.Component {
     constructor() {
         super();
         this.state = {
@@ -27,14 +27,7 @@ class TagsSidebar extends RefluxComponent {
             regexMode    : false,
             selectedTag  : null
         };
-        this.listenTo(TagStore, this.updateAllTags, (data) => {
-            this.state.allTags = data.tags;
-            this.state.tagIndex = data.tagIndex;
-        });
-    }
-
-    updateAllTags(allTags, tagIndex) {
-        this.setState({allTags, tagIndex});
+        this.store = TagStore;
     }
 
     setRegexMode(regexMode) {
