@@ -12,7 +12,8 @@
     "depcheck": "babel-node build/depcheck",
     "start": "yarn build && cd service && yarn start",
     "stop": "cd service && yarn stop",
-    "restart": "yarn build && cd service && yarn restart"
+    "restart": "yarn build && cd service && yarn restart",
+    "uninstall": "rm -rf node_modules && rm -rf service/node_modules && rm -rf ui/node_modules"
   },
   "author": "",
   "license": "ISC",
