@@ -31,7 +31,7 @@ class SecretService {
     }
 
     public getJwtSecret(): Promise<Buffer> {
-        return this.secretsPromise
+        return this.getSecrets()
             .then(secrets => {
                 if (secrets.jwt) {
                     return Buffer.from(secrets.jwt, 'hex');

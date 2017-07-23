@@ -11,7 +11,7 @@ export default function(passport: Passport): void {
     SecretService.getJwtSecret()
         .then(secret => {
             passport.use(new JwtStrategy({
-                secretOrKey   : secret,
+                secretOrKey: secret,
                 jwtFromRequest: req => {
                     let token = null;
                     if (req && req.cookies) {

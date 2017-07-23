@@ -1,8 +1,8 @@
 import * as del from 'del';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
+import * as jimp from 'jimp';
 import * as _ from 'lodash';
-import * as lwip from 'lwip';
 import {Db, GridFSBucket, ObjectID} from 'mongodb';
 
 import appConfig from '../config/app.config';
@@ -23,10 +23,10 @@ import MimeService from '../util/MimeService';
 import DBConnectionService from './DBConnectionService';
 import TagCollection from './TagCollection';
 
-const thumbnailSize      = appConfig.thumbnailSize,
-      imageMimeTypes     = MimeService.getSupportedImageTypes(),
-      videoMimeTypes     = MimeService.getSupportedVideoTypes(),
-      supportedMimeTypes = MimeService.getSupportedMimeTypes();
+const thumbnailSize = appConfig.thumbnailSize,
+    imageMimeTypes = MimeService.getSupportedImageTypes(),
+    videoMimeTypes = MimeService.getSupportedVideoTypes(),
+    supportedMimeTypes = MimeService.getSupportedMimeTypes();
 
 interface ThumbnailData {
     thumbnailID: string;
@@ -65,11 +65,11 @@ export default class MediaCollection {
                             return MediaCollection.createThumbnail(db, file, hash)
                                 .then(thumbnailData => {
                                     const thumbnailID = thumbnailData.thumbnailID,
-                                          width       = thumbnailData.width,
-                                          height      = thumbnailData.height,
-                                          media       = isVideo
-                                              ? new Video(file.mimetype, hash, thumbnailID, width, height)
-                                              : new Image(file.mimetype, hash, thumbnailID, width, height);
+                                        width = thumbnailData.width,
+                                        height = thumbnailData.height,
+                                        media = isVideo
+                                            ? new Video(file.mimetype, hash, thumbnailID, width, height)
+                                            : new Image(file.mimetype, hash, thumbnailID, width, height);
 
                                     this.storeFile(db, media, file.path).then(() => resolve());
                                 })
@@ -189,37 +189,37 @@ export default class MediaCollection {
     }
 
     private static createImageThumbnail(db: Db, file: Express.Multer.File, hash: string): Promise<ThumbnailData> {
-        const fileType           = MimeService.getFileExtension(file.mimetype),
-              thumbnailExtension = fileType === 'gif' ? 'jpg' : fileType,
-              thumbnailName      = `${hash}-thumb.${thumbnailExtension}`,
-              thumbnailModel     = new Thumbnail(thumbnailName, file.mimetype),
-              thumbnailPath      = `${appConfig.tmpDir}/${thumbnailName}`;
+        const fileType = MimeService.getFileExtension(file.mimetype),
+            thumbnailExtension = fileType === 'gif' ? 'jpg' : fileType,
+            thumbnailName = `${hash}-thumb.${thumbnailExtension}`,
+            thumbnailModel = new Thumbnail(thumbnailName, file.mimetype),
+            thumbnailPath = `${appConfig.tmpDir}/${thumbnailName}`;
 
         return new Promise((resolve, reject) => {
-            lwip.open(file.path, fileType, (err, image) => {
-                if (err) {
+            jimp.read(file.path, (readErr, image) => {
+                if (readErr) {
                     const message = `Failed to create thumbnail for file ${file.originalname}`;
                     logger.warn(message);
-                    reject(new CTIWarning(message, err));
+                    reject(new CTIWarning(message, readErr));
                 }
 
-                const originalWidth  = image.width(),
-                      originalHeight = image.height(),
-                      scale          = Math.min(thumbnailSize / originalWidth, thumbnailSize / originalHeight);
+                const originalWidth = image.bitmap.width,
+                    originalHeight = image.bitmap.height,
+                    scale = Math.min(thumbnailSize / originalWidth, thumbnailSize / originalHeight);
 
-                image.batch()
-                    .scale(scale)
-                    .writeFile(thumbnailPath, err1 => {
-                        if (err1) {
+                image.scale(scale)
+                    .write(thumbnailPath, writeErr => {
+                        if (writeErr) {
                             const message = `Failed to create thumbnail for file ${file.originalname}`;
                             logger.warn(message);
-                            reject(new CTIWarning(message, err1));
+                            reject(new CTIWarning(message, writeErr));
                         }
+
                         this.storeFile(db, thumbnailModel, thumbnailPath)
                             .then(thumbnailID => {
                                 resolve({
                                     thumbnailID,
-                                    width : originalWidth,
+                                    width: originalWidth,
                                     height: originalHeight
                                 });
                             })
@@ -248,15 +248,15 @@ export default class MediaCollection {
                 })
                 .on('end', () => {
                     const newFileData = {
-                        fieldname   : '',
-                        encoding    : 'utf-8',
-                        size        : 0,
-                        destination : '',
-                        buffer      : null as Buffer,
+                        fieldname: '',
+                        encoding: 'utf-8',
+                        size: 0,
+                        destination: '',
+                        buffer: null as Buffer,
                         originalname: file.originalname,
-                        mimetype    : 'image/png',
-                        filename    : thumbnailName,
-                        path        : `${appConfig.tmpDir}/${thumbnailName}`
+                        mimetype: 'image/png',
+                        filename: thumbnailName,
+                        path: `${appConfig.tmpDir}/${thumbnailName}`
                     };
                     resolve(this.createImageThumbnail(db, newFileData, hash));
                 })
@@ -266,7 +266,7 @@ export default class MediaCollection {
                     reject(new CTIWarning(message, err));
                 })
                 .screenshots({
-                    count    : 1,
+                    count: 1,
                     timemarks: ['1']
                 }, appConfig.tmpDir);
         });
@@ -288,9 +288,9 @@ export default class MediaCollection {
 
     private static storeFile(db: Db, file: AbstractFile, path: string): Promise<string> {
         const options = {
-                  metadata: file.serialiseToDatabase()
-              },
-              bucket  = new GridFSBucket(db);
+                metadata: file.serialiseToDatabase()
+            },
+            bucket = new GridFSBucket(db);
 
         return new Promise((resolve, reject) => {
             const thumbnailID = new ObjectID();
@@ -313,14 +313,14 @@ export default class MediaCollection {
     private static downloadFile<F extends AbstractFile>(fileIDHex: string,
                                                         deserialise: (doc: any) => F): Promise<FileStream<F>> {
         return DBConnectionService.getDB().then(db => {
-            const oid    = ObjectID.createFromHexString(fileIDHex),
-                  bucket = new GridFSBucket(db);
+            const oid = ObjectID.createFromHexString(fileIDHex),
+                bucket = new GridFSBucket(db);
             return bucket.find({_id: oid})
                 .toArray()
                 .then(arr => {
                     if (arr.length) {
                         return {
-                            doc   : deserialise(arr[0]).serialiseToApi(),
+                            doc: deserialise(arr[0]).serialiseToApi(),
                             stream: bucket.openDownloadStream(oid)
                         };
                     }
@@ -330,8 +330,8 @@ export default class MediaCollection {
 
     private static getFile(fileIDHex: string, deserialize: (doc: any) => any): Promise<any> {
         return DBConnectionService.getDB().then(db => {
-            const oid    = ObjectID.createFromHexString(fileIDHex),
-                  bucket = new GridFSBucket(db);
+            const oid = ObjectID.createFromHexString(fileIDHex),
+                bucket = new GridFSBucket(db);
             return bucket.find({_id: oid})
                 .toArray()
                 .then(arr => {
