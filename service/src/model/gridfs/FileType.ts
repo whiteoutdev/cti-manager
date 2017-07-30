@@ -1,28 +1,25 @@
-import * as _ from 'lodash';
-import FileCode from './FileCode';
+import Enum from '../Enum';
 
-export default class FileType {
-    public static IMAGE = new FileType('image', FileCode.IMAGE);
-    public static THUMBNAIL = new FileType('thumbnail', FileCode.THUMBNAIL);
-    public static VIDEO = new FileType('video', FileCode.VIDEO);
+enum FileCode {
+    IMAGE     = 0,
+    THUMBNAIL = 1,
+    VIDEO     = 2
+}
+
+class FileType implements Enum<FileCode> {
+    public static IMAGE = new FileType(FileCode.IMAGE);
+    public static THUMBNAIL = new FileType(FileCode.THUMBNAIL);
+    public static VIDEO = new FileType(FileCode.VIDEO);
 
     public static fromCode(code: FileCode): FileType {
-        return _.find(FileType.TYPES, fileType => {
-            return fileType.code === code;
-        });
+        return (FileType as any)[FileCode[code]];
     }
 
-    private static TYPES = [
-        FileType.IMAGE,
-        FileType.THUMBNAIL,
-        FileType.VIDEO
-    ];
+    public name: string;
+    public code: FileCode;
 
-    private name: string;
-    private code: FileCode;
-
-    constructor(name: string, code: FileCode) {
-        this.name = name;
+    private constructor(code: FileCode) {
+        this.name = FileCode[code];
         this.code = code;
     }
 
@@ -34,3 +31,5 @@ export default class FileType {
         return this.code;
     }
 }
+
+export {FileCode, FileType, FileType as default};

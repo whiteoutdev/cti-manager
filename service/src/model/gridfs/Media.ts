@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import MimeService from '../../util/MimeService';
 import AbstractFile from './AbstractFile';
 import FileType from './FileType';
+import {ObjectID} from 'bson';
 
 export default class Media extends AbstractFile {
     public static fromDatabase(doc: any): Media {
@@ -11,12 +12,13 @@ export default class Media extends AbstractFile {
     }
 
     private hash: string;
-    private thumbnailID: string;
+    private thumbnailID: ObjectID;
     private width: number;
     private height: number;
     private tags: string[];
 
-    constructor(fileType: FileType, mimeType: string, hash: string, thumbnailID: string, width: number, height: number,
+    constructor(fileType: FileType, mimeType: string, hash: string, thumbnailID: ObjectID, width: number,
+                height: number,
                 tags?: string[], id?: string) {
         super(fileType, hash, mimeType, id);
         this.hash = hash;
@@ -36,7 +38,7 @@ export default class Media extends AbstractFile {
     }
 
     public getThumbnailID(): string {
-        return this.thumbnailID;
+        return this.thumbnailID.toString();
     }
 
     public getWidth(): number {
@@ -66,7 +68,7 @@ export default class Media extends AbstractFile {
         const serialised = super.serialiseToApi();
         return _.extend(serialised, {
             hash       : this.hash,
-            thumbnailID: this.thumbnailID,
+            thumbnailID: this.thumbnailID.toString(),
             width      : this.width,
             height     : this.height,
             tags       : this.tags

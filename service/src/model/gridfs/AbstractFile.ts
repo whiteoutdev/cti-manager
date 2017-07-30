@@ -1,20 +1,24 @@
-import AbstractModel from '../AbstractModel';
+import {AbstractModel, AbstractModelSpec} from '../AbstractModel';
 import FileType from './FileType';
+import * as _ from 'lodash';
 
-export default class AbstractFile implements AbstractModel {
-    protected id: string;
-    protected fileType: FileType;
-    protected name: string;
-    protected mimeType: string;
+interface AbstractFileSpec extends AbstractModelSpec {
+    id?: string;
+    fileType: FileType;
+    name: string;
+    mimeType: string;
+}
+
+abstract class AbstractFile extends AbstractModel implements AbstractFileSpec {
+    public fileType: FileType;
+    public name: string;
+    public mimeType: string;
 
     constructor(fileType: FileType, name: string, mimeType: string, id?: string) {
+        super({id});
         this.fileType = fileType;
         this.name = name;
         this.mimeType = mimeType;
-
-        if (id) {
-            this.id = id;
-        }
     }
 
     public getId(): string {
@@ -34,24 +38,22 @@ export default class AbstractFile implements AbstractModel {
     }
 
     public serialiseToDatabase(): any {
-        return {
+        const serialised = super.serialiseToDatabase();
+        return _.extend(serialised, {
             n: this.name,
             m: this.mimeType,
             t: this.fileType.getCode()
-        };
+        });
     }
 
     public serialiseToApi(): any {
-        const serialised: any = {
+        const serialised = super.serialiseToApi();
+        return _.extend(serialised, {
             name    : this.name,
             mimeType: this.mimeType,
             type    : this.fileType.getName()
-        };
-
-        if (this.id) {
-            serialised.id = this.id;
-        }
-
-        return serialised;
+        });
     }
 }
+
+export {AbstractFile, AbstractFile as default, AbstractFileSpec};

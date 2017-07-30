@@ -20,10 +20,11 @@ export default class UserCollection {
 
         logger.info(`User creation requested: ${user.getUsername()}`);
 
-        return DBConnectionService.getDB().then(db => {
-            return db.collection(appConfig.db.userCollection)
-                .insertOne(user.serialiseToDatabase());
-        });
+        return DBConnectionService.getDB()
+            .then(db => {
+                return db.collection(appConfig.db.userCollection)
+                    .insertOne(user.serialiseToDatabase());
+            });
     }
 
     public static findById(id: string): Promise<User> {

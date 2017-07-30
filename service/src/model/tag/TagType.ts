@@ -1,40 +1,48 @@
-import * as _ from 'lodash';
-import TagCode from './TagCode';
+import Enum from '../Enum';
 
-export default class TagType {
-    public static GENERAL = new TagType('general', TagCode.GENERAL);
-    public static COPYRIGHT = new TagType('copyright', TagCode.COPYRIGHT);
-    public static CHARACTER = new TagType('character', TagCode.CHARACTER);
-    public static ARTIST = new TagType('artist', TagCode.ARTIST);
+enum TagCode {
+    GENERAL   = 0,
+    COPYRIGHT = 1,
+    CHARACTER = 2,
+    ARTIST    = 3
+}
+
+const keys: string[] = [];
+for (let key in TagCode) {
+    if (Number(key) >= 0) {
+        keys.push(TagCode[key]);
+    }
+}
+
+class TagType implements Enum<TagCode> {
+    public static GENERAL = new TagType(TagCode.GENERAL);
+    public static COPYRIGHT = new TagType(TagCode.COPYRIGHT);
+    public static CHARACTER = new TagType(TagCode.CHARACTER);
+    public static ARTIST = new TagType(TagCode.ARTIST);
+
+    private static TYPES: TagType[];
 
     public static fromCode(code: TagCode): TagType {
-        return _.find(TagType.TYPES, tagType => {
-            return tagType.code === code;
-        });
+        return (TagType as any)[TagCode[code]];
     }
 
     public static fromName(name: string): TagType {
-        return _.find(TagType.TYPES, tagType => {
-            return tagType.name === name;
-        });
+        return (TagType as any)[name];
     }
 
     public static values(): TagType[] {
-        return TagType.TYPES.slice();
+        if (TagType.TYPES) {
+            return TagType.TYPES;
+        } else {
+            return (TagType.TYPES = keys.map(key => (TagType as any)[key]));
+        }
     }
 
-    private static TYPES = [
-        TagType.GENERAL,
-        TagType.COPYRIGHT,
-        TagType.CHARACTER,
-        TagType.ARTIST
-    ];
+    public name: string;
+    public code: TagCode;
 
-    private name: string;
-    private code: TagCode;
-
-    constructor(name: string, code: TagCode) {
-        this.name = name;
+    private constructor(code: TagCode) {
+        this.name = TagCode[code];
         this.code = code;
     }
 
@@ -45,5 +53,6 @@ export default class TagType {
     public getCode(): TagCode {
         return this.code;
     }
-
 }
+
+export {TagCode, TagType, TagType as default};

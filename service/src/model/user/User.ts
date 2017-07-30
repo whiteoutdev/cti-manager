@@ -1,23 +1,19 @@
 import AbstractModel from '../AbstractModel';
 
-export default class User implements AbstractModel {
+export default class User extends AbstractModel {
     public static fromDatabase(doc: any): User {
         return new User(doc.u, doc.p, doc.a, doc._id);
     }
 
-    private id: string;
     private username: string;
     private password: string;
     private admin: boolean;
 
     constructor(username: string, password: string, admin?: boolean, id?: string) {
+        super({id});
         this.username = username;
         this.password = password;
         this.admin = admin || false;
-
-        if (id) {
-            this.id = id;
-        }
     }
 
     public getUsername(): string {
@@ -26,10 +22,6 @@ export default class User implements AbstractModel {
 
     public getPassword(): string {
         return this.password;
-    }
-
-    public getId(): string {
-        return this.id;
     }
 
     public serialiseToDatabase(): any {
