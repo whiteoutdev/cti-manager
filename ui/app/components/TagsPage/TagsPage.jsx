@@ -139,11 +139,11 @@ class TagsPage extends Reflux.Component {
 
     renderTagTypeSection(tag) {
         const tagTypeList = this.state.tagTypes.map((tagType) => {
-            const className = `tag-type-button ${tagType} ${tagType === tag.type ? 'selected' : ''}`;
+            const className = `tag-type-button ${tagType.toLowerCase()} ${tagType === tag.type ? 'selected' : ''}`;
             return (
                 <li key={tagType} className="tag-type">
                     <button className={className} onClick={() => this.setTagType(tagType)}>
-                        {tagType}
+                        {capitalise(tagType)}
                     </button>
                 </li>
             );
@@ -311,3 +311,7 @@ TagsPage.propTypes = {
 };
 
 export default TagsPage;
+
+function capitalise(str) {
+    return str.toLowerCase().replace(/(^|\s)(\w)/g, (match, g1, g2) => `${g1}${g2.toUpperCase()}`);
+}
