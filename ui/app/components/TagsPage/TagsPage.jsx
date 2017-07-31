@@ -166,7 +166,7 @@ class TagsPage extends Reflux.Component {
     renderDerivedTagsSection(tag) {
         const derivedTagList = tag.derivedTags.map((derivedTagId) => {
             const derivedTag     = this.state.tagIndex[derivedTagId],
-                  derivedTagType = derivedTag ? derivedTag.type : '';
+                  derivedTagType = derivedTag ? derivedTag.type.toLowerCase() : '';
 
             return (
                 <li key={derivedTagId} className={`derived-tag ${derivedTagType}`}>
