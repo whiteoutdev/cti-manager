@@ -3,11 +3,15 @@ import MediaApi from './MediaApi';
 import RestApi from './RestApi';
 import TagsApi from './TagsApi';
 import UserApi from './UserApi';
+import TeaseApi from './TeaseApi';
+import InstructionsApi from './InstructionsApi';
 
 const apis: RestApi[] = [
     new MediaApi(),
     new TagsApi(),
-    new UserApi()
+    new UserApi(),
+    new TeaseApi(),
+    new InstructionsApi()
 ];
 
 export default class RestConfig {

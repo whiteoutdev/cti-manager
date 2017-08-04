@@ -23,6 +23,12 @@ class LandingPage extends React.Component {
                             <span>Search Tags</span>
                         </Link>
                     </li>
+                    <li className="landing-page-list-item">
+                        <Link to="/instructions">
+                            <i className="material-icons">casino</i>
+                            <span>View Instructions</span>
+                        </Link>
+                    </li>
                 </ul>
             </div>
         );
