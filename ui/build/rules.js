@@ -17,6 +17,12 @@ const rules = [
         }
     },
     {
+        test: /\.tsx?$/,
+        use : {
+            loader: 'awesome-typescript-loader'
+        }
+    },
+    {
         test: /\.(png|jpg|jpeg|svg|eot|ttf|woff|woff2)$/,
         use : {
             loader: 'url-loader?limit=8192'

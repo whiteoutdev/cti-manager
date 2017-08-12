@@ -9,7 +9,7 @@ class UserApi extends AbstractApi {
         return this.getData(`${apiPath}/user`);
     }
 
-    login(username, password) {
+    login(username: string, password: string) {
         return this.postData(`${apiPath}/login`, {username, password})
             .then(data => {
                 const token = data.token;

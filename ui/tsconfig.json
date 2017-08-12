@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "outDir": "dist",
+    "lib": [
+      "es2015",
+      "es5",
+      "es6",
+      "dom"
+    ]
+  },
+  "include": [
+    "./app/**/*"
+  ]
+}

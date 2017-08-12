@@ -6,7 +6,7 @@ const apiPath   = appConfig.api.path,
       mediaPath = `${apiPath}/media`;
 
 class MediaApi extends AbstractApi {
-    findMedia(tags, skip, limit) {
+    findMedia(tags: string[], skip: number, limit: number) {
         let url = `${mediaPath}`;
         url += UrlService.createQueryString({
             tags: tags instanceof Array ? tags.join() : null,
@@ -16,19 +16,19 @@ class MediaApi extends AbstractApi {
         return this.getData(url);
     }
 
-    getMedia(id) {
+    getMedia(id: string) {
         return this.getData(`${mediaPath}/${id}`);
     }
 
-    getMediaThumbnail(id) {
+    getMediaThumbnail(id: string) {
         return this.getData(`${mediaPath}/${id}/thumbnail`);
     }
 
-    uploadFiles(formData) {
+    uploadFiles(formData: FormData) {
         return this.postData(mediaPath, formData);
     }
 
-    setTags(id, tags) {
+    setTags(id: string, tags: string[]) {
         return this.postData(`${mediaPath}/${id}/tags`, {tags});
     }
 

@@ -19,7 +19,7 @@ export default function(env) {
         },
         plugins: plugins(prod),
         resolve: {
-            extensions: ['.js', '.jsx', '.json']
+            extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
         },
         devtool: prod ? 'source-map' : 'inline-source-map'
     };
