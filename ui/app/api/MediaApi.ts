@@ -1,12 +1,18 @@
 import appConfig from '../config/app.config';
 import UrlService from '../services/UrlService';
 import AbstractApi from './AbstractApi';
+import Media from '../model/media/Media';
 
 const apiPath   = appConfig.api.path,
       mediaPath = `${apiPath}/media`;
 
+interface MediaResult {
+    media: Media[];
+    count: number;
+}
+
 class MediaApi extends AbstractApi {
-    findMedia(tags: string[], skip: number, limit: number) {
+    findMedia(tags: string[], skip: number, limit: number): Promise<MediaResult> {
         let url = `${mediaPath}`;
         url += UrlService.createQueryString({
             tags: tags instanceof Array ? tags.join() : null,

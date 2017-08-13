@@ -10,13 +10,6 @@ const rules = [
         }]
     },
     {
-        test   : /\.jsx?$/,
-        exclude: /node_modules/,
-        use    : {
-            loader: 'babel-loader'
-        }
-    },
-    {
         test: /\.tsx?$/,
         use : {
             loader: 'awesome-typescript-loader'

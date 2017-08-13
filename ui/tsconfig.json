@@ -13,7 +13,13 @@
       "es5",
       "es6",
       "dom"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "types/*"
+      ]
+    }
   },
   "include": [
     "./app/**/*"

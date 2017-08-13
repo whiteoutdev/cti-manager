@@ -8,7 +8,7 @@ export default function(env) {
     return {
         context: config.app.path,
         entry  : [
-            './index.jsx'
+            './index.tsx'
         ],
         output : {
             path    : config.dist.path,
@@ -19,7 +19,7 @@ export default function(env) {
         },
         plugins: plugins(prod),
         resolve: {
-            extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
+            extensions: ['.json', '.ts', '.tsx']
         },
         devtool: prod ? 'source-map' : 'inline-source-map'
     };
