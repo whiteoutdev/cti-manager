@@ -8,7 +8,7 @@ enum TagCode {
 }
 
 const keys: string[] = [];
-for (let key in TagCode) {
+for (const key in TagCode) {
     if (Number(key) >= 0) {
         keys.push(TagCode[key]);
     }
@@ -19,8 +19,6 @@ class TagType implements Enum<TagCode> {
     public static COPYRIGHT = new TagType(TagCode.COPYRIGHT);
     public static CHARACTER = new TagType(TagCode.CHARACTER);
     public static ARTIST = new TagType(TagCode.ARTIST);
-
-    private static TYPES: TagType[];
 
     public static fromCode(code: TagCode): TagType {
         return (TagType as any)[TagCode[code]];
@@ -37,6 +35,8 @@ class TagType implements Enum<TagCode> {
             return (TagType.TYPES = keys.map(key => (TagType as any)[key]));
         }
     }
+
+    private static TYPES: TagType[];
 
     public name: string;
     public code: TagCode;

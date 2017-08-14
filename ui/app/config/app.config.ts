@@ -6,7 +6,7 @@ export default {
     api    : {
         host: 'localhost',
         port: 3333,
-        get path() {
+        get path(): string {
             return `http://${this.host}:${this.port}/api`;
         }
     },

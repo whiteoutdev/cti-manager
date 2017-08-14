@@ -1,6 +1,6 @@
-import StoreWithUser from './StoreWithUser';
 import TagActions from '../actions/TagActions';
 import TagsApi from '../api/TagsApi';
+import StoreWithUser from './StoreWithUser';
 
 interface TagTypeStoreState {
     tagTypes: string[];
@@ -15,16 +15,16 @@ class TagTypeStore extends StoreWithUser<TagTypeStoreState> {
         this.listenTo(TagActions.updateTagTypes, this.onUpdateTagTypes, this.onUpdateTagTypes);
     }
 
-    onUserSet() {
-        this.onUpdateTagTypes();
+    public onUserSet(): Promise<void> {
+        return this.onUpdateTagTypes();
     }
 
-    onUpdateTagTypes() {
+    public onUpdateTagTypes(): Promise<void> {
         if (!this.user) {
-            return;
+            return Promise.resolve();
         }
 
-        TagsApi.getTagTypes()
+        return TagsApi.getTagTypes()
             .then(tagTypes => this.setState({tagTypes}));
     }
 }

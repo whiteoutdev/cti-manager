@@ -1,11 +1,11 @@
 export default class TagService {
-    static toTagId(displayName: string) {
+    public static toTagId(displayName: string): string {
         return typeof displayName === 'string'
             ? displayName.replace(/ /g, '_').toLowerCase()
             : displayName;
     }
 
-    static toDisplayName(tagId: string) {
+    public static toDisplayName(tagId: string): string {
         return typeof tagId === 'string'
             ? tagId.replace(/_/g, ' ')
             : tagId;

@@ -1,5 +1,5 @@
-import Enum from '../Enum';
 import {AbstractModel} from '../AbstractModel';
+import Enum from '../Enum';
 
 enum InstructionCode {
     BONDAGE                = 0,

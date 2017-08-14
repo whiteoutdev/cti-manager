@@ -1,5 +1,5 @@
-import StoreWithUser from './StoreWithUser';
 import MediaApi from '../api/MediaApi';
+import StoreWithUser from './StoreWithUser';
 
 interface MediaTypeStoreState {
     mimeTypes?: string[];
@@ -13,12 +13,12 @@ class MediaTypeStore extends StoreWithUser<MediaTypeStoreState> {
         });
     }
 
-    getSupportedMimeTypes() {
+    public getSupportedMimeTypes(): Promise<void> {
         if (!this.user) {
-            return;
+            return Promise.resolve();
         }
 
-        MediaApi.getSupportedMimeTypes()
+        return MediaApi.getSupportedMimeTypes()
             .then(mimeTypes => this.setState({mimeTypes}));
     }
 }

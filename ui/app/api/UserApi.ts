@@ -1,16 +1,16 @@
 import appConfig from '../config/app.config';
-import AbstractApi from './AbstractApi';
-import http from '../services/http';
 import User from '../model/user/User';
+import http from '../services/http';
+import AbstractApi from './AbstractApi';
 
 const apiPath = appConfig.api.path;
 
 class UserApi extends AbstractApi {
-    getCurrentUser(): Promise<User> {
+    public getCurrentUser(): Promise<User> {
         return this.getData(`${apiPath}/user`);
     }
 
-    login(username: string, password: string): Promise<any> {
+    public login(username: string, password: string): Promise<any> {
         return this.postData(`${apiPath}/login`, {username, password})
             .then(data => {
                 const token = data.token;

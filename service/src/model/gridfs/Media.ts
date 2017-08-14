@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 
+import {ObjectID} from 'bson';
 import MimeService from '../../util/MimeService';
 import AbstractFile from './AbstractFile';
 import FileType from './FileType';
-import {ObjectID} from 'bson';
 
 export default class Media extends AbstractFile {
     public static fromDatabase(doc: any): Media {

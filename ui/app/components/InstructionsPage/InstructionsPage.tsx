@@ -1,10 +1,11 @@
 import * as React from 'react';
+import {ReactElement} from 'react';
 import NavbarredPage from '../NavbarredPage/NavbarredPage';
 
 class InstructionsPage extends React.Component<{}, {}> {
-    render() {
+    public render(): ReactElement<{}> {
         return (
-            <div className="InstructionsPage">
+            <div className='InstructionsPage'>
                 <NavbarredPage>
                     Instructions Page
                 </NavbarredPage>

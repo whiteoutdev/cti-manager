@@ -1,6 +1,6 @@
 interface Enum<E> {
     name: string;
-    code: E
+    code: E;
 }
 
 export default Enum;

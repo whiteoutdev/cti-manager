@@ -1,6 +1,6 @@
+import * as _ from 'lodash';
 import {AbstractModel, AbstractModelSpec} from '../AbstractModel';
 import User from '../user/User';
-import * as _ from 'lodash';
 
 interface TeaseSpec extends AbstractModelSpec {
     owner: User;
@@ -20,7 +20,7 @@ class Tease extends AbstractModel implements TeaseSpec {
         this.strokeCount = data.strokeCount;
     }
 
-    serialiseToApi(): any {
+    public serialiseToApi(): any {
         const serialised = super.serialiseToApi();
 
         return _.extend(serialised, {
@@ -30,7 +30,7 @@ class Tease extends AbstractModel implements TeaseSpec {
         });
     }
 
-    serialiseToDatabase(): any {
+    public serialiseToDatabase(): any {
         const serialised = super.serialiseToDatabase();
 
         return _.extend(serialised, {

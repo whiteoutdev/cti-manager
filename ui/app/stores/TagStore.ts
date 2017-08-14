@@ -1,7 +1,7 @@
-import StoreWithUser from './StoreWithUser';
 import TagActions from '../actions/TagActions';
 import TagsApi from '../api/TagsApi';
 import Tag from '../model/tag/Tag';
+import StoreWithUser from './StoreWithUser';
 
 interface TagStoreState {
     tags?: Tag[];
@@ -19,23 +19,23 @@ class TagStore extends StoreWithUser<TagStoreState> {
         this.listenTo(TagActions.updateTag, this.onUpdateTag);
     }
 
-    onUserSet() {
-        this.onUpdateTags();
+    public onUserSet(): Promise<void> {
+        return this.onUpdateTags();
     }
 
-    buildTagIndex(tags: Tag[]) {
+    public buildTagIndex(tags: Tag[]): {[id: string]: Tag} {
         const tagIndex: {[id: string]: Tag} = {};
         tags.forEach(tag => tagIndex[tag.id] = tag);
         return tagIndex;
     }
 
-    onUpdateTags() {
+    public onUpdateTags(): Promise<void> {
         if (!this.user) {
-            return;
+            return Promise.resolve();
         }
 
-        TagsApi.getTags()
-            .then((tags) => {
+        return TagsApi.getTags()
+            .then(tags => {
                 if (tags instanceof Array) {
                     const tagIndex = this.buildTagIndex(tags);
                     this.setState({tags, tagIndex});
@@ -43,8 +43,8 @@ class TagStore extends StoreWithUser<TagStoreState> {
             });
     }
 
-    onUpdateTag(tagId: string) {
-        TagsApi.getTag(tagId)
+    public onUpdateTag(tagId: string): Promise<void> {
+        return TagsApi.getTag(tagId)
             .then(tag => {
                 const index = this.state.tags.findIndex(oldTag => oldTag.id === tag.id);
                 if (~index) {

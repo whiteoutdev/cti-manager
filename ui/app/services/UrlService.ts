@@ -2,24 +2,24 @@ import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
 export default class UrlService {
-    static createQueryString(parameterMap: {[key: string]: any}): string {
-        let queryString = '?';
+    public static createQueryString(parameterMap: {[key: string]: any}): string {
+        let query = '?';
         _.each(parameterMap, (param, key) => {
             if (param !== null && typeof param !== 'undefined') {
-                if (queryString !== '?') {
-                    queryString += '&';
+                if (query !== '?') {
+                    query += '&';
                 }
-                queryString += `${key}=${param}`;
+                query += `${key}=${param}`;
             }
         });
-        return queryString === '?' ? '' : queryString;
+        return query === '?' ? '' : query;
     }
 
-    static parseQueryString(search: string): {[key: string]: any} {
+    public static parseQueryString(search: string): {[key: string]: any} {
         return queryString.parse(search);
     }
 
-    static createAbsoluteUrl(url: string): string {
+    public static createAbsoluteUrl(url: string): string {
         const schemeRegex = /^https?:\/\//;
         return schemeRegex.test(url) ? url : `http://${url}`;
     }

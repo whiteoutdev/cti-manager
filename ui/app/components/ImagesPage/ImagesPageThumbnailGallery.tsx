@@ -3,8 +3,9 @@ import {Link} from 'react-router-dom';
 
 import appConfig from '../../config/app.config';
 
-import './ImagesPageThumbnailGallery.scss';
+import {ReactElement, ReactNode} from 'react';
 import {AbstractComponent} from '../AbstractComponent/AbstractComponent';
+import './ImagesPageThumbnailGallery.scss';
 
 const maxNavButtons = 11;
 
@@ -17,15 +18,15 @@ interface ImagesPageThumbnailGalleryProps {
 }
 
 class ImagesPageThumbnailGallery extends AbstractComponent<ImagesPageThumbnailGalleryProps, {}> {
-    shouldComponentUpdate(nextProps: ImagesPageThumbnailGalleryProps) {
+    public shouldComponentUpdate(nextProps: ImagesPageThumbnailGalleryProps): boolean {
         return JSON.stringify(nextProps) !== JSON.stringify(this.props);
     }
 
-    renderThumbnails() {
+    public renderThumbnails(): ReactNode {
         if (this.getProps().ids) {
-            return this.getProps().ids.map((id) => {
+            return this.getProps().ids.map(id => {
                 return (
-                    <li key={id} className="thumbnail-list-item">
+                    <li key={id} className='thumbnail-list-item'>
                         <Link to={`/media/${id}`}>
                             <img src={`${appConfig.api.path}/media/${id}/thumbnail/download`} alt={id}/>
                         </Link>
@@ -35,7 +36,7 @@ class ImagesPageThumbnailGallery extends AbstractComponent<ImagesPageThumbnailGa
         }
     }
 
-    renderNavigation() {
+    public renderNavigation(): ReactNode {
         const imageCount = this.getProps().count,
               limit      = this.getProps().limit,
               skip       = this.getProps().skip,
@@ -58,13 +59,13 @@ class ImagesPageThumbnailGallery extends AbstractComponent<ImagesPageThumbnailGa
         for (let i = minPageNav; i < maxPageNav; i++) {
             if (i === currentPage) {
                 navButtons.push(
-                    <li className="nav-button current" key={i}><span>{i + 1}</span></li>
+                    <li className='nav-button current' key={i}><span>{i + 1}</span></li>
                 );
             } else {
                 const newSkip = i * limit;
-                let url = `/media?${query ? `${query}&` : ''}skip=${newSkip}&limit=${limit}`;
+                const url = `/media?${query ? `${query}&` : ''}skip=${newSkip}&limit=${limit}`;
                 navButtons.push(
-                    <li key={i} className="nav-button link">
+                    <li key={i} className='nav-button link'>
                         <Link to={url}>{i + 1}</Link>
                     </li>
                 );
@@ -75,14 +76,14 @@ class ImagesPageThumbnailGallery extends AbstractComponent<ImagesPageThumbnailGa
             const previousPageUrl = `/media?${query ? `${query}&` : ''}skip=${(currentPage - 1) *
             limit}&limit=${limit}`;
             navButtons.unshift(
-                <li key="firstPage" className="nav-button link button-link">
+                <li key='firstPage' className='nav-button link button-link'>
                     <Link to={`/media?${query ? `${query}&` : ''}limit=${limit}`}>
-                        <i className="material-icons">first_page</i>
+                        <i className='material-icons'>first_page</i>
                     </Link>
                 </li>,
-                <li key="previousPage" className="nav-button link button-link">
+                <li key='previousPage' className='nav-button link button-link'>
                     <Link to={previousPageUrl}>
-                        <i className="material-icons">chevron_left</i>
+                        <i className='material-icons'>chevron_left</i>
                     </Link>
                 </li>
             );
@@ -91,34 +92,34 @@ class ImagesPageThumbnailGallery extends AbstractComponent<ImagesPageThumbnailGa
         if (currentPage < pageCount - 1) {
             const nextPageUrl = `/media?${query ? `${query}&` : ''}skip=${(currentPage + 1) * limit}&limit=${limit}`;
             navButtons.push(
-                <li key="nextPage" className="nav-button link button-link">
+                <li key='nextPage' className='nav-button link button-link'>
                     <Link to={nextPageUrl}>
-                        <i className="material-icons">chevron_right</i>
+                        <i className='material-icons'>chevron_right</i>
                     </Link>
                 </li>,
-                <li key="lastPage" className="nav-button link button-link">
+                <li key='lastPage' className='nav-button link button-link'>
                     <Link to={`/media?${query ? `${query}&` : ''}skip=${(pageCount - 1) * limit}&limit=${limit}`}>
-                        <i className="material-icons">last_page</i>
+                        <i className='material-icons'>last_page</i>
                     </Link>
                 </li>
             );
         }
 
         return (
-            <ul className="nav-buttons">
+            <ul className='nav-buttons'>
                 {navButtons}
             </ul>
         );
     }
 
-    render() {
+    public render(): ReactElement<ImagesPageThumbnailGalleryProps> {
         return (
-            <div className="ImagesPageThumbnailGallery">
-                <ul className="thumbnail-list">
+            <div className='ImagesPageThumbnailGallery'>
+                <ul className='thumbnail-list'>
                     {this.renderThumbnails()}
-                    <li className="end-padding"/>
+                    <li className='end-padding'/>
                 </ul>
-                <div className="page-navigation">
+                <div className='page-navigation'>
                     {this.renderNavigation()}
                 </div>
             </div>

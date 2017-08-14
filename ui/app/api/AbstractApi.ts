@@ -1,6 +1,6 @@
-import http from '../services/http';
-import history from '../services/history';
 import {AxiosResponse} from 'axios';
+import history from '../services/history';
+import http from '../services/http';
 
 abstract class AbstractApi {
     protected getData(path: string): Promise<any> {
@@ -19,7 +19,7 @@ abstract class AbstractApi {
         return res.data;
     }
 
-    private catchUnauthorized(err: any) {
+    private catchUnauthorized(err: any): {} {
         const res = err.response;
 
         if (res.status === 401) {
@@ -29,7 +29,6 @@ abstract class AbstractApi {
 
         throw err;
     }
-
 }
 
 export default AbstractApi;

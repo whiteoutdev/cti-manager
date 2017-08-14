@@ -22,15 +22,15 @@ class UserStore extends Store<UserStoreState> {
         };
     }
 
-    onUpdateCurrentUser() {
-        UserApi.getCurrentUser()
+    public onUpdateCurrentUser(): Promise<void> {
+        return UserApi.getCurrentUser()
             .then(user => {
                 this.setState({user});
             });
     }
 
-    onLogin(username: string, password: string) {
-        UserApi.login(username, password)
+    public onLogin(username: string, password: string): Promise<void> {
+        return UserApi.login(username, password)
             .then(this.onUpdateCurrentUser.bind(this));
     }
 }

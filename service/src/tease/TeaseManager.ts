@@ -1,6 +1,6 @@
 import {Tease} from '../model/tease/Tease';
-import User from '../model/user/User';
 import {TeaseConfig} from '../model/tease/TeaseConfig';
+import User from '../model/user/User';
 
 class TeaseManager {
     public createTease(user: User, config: TeaseConfig): Tease {

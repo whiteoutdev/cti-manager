@@ -1,20 +1,22 @@
 import * as React from 'react';
 
-import NavbarredPage from '../NavbarredPage/NavbarredPage';
 import ImageSidebar from '../ImageSidebar/ImageSidebar';
+import NavbarredPage from '../NavbarredPage/NavbarredPage';
 
-import appConfig from '../../config/app.config';
-import MediaApi from '../../api/MediaApi';
 import TagActions from '../../actions/TagActions';
+import MediaApi from '../../api/MediaApi';
+import appConfig from '../../config/app.config';
 
-import './ImagePage.scss';
+import {ReactElement, ReactNode} from 'react';
 import {RouteComponentProps} from 'react-router';
 import Media from '../../model/media/Media';
+import './ImagePage.scss';
 
 interface ImagePageRouteParams {
     imageID: string;
 }
 
+// tslint:disable-next-line:no-empty-interface
 interface ImagePageProps extends RouteComponentProps<ImagePageRouteParams> {
 }
 
@@ -34,34 +36,35 @@ class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
         };
     }
 
-    updateTags(tags: string[]) {
-        MediaApi.setTags(this.getImageID(), tags)
-            .then((media) => {
+    public updateTags(tags: string[]): Promise<void> {
+        return MediaApi.setTags(this.getImageID(), tags)
+            .then(media => {
                 this.setState({media}, () => {
                     TagActions.updateTags();
                 });
             });
     }
 
-    getImage(props: ImagePageProps) {
+    public getImage(props: ImagePageProps): Promise<void> {
         const imageId = this.getImageID(props);
-        MediaApi.getMedia(imageId).then((media) => {
-            this.setState({media});
-        });
+        return MediaApi.getMedia(imageId)
+            .then(media => {
+                this.setState({media});
+            });
     }
 
-    getImageID(props?: ImagePageProps): string {
+    public getImageID(props?: ImagePageProps): string {
         props = props || this.props;
         return props.match.params.imageID;
     }
 
-    toggleMaximize() {
+    public toggleMaximize(): void {
         this.setState({
             maximized: !this.state.maximized
         });
     }
 
-    toggleVideoPause() {
+    public toggleVideoPause(): void {
         const player = this.videoPlayer;
         if (player.paused) {
             player.play();
@@ -70,11 +73,11 @@ class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
         }
     }
 
-    componentDidMount() {
-        this.getImage(this.props);
+    public componentDidMount(): Promise<void> {
+        return this.getImage(this.props);
     }
 
-    renderImage() {
+    public renderImage(): ReactNode {
         const media = this.state.media;
 
         if (media) {
@@ -100,16 +103,16 @@ class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
         }
     }
 
-    render() {
+    public render(): ReactElement<ImagePageProps> {
         return (
-            <div className="ImagePage">
+            <div className='ImagePage'>
                 <NavbarredPage>
                     <ImageSidebar images={this.state.media ? [this.state.media] : []}
                                   uploadDisabled
                                   tagsEditable
                                   onTagsChange={this.updateTags.bind(this)}/>
-                    <div className="image-section">
-                        <div className="image-container">
+                    <div className='image-section'>
+                        <div className='image-container'>
                             {this.renderImage()}
                         </div>
                     </div>

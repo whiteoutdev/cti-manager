@@ -1,12 +1,13 @@
-import * as React from 'react';
 import * as _ from 'lodash';
+import * as React from 'react';
 
-import './EditableLink.scss';
+import {ReactElement, ReactNode} from 'react';
 import {AbstractComponent} from '../AbstractComponent/AbstractComponent';
 import Hotkeys from '../Hotkeys/Hotkeys';
+import './EditableLink.scss';
 
 interface EditableLinkProps {
-    onSave: (value: string) => void,
+    onSave: (value: string) => void;
     display: string;
     link: string;
 }
@@ -25,8 +26,8 @@ class EditableLink extends AbstractComponent<EditableLinkProps, EditableLinkStat
         };
     }
 
-    toggleEditMode() {
-        return new Promise((resolve) => {
+    public toggleEditMode(): Promise<void> {
+        return new Promise(resolve => {
             this.setState({
                 editMode: !this.state.editMode
             }, () => {
@@ -35,53 +36,54 @@ class EditableLink extends AbstractComponent<EditableLinkProps, EditableLinkStat
         });
     }
 
-    fireSave() {
+    public fireSave(): Promise<void> {
         const newValue = this.editableInput.value;
-        this.toggleEditMode().then(() => {
-            this.getProps().onSave(newValue);
-        });
+        return this.toggleEditMode()
+            .then(() => {
+                this.getProps().onSave(newValue);
+            });
     }
 
-    componentDidUpdate() {
+    public componentDidUpdate(): void {
         if (this.state.editMode) {
             this.editableInput.select();
         }
     }
 
-    renderEditor() {
+    public renderEditor(): ReactNode {
         return (
-            <Hotkeys className="link-form" handlers={{enter: this.fireSave.bind(this)}}>
-                <input type="text"
-                       className="link-input with-addon"
+            <Hotkeys className='link-form' handlers={{enter: this.fireSave.bind(this)}}>
+                <input type='text'
+                       className='link-input with-addon'
                        ref={input => this.editableInput = input}
                        defaultValue={this.getProps().display}
                        onBlur={this.toggleEditMode.bind(this)}/>
-                <button className="accent" onClick={this.fireSave.bind(this)}>
-                    <i className="material-icons">done</i>
+                <button className='accent' onClick={this.fireSave.bind(this)}>
+                    <i className='material-icons'>done</i>
                 </button>
             </Hotkeys>
         );
     }
 
-    renderLink() {
+    public renderLink(): ReactNode {
         if (this.getProps().link && this.getProps().display) {
             return (
-                <div className="link-display">
+                <div className='link-display'>
                     <a href={this.getProps().link}>{this.getProps().display}</a>
-                    <i className="material-icons edit-button" onClick={this.toggleEditMode.bind(this)}>edit</i>
+                    <i className='material-icons edit-button' onClick={this.toggleEditMode.bind(this)}>edit</i>
                 </div>
             );
         } else {
             return (
-                <div className="link-display">
+                <div className='link-display'>
                     <span>None</span>
-                    <i className="material-icons edit-button" onClick={this.toggleEditMode.bind(this)}>edit</i>
+                    <i className='material-icons edit-button' onClick={this.toggleEditMode.bind(this)}>edit</i>
                 </div>
             );
         }
     }
 
-    renderContent() {
+    public renderContent(): ReactNode {
         if (this.state.editMode) {
             return this.renderEditor();
         } else {
@@ -89,9 +91,9 @@ class EditableLink extends AbstractComponent<EditableLinkProps, EditableLinkStat
         }
     }
 
-    render() {
+    public render(): ReactElement<EditableLinkProps> {
         return (
-            <div className="EditableLink">
+            <div className='EditableLink'>
                 {this.renderContent()}
             </div>
         );

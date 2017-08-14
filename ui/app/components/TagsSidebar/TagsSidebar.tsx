@@ -1,29 +1,30 @@
-import * as React from 'react';
-import * as _ from 'lodash';
 import escapeRegex = require('escape-string-regexp');
+import * as _ from 'lodash';
+import * as React from 'react';
+import {ReactElement, ReactNode} from 'react';
+import TagsApi from '../../api/TagsApi';
+import Tag from '../../model/tag/Tag';
+import TagService from '../../services/TagService';
+import TagStore, {TagStoreState} from '../../stores/TagStore';
+import {AbstractRefluxComponent} from '../AbstractComponent/AbstractComponent';
+import Hotkeys from '../Hotkeys/Hotkeys';
 import Panel from '../Panel/Panel';
-import PanelHeader from '../Panel/PanelHeader';
 import PanelBody from '../Panel/PanelBody';
-import PanelButtons from '../Panel/PanelButtons';
 import PanelButton from '../Panel/PanelButton';
+import PanelButtons from '../Panel/PanelButtons';
+import PanelHeader from '../Panel/PanelHeader';
 import PanelList from '../Panel/PanelList';
 import PanelListItem from '../Panel/PanelListItem';
-import TagService from '../../services/TagService';
-import TagsApi from '../../api/TagsApi';
-import TagStore, {TagStoreState} from '../../stores/TagStore';
 import './TagsSidebar.scss';
-import {AbstractRefluxComponent} from '../AbstractComponent/AbstractComponent';
-import Tag from '../../model/tag/Tag';
-import Hotkeys from '../Hotkeys/Hotkeys';
 
 interface TagsSidebarProps {
-    onTagSelect: Function;
+    onTagSelect: (tag: Tag) => void;
 }
 
 interface TagsSidebarState extends TagStoreState {
     searchResults: Tag[];
     regexMode: boolean;
-    selectedTag: Tag
+    selectedTag: Tag;
     queryError: string;
 }
 
@@ -43,55 +44,57 @@ class TagsSidebar extends AbstractRefluxComponent<TagsSidebarProps, TagsSidebarS
         this.store = TagStore;
     }
 
-    setRegexMode(regexMode: boolean) {
+    public setRegexMode(regexMode: boolean): void {
         this.setState({regexMode});
     }
 
-    createRegexString(query: string) {
+    public createRegexString(query: string): string {
         return query.split('*')
             .map(part => escapeRegex(part))
             .join('.*');
     }
 
-    search() {
+    public search(): Promise<void> {
         const query = this.searchInput.value;
         if (!query) {
-            return;
+            return Promise.resolve();
         }
 
         const regexQuery = this.state.regexMode ? query : this.createRegexString(query);
         try {
+            // tslint:disable-next-line:no-unused-expression
             new RegExp(regexQuery);
             this.setState({queryError: null});
         } catch (e) {
             this.setState({queryError: e.message});
-            return;
+            return Promise.resolve();
         }
 
-        TagsApi.getTags(regexQuery).then((tags) => {
-            this.setState({searchResults: tags});
-        });
+        return TagsApi.getTags(regexQuery)
+            .then(tags => {
+                this.setState({searchResults: tags});
+            });
     }
 
-    fireTagSelect() {
+    public fireTagSelect(): void {
         this.getProps().onTagSelect(this.state.selectedTag);
     }
 
-    selectTag(tag: Tag) {
+    public selectTag(tag: Tag): void {
         this.setState({selectedTag: tag}, this.fireTagSelect);
     }
 
-    renderSearchPanel() {
+    public renderSearchPanel(): ReactNode {
         return (
             <Panel>
                 <PanelHeader>
                     <h2>Tag Search</h2>
                 </PanelHeader>
-                <PanelBody className="search-panel-body">
-                    <Hotkeys className="search-container" handlers={{enter: this.search.bind(this)}}>
-                        <input ref={input => this.searchInput = input} type="text"/>
-                        <button className="search-button accent" onClick={this.search.bind(this)}>
-                            <i className="material-icons">search</i>
+                <PanelBody className='search-panel-body'>
+                    <Hotkeys className='search-container' handlers={{enter: this.search.bind(this)}}>
+                        <input ref={input => this.searchInput = input} type='text'/>
+                        <button className='search-button accent' onClick={this.search.bind(this)}>
+                            <i className='material-icons'>search</i>
                         </button>
                     </Hotkeys>
                 </PanelBody>
@@ -109,8 +112,8 @@ class TagsSidebar extends AbstractRefluxComponent<TagsSidebarProps, TagsSidebarS
         );
     }
 
-    renderTagList(results: Tag[]) {
-        return results.map((result) => {
+    public renderTagList(results: Tag[]): ReactNode {
+        return results.map(result => {
             const tag      = this.state.tagIndex[result.id] || result,
                   selected = this.state.selectedTag ? tag.id === this.state.selectedTag.id : false;
             return (
@@ -122,7 +125,7 @@ class TagsSidebar extends AbstractRefluxComponent<TagsSidebarProps, TagsSidebarS
         });
     }
 
-    renderSearchResultsPanel() {
+    public renderSearchResultsPanel(): ReactNode {
         const results = this.state.searchResults;
         if (!results || !results.length) {
             return null;
@@ -133,16 +136,16 @@ class TagsSidebar extends AbstractRefluxComponent<TagsSidebarProps, TagsSidebarS
                 <PanelHeader>
                     <h2>Search Results</h2>
                 </PanelHeader>
-                <PanelList className="search-results-list">
+                <PanelList className='search-results-list'>
                     {this.renderTagList(results)}
                 </PanelList>
             </Panel>
         );
     }
 
-    render() {
+    public render(): ReactElement<TagsSidebarProps> {
         return (
-            <div className="TagsSidebar">
+            <div className='TagsSidebar'>
                 {this.renderSearchPanel()}
                 {this.renderSearchResultsPanel()}
             </div>

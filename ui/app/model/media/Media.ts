@@ -7,7 +7,7 @@ interface Media {
     thumbnailID: string;
     width: number;
     height: number;
-    tags: string[]
+    tags: string[];
 }
 
 export default Media;

@@ -1,7 +1,8 @@
 import appConfig from '../config/app.config';
+import Media from '../model/media/Media';
+import Thumbnail from '../model/media/Thumbnail';
 import UrlService from '../services/UrlService';
 import AbstractApi from './AbstractApi';
-import Media from '../model/media/Media';
 
 const apiPath   = appConfig.api.path,
       mediaPath = `${apiPath}/media`;
@@ -12,7 +13,7 @@ interface MediaResult {
 }
 
 class MediaApi extends AbstractApi {
-    findMedia(tags: string[], skip: number, limit: number): Promise<MediaResult> {
+    public findMedia(tags: string[], skip: number, limit: number): Promise<MediaResult> {
         let url = `${mediaPath}`;
         url += UrlService.createQueryString({
             tags: tags instanceof Array ? tags.join() : null,
@@ -22,23 +23,24 @@ class MediaApi extends AbstractApi {
         return this.getData(url);
     }
 
-    getMedia(id: string) {
+    public getMedia(id: string): Promise<Media> {
         return this.getData(`${mediaPath}/${id}`);
     }
 
-    getMediaThumbnail(id: string) {
+    public getMediaThumbnail(id: string): Promise<Thumbnail> {
         return this.getData(`${mediaPath}/${id}/thumbnail`);
     }
 
-    uploadFiles(formData: FormData) {
+    // TODO: Sort out typings on this
+    public uploadFiles(formData: FormData): Promise<any> {
         return this.postData(mediaPath, formData);
     }
 
-    setTags(id: string, tags: string[]) {
+    public setTags(id: string, tags: string[]): Promise<Media> {
         return this.postData(`${mediaPath}/${id}/tags`, {tags});
     }
 
-    getSupportedMimeTypes() {
+    public getSupportedMimeTypes(): Promise<string[]> {
         return this.getData(`${apiPath}/mediatypes`);
     }
 }

@@ -1,6 +1,8 @@
+// tslint:disable:max-classes-per-file
+
+import * as _ from 'lodash';
 import * as React from 'react';
 import {Component} from 'reflux';
-import * as _ from 'lodash';
 
 abstract class AbstractComponent<P, S> extends React.Component<P, S> {
     protected abstract defaultProps(): P;

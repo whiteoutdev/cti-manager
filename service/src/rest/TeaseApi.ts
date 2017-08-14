@@ -1,7 +1,7 @@
-import RestApi from './RestApi';
 import {RequestHandler, Router} from 'express';
 import {TeaseConfig} from '../model/tease/TeaseConfig';
 import logger from '../util/logger';
+import RestApi from './RestApi';
 
 export default class TeaseApi implements RestApi {
     public configure(router: Router, authenticate: RequestHandler): Promise<any> {
