@@ -1,0 +1,42 @@
+@import '../../scss/colours';
+@import '../../scss/mixins';
+
+.LoginPage {
+
+    .container {
+        @include tile;
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 2em;
+        text-align: center;
+        max-width: 100%;
+        width: 800px;
+    }
+
+    h1 {
+        color: $brand-primary;
+        font-size: 3rem;
+        margin: .75em;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        color: $font-dark-secondary;
+        margin: 1em;
+    }
+
+    .form-row {
+        max-width: 100%;
+        width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    button {
+        font-size: 1.5em;
+        margin: 2em 0 1em;
+    }
+
+}

@@ -5,7 +5,7 @@ const exec        = require('child_process').exec,
 
 Promise.all([
     new Promise((resolve, reject) => {
-        exec(`npm version ${newVersion}`, {cwd: path.join(__dirname, 'cti-manager-server')}, (err, stdout, stderr) => {
+        exec(`npm version ${newVersion}`, {cwd: path.join(__dirname, 'service')}, (err, stdout, stderr) => {
             console.log(stdout);
             console.error(stderr);
 
@@ -17,7 +17,7 @@ Promise.all([
         });
     }),
     new Promise((resolve, reject) => {
-        exec(`npm version ${newVersion}`, {cwd: path.join(__dirname, 'cti-manager-web-ui')}, (err, stdout, stderr) => {
+        exec(`npm version ${newVersion}`, {cwd: path.join(__dirname, 'ui')}, (err, stdout, stderr) => {
             console.log(stdout);
             console.error(stderr);
 
