@@ -1,7 +1,7 @@
 const packageJson = require('../../package.json');
 
 export default {
-    appName: 'CTI Manager',
+    appName: 'App', // 'CTI Manager',
     version: packageJson.version,
     api    : {
         host: 'localhost',

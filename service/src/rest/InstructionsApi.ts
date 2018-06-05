@@ -1,4 +1,5 @@
 import {RequestHandler, Router} from 'express';
+import {InstructionType} from '../model/instruction/InstructionType';
 import logger from '../util/logger';
 import RestApi from './RestApi';
 
@@ -14,6 +15,12 @@ export default class InstructionsApi implements RestApi {
             logger.debug('Instruction creation requested');
             // TODO
             res.status(200).end();
+        });
+
+        router.get('/instructionTypes', authenticate, (req, res) => {
+            logger.debug('Instruction types requests');
+
+            res.status(200).send(InstructionType.values());
         });
 
         return Promise.resolve();

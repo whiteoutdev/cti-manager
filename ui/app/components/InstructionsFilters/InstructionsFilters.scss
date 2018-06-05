@@ -1,0 +1,31 @@
+@import '../../scss/colours';
+@import '../../scss/mixins';
+
+.InstructionsFilters {
+    @include sidebar;
+    padding: 2rem 1rem;
+
+    .Panel {
+        margin-bottom: 1em;
+
+        .PanelHeader {
+            h2, i {
+                font-size: 1.125em;
+            }
+        }
+
+        &.search-section {
+            z-index: 5;
+
+            .search-form {
+                @include flex-row-nowrap;
+                font-size: 1em;
+
+                input {
+                    flex: 1;
+                    border-right: 0;
+                }
+            }
+        }
+    }
+}

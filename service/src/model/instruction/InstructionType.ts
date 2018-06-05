@@ -18,6 +18,13 @@ enum InstructionCode {
     WORK_IT                = 13
 }
 
+const keys: string[] = [];
+for (const key in InstructionCode) {
+    if (Number(key) >= 0) {
+        keys.push(InstructionCode[key]);
+    }
+}
+
 class InstructionType extends AbstractModel implements Enum<InstructionCode> {
     public static BONDAGE = new InstructionType(InstructionCode.BONDAGE, 'Bondage');
     public static CHANCE_TO_CUM = new InstructionType(InstructionCode.CHANCE_TO_CUM, 'Chance to Cum');
@@ -34,6 +41,21 @@ class InstructionType extends AbstractModel implements Enum<InstructionCode> {
     public static STROKE_IT = new InstructionType(InstructionCode.STROKE_IT, 'Stroke It!');
     public static TOY_TIME = new InstructionType(InstructionCode.TOY_TIME, 'Toy Time');
     public static WORK_IT = new InstructionType(InstructionCode.WORK_IT, 'Work It!');
+
+    public static values(): InstructionType[] {
+        if (InstructionType.TYPES) {
+            return InstructionType.TYPES;
+        } else {
+            InstructionType.TYPES = keys.map(key => (InstructionType as any)[key]);
+            InstructionType.TYPES.sort((t1, t2) => {
+                return t1.name.localeCompare(t2.name);
+            });
+            console.log(JSON.stringify(InstructionType.TYPES), null, 4);
+            return InstructionType.TYPES;
+        }
+    }
+
+    private static TYPES: InstructionType[];
 
     public static fromCode(code: InstructionCode): InstructionType {
         return (InstructionType as any)[InstructionCode[code]];
