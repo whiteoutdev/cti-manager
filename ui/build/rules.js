@@ -12,19 +12,13 @@ const rules = [
     {
         test: /\.tsx?$/,
         use : {
-            loader: 'awesome-typescript-loader'
+            loader: 'ts-loader'
         }
     },
     {
         test: /\.(png|jpg|jpeg|svg|eot|ttf|woff|woff2)$/,
         use : {
             loader: 'url-loader?limit=8192'
-        }
-    },
-    {
-        test: /\.json$/,
-        use : {
-            loader: 'json-loader'
         }
     }
 ];

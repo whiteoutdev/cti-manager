@@ -1,10 +1,10 @@
+import {DefinePlugin} from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
-import {CheckerPlugin} from 'awesome-typescript-loader';
 
 import config from './config';
 
-export default function(prod) {
+export default function(prod, presetData) {
     const htmlPluginConfig = {
         inject  : 'body',
         template: config.app.indexEjs
@@ -12,7 +12,9 @@ export default function(prod) {
 
     const plugins = [
         new HtmlWebpackPlugin(htmlPluginConfig),
-        new CheckerPlugin()
+        new DefinePlugin({
+            presetData: JSON.stringify(presetData)
+        })
     ];
 
     if (prod) {

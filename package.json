@@ -6,6 +6,7 @@
   "scripts": {
     "build": "concurrently \"cd service && yarn build\" \"cd ui && yarn build\"",
     "dev": "concurrently \"cd service && yarn dev\" \"cd ui && yarn dev\"",
+    "sfw": "concurrently \"cd service && yarn sfw\" \"cd ui && yarn sfw\"",
     "test": "concurrently \"yarn depcheck\" \"cd service && yarn test\" \"cd ui && yarn test\"",
     "version": "node version",
     "postinstall": "concurrently \"cd service && yarn\" \"cd ui && yarn\"",

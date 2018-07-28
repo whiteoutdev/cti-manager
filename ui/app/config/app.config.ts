@@ -1,7 +1,7 @@
 const packageJson = require('../../package.json');
 
 export default {
-    appName: 'App', // 'CTI Manager',
+    appName: presetData.preset === 'sfw' ? 'App' : 'CTI Manager',
     version: packageJson.version,
     api    : {
         host: 'localhost',

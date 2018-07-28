@@ -50,16 +50,15 @@ class InstructionType extends AbstractModel implements Enum<InstructionCode> {
             InstructionType.TYPES.sort((t1, t2) => {
                 return t1.name.localeCompare(t2.name);
             });
-            console.log(JSON.stringify(InstructionType.TYPES), null, 4);
             return InstructionType.TYPES;
         }
     }
 
-    private static TYPES: InstructionType[];
-
     public static fromCode(code: InstructionCode): InstructionType {
         return (InstructionType as any)[InstructionCode[code]];
     }
+
+    private static TYPES: InstructionType[];
 
     public name: string;
     public code: InstructionCode;

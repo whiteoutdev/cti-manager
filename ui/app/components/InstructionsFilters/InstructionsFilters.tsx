@@ -10,11 +10,11 @@ import {InstructionTypeStore, InstructionTypeStoreState} from '../../stores/Inst
 import {TagStore, TagStoreState} from '../../stores/TagStore';
 import {AbstractRefluxComponent} from '../AbstractComponent/AbstractComponent';
 
-import './InstructionsFilters.scss';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput';
 import Panel from '../Panel/Panel';
 import PanelBody from '../Panel/PanelBody';
 import PanelHeader from '../Panel/PanelHeader';
+import './InstructionsFilters.scss';
 
 interface InstructionsFiltersBaseProps {
 }
@@ -52,7 +52,6 @@ class InstructionsFilters extends AbstractRefluxComponent<InstructionsFiltersPro
     }
 
     private search(): void {
-
     }
 
     private renderSearchSection(): ReactNode {
@@ -64,12 +63,12 @@ class InstructionsFilters extends AbstractRefluxComponent<InstructionsFiltersPro
                     </PanelHeader>
 
                     <PanelBody>
-                        <div className="search-form">
+                        <div className='search-form'>
                             <AutocompleteInput ref={input => this.searchInput = input} tokenize
                                                items={this.state.tags.map(tag => tag.id)}
                                                onEnter={this.search.bind(this)}/>
-                            <button className="search-button accent" onClick={this.search.bind(this)}>
-                                <i className="material-icons">search</i>
+                            <button className='search-button accent' onClick={this.search.bind(this)}>
+                                <i className='material-icons'>search</i>
                             </button>
                         </div>
                     </PanelBody>
@@ -80,13 +79,13 @@ class InstructionsFilters extends AbstractRefluxComponent<InstructionsFiltersPro
 
     private renderTypesSection(): ReactNode {
         return (
-            <Panel className="types-section">
+            <Panel className='types-section'>
                 <PanelHeader>
                     <h2>Instruction Types</h2>
                 </PanelHeader>
 
                 <PanelBody>
-                    <ul className="type-list">
+                    <ul className='type-list'>
                         {this.state.instructionTypes.map(type => <li>{type.code}</li>)}
                     </ul>
                 </PanelBody>

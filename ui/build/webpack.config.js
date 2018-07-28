@@ -3,7 +3,9 @@ import rules from './rules';
 import plugins from './plugins';
 
 export default function(env) {
-    const prod = env === 'production';
+    const prod       = env === 'production',
+          preset     = env.preset || 'std',
+          presetData = require(`./preset.${preset}.json`);
 
     return {
         context: config.app.path,
@@ -17,7 +19,7 @@ export default function(env) {
         module : {
             rules
         },
-        plugins: plugins(prod),
+        plugins: plugins(prod, presetData),
         resolve: {
             extensions: ['.json', '.ts', '.tsx', '.js']
         },
