@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "concurrently \"cd service && yarn build\" \"cd ui && yarn build\"",
+    "db-dev": "cd service && yarn db-dev",
+    "db-sfw": "cd service && yarn db-sfw",
     "dev": "concurrently \"cd service && yarn dev\" \"cd ui && yarn dev\"",
     "sfw": "concurrently \"cd service && yarn sfw\" \"cd ui && yarn sfw\"",
     "test": "concurrently \"yarn depcheck\" \"cd service && yarn test\" \"cd ui && yarn test\"",

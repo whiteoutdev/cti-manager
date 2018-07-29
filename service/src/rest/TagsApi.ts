@@ -72,7 +72,10 @@ export default class TagsApi implements RestApi {
 
         router.get('/tagtypes', authenticate, (req, res) => {
             logger.debug('Tag types requested');
-            res.status(200).send(TagCollection.getTagTypeNames());
+            TagCollection.getTagTypeNames()
+                .then(tagTypeNames => {
+                    res.status(200).send(tagTypeNames);
+                });
         });
 
         return Promise.resolve();
