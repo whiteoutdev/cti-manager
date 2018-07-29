@@ -1,5 +1,5 @@
-import Reflux from 'reflux';
+import {createActions} from 'reflux';
 
-export default Reflux.createActions([
+export default createActions([
     'updateInstructionTypes'
 ]);

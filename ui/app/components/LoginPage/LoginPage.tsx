@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {Component} from 'reflux';
+import {Component, Store} from 'reflux';
 import appConfig from '../../config/app.config';
 import history from '../../services/history';
 import {UserActions, UserStore, UserStoreState} from '../../stores/UserStore';
@@ -12,7 +12,7 @@ import './LoginPage.scss';
 interface LoginPageState extends UserStoreState {
 }
 
-export default class LoginPage extends Component<{}, LoginPageState> {
+export default class LoginPage extends Component<typeof Store, {}, LoginPageState> {
     private usernameInput: HTMLInputElement;
     private passwordInput: HTMLInputElement;
 

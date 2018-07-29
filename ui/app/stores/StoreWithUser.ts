@@ -1,22 +1,25 @@
 import {Store} from 'reflux';
-
 import User from '../model/user/User';
-import UserStore, {UserStoreState} from './UserStore';
+import {UserActions} from './UserStore';
 
-export default class StoreWithUser<S> extends Store<S> {
+export class StoreWithUser<S extends object> extends Store {
+    public state: Readonly<S>;
+
     protected user: User;
 
     constructor() {
         super();
-        this.listenTo(UserStore, this.onUpdateUser, this.onUpdateUser);
+        this.listenTo(UserActions.propagateNewUser, this.onUpdateUser);
     }
 
-    public onUpdateUser(userData: UserStoreState): void {
-        if (userData && userData.user) {
-            this.user = userData.user;
-        }
+    public setState(state: S): void {
+        return super.setState(state);
+    }
 
-        if (!this.user) {
+    public onUpdateUser(user: User): void {
+        if (user) {
+            this.user = user;
+        } else {
             return;
         }
 

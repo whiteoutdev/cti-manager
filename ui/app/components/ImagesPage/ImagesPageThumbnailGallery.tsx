@@ -18,6 +18,14 @@ interface ImagesPageThumbnailGalleryProps {
 }
 
 class ImagesPageThumbnailGallery extends AbstractComponent<ImagesPageThumbnailGalleryProps, {}> {
+    public static defaultProps: ImagesPageThumbnailGalleryProps = {
+        ids  : [],
+        count: 0,
+        limit: 40,
+        skip : 0,
+        query: ''
+    };
+
     public shouldComponentUpdate(nextProps: ImagesPageThumbnailGalleryProps): boolean {
         return JSON.stringify(nextProps) !== JSON.stringify(this.props);
     }
@@ -126,14 +134,8 @@ class ImagesPageThumbnailGallery extends AbstractComponent<ImagesPageThumbnailGa
         );
     }
 
-    protected defaultProps(): ImagesPageThumbnailGalleryProps {
-        return {
-            ids  : [],
-            count: 0,
-            limit: 40,
-            skip : 0,
-            query: ''
-        };
+    protected getBaseProps(): ImagesPageThumbnailGalleryProps {
+        return ImagesPageThumbnailGallery.defaultProps;
     }
 }
 

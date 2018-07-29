@@ -20,7 +20,11 @@ class MediaApi extends AbstractApi {
             skip,
             limit
         });
-        return this.getData(url);
+        return this.getData(url)
+            .then(data => {
+                data.media = data.media || [];
+                return data;
+            });
     }
 
     public getMedia(id: string): Promise<Media> {

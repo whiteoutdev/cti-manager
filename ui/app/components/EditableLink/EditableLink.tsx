@@ -17,10 +17,16 @@ interface EditableLinkState {
 }
 
 class EditableLink extends AbstractComponent<EditableLinkProps, EditableLinkState> {
+    public static defaultProps: EditableLinkProps = {
+        onSave : _.noop,
+        display: '',
+        link   : ''
+    };
+
     private editableInput: HTMLInputElement;
 
-    constructor() {
-        super();
+    constructor(props: EditableLinkProps) {
+        super(props);
         this.state = {
             editMode: false
         };
@@ -99,12 +105,8 @@ class EditableLink extends AbstractComponent<EditableLinkProps, EditableLinkStat
         );
     }
 
-    protected defaultProps(): EditableLinkProps {
-        return {
-            onSave : _.noop,
-            display: '',
-            link   : ''
-        };
+    protected getBaseProps(): EditableLinkProps {
+        return EditableLink.defaultProps;
     }
 }
 

@@ -18,8 +18,8 @@ import TagEditor from '../TagEditor/TagEditor';
 import TagActions from '../../actions/TagActions';
 import MediaApi from '../../api/MediaApi';
 import TagService from '../../services/TagService';
-import MediaTypeStore, {MediaTypeStoreState} from '../../stores/MediaTypeStore';
-import TagStore, {TagStoreState} from '../../stores/TagStore';
+import {MediaTypeStore, MediaTypeStoreState} from '../../stores/MediaTypeStore';
+import {TagStore, TagStoreState} from '../../stores/TagStore';
 
 import {ReactElement, ReactNode} from 'react';
 import {RouteComponentProps} from 'react-router';
@@ -45,6 +45,18 @@ interface ImageSidebarState extends TagStoreState, MediaTypeStoreState {
 }
 
 class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSidebarState> {
+    public static defaultProps: ImageSidebarProps = {
+        onUploadComplete: _.noop,
+        onTagsChange    : _.noop,
+        uploadDisabled  : false,
+        tagsEditable    : false,
+        images          : [],
+        tagLimit        : Infinity,
+        match           : undefined,
+        location        : undefined,
+        history         : undefined
+    };
+
     private id = `ImageSidebar-${uuid.v1()}`;
     private searchInput: AutocompleteInput;
     private fileInput: HTMLInputElement;
@@ -233,7 +245,7 @@ class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSideb
                 }
             });
             return previous;
-        }, {} as {[tag: string]: number});
+        }, {} as { [tag: string]: number });
 
         const tagLimit = this.getProps().tagLimit;
 
@@ -280,18 +292,8 @@ class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSideb
         );
     }
 
-    protected defaultProps(): ImageSidebarProps {
-        return {
-            onUploadComplete: _.noop,
-            onTagsChange    : _.noop,
-            uploadDisabled  : false,
-            tagsEditable    : false,
-            images          : [],
-            tagLimit        : Infinity,
-            match           : undefined,
-            location        : undefined,
-            history         : undefined
-        };
+    protected getBaseProps(): ImageSidebarProps {
+        return ImageSidebar.defaultProps;
     }
 }
 

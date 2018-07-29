@@ -1,13 +1,13 @@
 import {InstructionType} from '../../../service/src/model/instruction/InstructionType';
 import InstructionActions from '../actions/InstructionActions';
 import InstructionsApi from '../api/InstructionsApi';
-import StoreWithUser from './StoreWithUser';
+import {StoreWithUser} from './StoreWithUser';
 
-interface InstructionTypeStoreState {
+export interface InstructionTypeStoreState {
     instructionTypes: InstructionType[];
 }
 
-class InstructionTypeStore extends StoreWithUser<InstructionTypeStoreState> {
+export class InstructionTypeStore extends StoreWithUser<InstructionTypeStoreState> {
     constructor() {
         super();
         this.state = Object.assign({}, this.state, {
@@ -30,6 +30,3 @@ class InstructionTypeStore extends StoreWithUser<InstructionTypeStoreState> {
             .then(instructionTypes => this.setState({instructionTypes}));
     }
 }
-
-const store = new InstructionTypeStore();
-export {store as default, store as InstructionTypeStore, InstructionTypeStoreState};

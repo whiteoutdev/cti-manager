@@ -8,6 +8,7 @@ export default function(env) {
           presetData = require(`./preset.${preset}.json`);
 
     return {
+        mode   : prod ? 'production' : 'development',
         context: config.app.path,
         entry  : [
             './index.tsx'

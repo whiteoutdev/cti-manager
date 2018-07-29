@@ -1,31 +1,32 @@
-import Reflux, {Store} from 'reflux';
+import {createActions, Store} from 'reflux';
 
 import UserApi from '../api/UserApi';
 import User from '../model/user/User';
 
-const UserActions = Reflux.createActions([
+export const UserActions = createActions([
     'updateCurrentUser',
+    'propagateNewUser',
     'login'
 ]);
 
-interface UserStoreState {
+export interface UserStoreState {
     user: User;
 }
 
-class UserStore extends Store<UserStoreState> {
+export class UserStore extends Store {
     constructor() {
         super();
         this.listenables = UserActions;
-        this.onUpdateCurrentUser();
         this.state = {
             user: null
         };
+        this.onUpdateCurrentUser();
     }
 
     public onUpdateCurrentUser(): Promise<void> {
         return UserApi.getCurrentUser()
             .then(user => {
-                this.setState({user});
+                UserActions.propagateNewUser(user);
             });
     }
 
@@ -33,7 +34,8 @@ class UserStore extends Store<UserStoreState> {
         return UserApi.login(username, password)
             .then(this.onUpdateCurrentUser.bind(this));
     }
-}
 
-const store = new UserStore();
-export {store as default, store as UserStore, UserActions, UserStoreState};
+    public onPropagateNewUser(user: User): void {
+        this.setState({user});
+    }
+}

@@ -3,6 +3,8 @@ import {HotKeys} from 'react-hotkeys';
 import {Route, Switch} from 'react-router-dom';
 
 import keymap from '../../config/keymap.config';
+import {UserStore} from '../../stores/UserStore';
+import {AbstractRefluxComponent} from '../AbstractComponent/AbstractComponent';
 
 import ImagePage from '../ImagePage/ImagePage';
 import ImagesPage from '../ImagesPage/ImagesPage';
@@ -11,11 +13,16 @@ import LandingPage from '../LandingPage/LandingPage';
 import LoginPage from '../LoginPage/LoginPage';
 import TagsPage from '../TagsPage/TagsPage';
 
-import {ReactElement} from 'react';
+import {ReactNode} from 'react';
 import './App.scss';
 
-class App extends React.Component<{}, {}> {
-    public render(): ReactElement<{}> {
+class App extends AbstractRefluxComponent<{}, {}> {
+    constructor(props: object) {
+        super(props);
+        this.store = UserStore;
+    }
+
+    public render(): ReactNode {
         return (
             <HotKeys keyMap={keymap}>
                 <div className='App'>
@@ -31,6 +38,10 @@ class App extends React.Component<{}, {}> {
                 </div>
             </HotKeys>
         );
+    }
+
+    protected getBaseProps(): {} {
+        return {};
     }
 }
 

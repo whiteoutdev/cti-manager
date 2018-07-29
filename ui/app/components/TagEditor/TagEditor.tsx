@@ -5,7 +5,7 @@ import AutocompleteInput from '../AutocompleteInput/AutocompleteInput';
 
 import TagActions from '../../actions/TagActions';
 import TagService from '../../services/TagService';
-import TagStore from '../../stores/TagStore';
+import {TagStore, TagStoreState} from '../../stores/TagStore';
 
 import {ReactElement, ReactNode} from 'react';
 import {AbstractRefluxComponent} from '../AbstractComponent/AbstractComponent';
@@ -23,16 +23,21 @@ interface TagEditorState {
 }
 
 class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> {
+    public static defaultProps: TagEditorProps = {
+        tags  : [],
+        onSave: _.noop
+    };
+
     private addTagInput: AutocompleteInput;
 
     constructor(props: TagEditorProps) {
-        super();
+        super(props);
         this.state = {
             tags       : props.tags.slice(),
             deletedTags: []
         };
 
-        this.mapStoreToState(TagStore, fromStore => {
+        this.mapStoreToState(TagStore, (fromStore: TagStoreState) => {
             return {
                 allTags: fromStore.tags.map(tag => TagService.toDisplayName(tag.id))
             };
@@ -171,11 +176,8 @@ class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> 
         );
     }
 
-    protected defaultProps(): TagEditorProps {
-        return {
-            tags  : [],
-            onSave: _.noop
-        };
+    protected getBaseProps(): TagEditorProps {
+        return TagEditor.defaultProps;
     }
 }
 

@@ -1,11 +1,11 @@
 import MediaApi from '../api/MediaApi';
-import StoreWithUser from './StoreWithUser';
+import {StoreWithUser} from './StoreWithUser';
 
-interface MediaTypeStoreState {
+export interface MediaTypeStoreState {
     mimeTypes?: string[];
 }
 
-class MediaTypeStore extends StoreWithUser<MediaTypeStoreState> {
+export class MediaTypeStore extends StoreWithUser<MediaTypeStoreState> {
     constructor() {
         super();
         this.state = Object.assign({}, this.state, {
@@ -22,6 +22,3 @@ class MediaTypeStore extends StoreWithUser<MediaTypeStoreState> {
             .then(mimeTypes => this.setState({mimeTypes}));
     }
 }
-
-const store = new MediaTypeStore();
-export {store as default, store as MediaTypeStore, MediaTypeStoreState};

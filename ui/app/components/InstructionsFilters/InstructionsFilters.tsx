@@ -26,6 +26,12 @@ interface InstructionsFiltersState extends InstructionTypeStoreState, TagStoreSt
 }
 
 class InstructionsFilters extends AbstractRefluxComponent<InstructionsFiltersProps, InstructionsFiltersState> {
+    public static defaultProps: InstructionsFiltersProps = {
+        match   : undefined,
+        location: undefined,
+        history : undefined
+    };
+
     private searchInput: AutocompleteInput;
 
     constructor(props: InstructionsFiltersProps) {
@@ -43,12 +49,8 @@ class InstructionsFilters extends AbstractRefluxComponent<InstructionsFiltersPro
         );
     }
 
-    protected defaultProps(): InstructionsFiltersProps {
-        return {
-            match   : undefined,
-            location: undefined,
-            history : undefined
-        };
+    protected getBaseProps(): InstructionsFiltersProps {
+        return InstructionsFilters.defaultProps;
     }
 
     private search(): void {

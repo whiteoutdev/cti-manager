@@ -6,7 +6,7 @@ import {FormEvent, HTMLProps, KeyboardEvent, ReactElement, ReactNode} from 'reac
 import {AbstractComponent} from '../AbstractComponent/AbstractComponent';
 import './AutocompleteInput.scss';
 
-const props        = ['limit', 'items', 'onEnter', 'onAutocomplete', 'tokenize'],
+const propNames    = ['limit', 'items', 'onEnter', 'onAutocomplete', 'tokenize'],
       defaultLimit = 10;
 
 interface AutocompleteInputProps extends HTMLProps<AutocompleteInput> {
@@ -23,6 +23,15 @@ interface AutocompleteInputState {
 }
 
 class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, AutocompleteInputState> {
+    public static defaultProps: AutocompleteInputProps = {
+        tokenize      : false,
+        onAutocomplete: _.noop,
+        onEnter       : _.noop,
+        limit         : defaultLimit,
+        items         : [],
+        onChange      : _.noop
+    };
+
     private input: HTMLInputElement;
     private keyHandlers = {
         enter : this.completeSuggestion.bind(this),
@@ -31,8 +40,8 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
         down  : this.nextSuggestion.bind(this)
     };
 
-    constructor() {
-        super();
+    constructor(props: AutocompleteInputProps) {
+        super(props);
         this.state = {
             suggestions: []
         };
@@ -171,10 +180,10 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
         }
     }
 
-    public trimProps(): {[key: string]: any} {
-        const trimmed: {[key: string]: any} = {};
+    public trimProps(): { [key: string]: any } {
+        const trimmed: { [key: string]: any } = {};
         _.each(this.getProps(), (value, key) => {
-            if (!~props.indexOf(key)) {
+            if (!~propNames.indexOf(key)) {
                 trimmed[key] = value;
             }
         });
@@ -222,15 +231,8 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
         );
     }
 
-    protected defaultProps(): AutocompleteInputProps {
-        return {
-            tokenize      : false,
-            onAutocomplete: _.noop,
-            onEnter       : _.noop,
-            limit         : defaultLimit,
-            items         : [],
-            onChange      : _.noop
-        };
+    protected getBaseProps(): AutocompleteInputProps {
+        return AutocompleteInput.defaultProps;
     }
 }
 

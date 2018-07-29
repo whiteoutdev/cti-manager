@@ -1,12 +1,12 @@
 import TagActions from '../actions/TagActions';
 import TagsApi from '../api/TagsApi';
-import StoreWithUser from './StoreWithUser';
+import {StoreWithUser} from './StoreWithUser';
 
-interface TagTypeStoreState {
+export interface TagTypeStoreState {
     tagTypes: string[];
 }
 
-class TagTypeStore extends StoreWithUser<TagTypeStoreState> {
+export class TagTypeStore extends StoreWithUser<TagTypeStoreState> {
     constructor() {
         super();
         this.state = Object.assign({}, this.state, {
@@ -28,6 +28,3 @@ class TagTypeStore extends StoreWithUser<TagTypeStoreState> {
             .then(tagTypes => this.setState({tagTypes}));
     }
 }
-
-const store = new TagTypeStore();
-export {store as default, store as TagTypeStore, TagTypeStoreState};

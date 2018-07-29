@@ -5,7 +5,7 @@ import {ReactElement, ReactNode} from 'react';
 import TagsApi from '../../api/TagsApi';
 import Tag from '../../model/tag/Tag';
 import TagService from '../../services/TagService';
-import TagStore, {TagStoreState} from '../../stores/TagStore';
+import {TagStore, TagStoreState} from '../../stores/TagStore';
 import {AbstractRefluxComponent} from '../AbstractComponent/AbstractComponent';
 import Hotkeys from '../Hotkeys/Hotkeys';
 import Panel from '../Panel/Panel';
@@ -29,10 +29,14 @@ interface TagsSidebarState extends TagStoreState {
 }
 
 class TagsSidebar extends AbstractRefluxComponent<TagsSidebarProps, TagsSidebarState> {
+    public static defaultProps: TagsSidebarProps = {
+        onTagSelect: _.noop
+    };
+
     private searchInput: HTMLInputElement;
 
-    constructor() {
-        super();
+    constructor(props: TagsSidebarProps) {
+        super(props);
         this.state = {
             searchResults: [],
             regexMode    : false,
@@ -152,10 +156,8 @@ class TagsSidebar extends AbstractRefluxComponent<TagsSidebarProps, TagsSidebarS
         );
     }
 
-    protected defaultProps(): TagsSidebarProps {
-        return {
-            onTagSelect: _.noop
-        };
+    protected getBaseProps(): TagsSidebarProps {
+        return TagsSidebar.defaultProps;
     }
 }
 

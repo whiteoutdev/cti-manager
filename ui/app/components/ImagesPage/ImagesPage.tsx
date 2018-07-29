@@ -25,8 +25,8 @@ interface ImagesPageState {
 }
 
 class ImagesPage extends React.Component<RouteComponentProps<{}>, ImagesPageState> {
-    constructor() {
-        super();
+    constructor(props: RouteComponentProps<{}>) {
+        super(props);
         this.state = {
             images      : [],
             thumbnailIds: null,

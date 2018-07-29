@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Component} from 'reflux';
+import {Component, Store} from 'reflux';
 import * as uuid from 'uuid';
 
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput';
@@ -11,8 +11,8 @@ import TagActions from '../../actions/TagActions';
 import TagsApi from '../../api/TagsApi';
 import TagService from '../../services/TagService';
 import UrlService from '../../services/UrlService';
-import TagStore, {TagStoreState} from '../../stores/TagStore';
-import TagTypeStore, {TagTypeStoreState} from '../../stores/TagTypeStore';
+import {TagStore, TagStoreState} from '../../stores/TagStore';
+import {TagTypeStore, TagTypeStoreState} from '../../stores/TagTypeStore';
 
 import {ReactElement, ReactNode} from 'react';
 import {RouteComponentProps} from 'react-router';
@@ -33,13 +33,13 @@ interface TagsPageState extends TagStoreState, TagTypeStoreState {
     tag: Tag;
 }
 
-class TagsPage extends Component<TagsPageProps, TagsPageState> {
+class TagsPage extends Component<typeof Store, TagsPageProps, TagsPageState> {
     private tagInput: AutocompleteInput;
     private pixivIdInput: HTMLInputElement;
     private tagUrlInput: HTMLInputElement;
 
-    constructor() {
-        super();
+    constructor(props: TagsPageProps) {
+        super(props);
         this.state = {
             originalTag: null,
             tag        : null,

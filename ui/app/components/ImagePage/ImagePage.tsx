@@ -28,8 +28,8 @@ interface ImagePageState {
 class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
     private videoPlayer: HTMLVideoElement;
 
-    constructor() {
-        super();
+    constructor(props: ImagePageProps) {
+        super(props);
         this.state = {
             media    : null,
             maximized: false

@@ -1,14 +1,14 @@
 import TagActions from '../actions/TagActions';
 import TagsApi from '../api/TagsApi';
 import Tag from '../model/tag/Tag';
-import StoreWithUser from './StoreWithUser';
+import {StoreWithUser} from './StoreWithUser';
 
-interface TagStoreState {
+export interface TagStoreState {
     tags?: Tag[];
-    tagIndex?: {[id: string]: Tag};
+    tagIndex?: { [id: string]: Tag };
 }
 
-class TagStore extends StoreWithUser<TagStoreState> {
+export class TagStore extends StoreWithUser<TagStoreState> {
     constructor() {
         super();
         this.state = Object.assign({}, this.state, {
@@ -23,8 +23,8 @@ class TagStore extends StoreWithUser<TagStoreState> {
         return this.onUpdateTags();
     }
 
-    public buildTagIndex(tags: Tag[]): {[id: string]: Tag} {
-        const tagIndex: {[id: string]: Tag} = {};
+    public buildTagIndex(tags: Tag[]): { [id: string]: Tag } {
+        const tagIndex: { [id: string]: Tag } = {};
         tags.forEach(tag => tagIndex[tag.id] = tag);
         return tagIndex;
     }
@@ -57,6 +57,3 @@ class TagStore extends StoreWithUser<TagStoreState> {
             });
     }
 }
-
-const store = new TagStore();
-export {store as default, store as TagStore, TagStoreState};
