@@ -2,10 +2,10 @@ import * as React from 'react';
 import {Component, Store} from 'reflux';
 import * as uuid from 'uuid';
 
-import AutocompleteInput from '../AutocompleteInput/AutocompleteInput';
-import EditableLink from '../EditableLink/EditableLink';
-import NavbarredPage from '../NavbarredPage/NavbarredPage';
-import TagsSidebar from '../TagsSidebar/TagsSidebar';
+import AutocompleteInput from '../../components/AutocompleteInput/AutocompleteInput';
+import EditableLink from '../../components/EditableLink/EditableLink';
+import NavbarredPage from '../../components/NavbarredPage/NavbarredPage';
+import TagsSidebar from '../../components/TagsSidebar/TagsSidebar';
 
 import TagActions from '../../actions/TagActions';
 import TagsApi from '../../api/TagsApi';
@@ -16,8 +16,8 @@ import {TagTypeStore, TagTypeStoreState} from '../../stores/TagTypeStore';
 
 import {ReactElement, ReactNode} from 'react';
 import {RouteComponentProps} from 'react-router';
+import Hotkeys from '../../components/Hotkeys/Hotkeys';
 import Tag from '../../model/tag/Tag';
-import Hotkeys from '../Hotkeys/Hotkeys';
 import './TagsPage.scss';
 
 interface TagsPageRouteParams {

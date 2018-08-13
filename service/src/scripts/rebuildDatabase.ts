@@ -1,6 +1,7 @@
 import DBConnectionService from '../store/DBConnectionService';
 import MediaCollection from '../store/MediaCollection';
 import TagCollection from '../store/TagCollection';
+import {TagTypeCollection} from '../store/TagTypeCollection';
 import UserCollection from '../store/UserCollection';
 import logger from '../util/logger';
 
@@ -20,6 +21,7 @@ function rebuildDatabase(): Promise<any> {
                     const createPromises = [
                         MediaCollection.init(),
                         TagCollection.init(),
+                        TagTypeCollection.init(),
                         UserCollection.init()
                     ];
                     return Promise.all(createPromises).then(() => {

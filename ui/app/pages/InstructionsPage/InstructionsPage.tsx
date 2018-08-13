@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {ReactElement} from 'react';
 import {RouteComponentProps} from 'react-router';
+import InstructionsFilters from '../../components/InstructionsFilters/InstructionsFilters';
+import NavbarredPage from '../../components/NavbarredPage/NavbarredPage';
 import {InstructionTypeStoreState} from '../../stores/InstructionTypeStore';
-import InstructionsFilters from '../InstructionsFilters/InstructionsFilters';
-import NavbarredPage from '../NavbarredPage/NavbarredPage';
 
 interface InstructionsPageRouteParams {
 }

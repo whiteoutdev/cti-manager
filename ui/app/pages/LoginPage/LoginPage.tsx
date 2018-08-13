@@ -1,42 +1,37 @@
+import {noop} from 'lodash';
 import * as React from 'react';
-
-import {Component, Store} from 'reflux';
+import {Component, FormEvent, ReactElement} from 'react';
 import appConfig from '../../config/app.config';
+import {DEFAULT_USER_STATE, UserState} from '../../redux/user/UserState';
 import history from '../../services/history';
-import {UserActions, UserStore, UserStoreState} from '../../stores/UserStore';
-
-import {FormEvent, ReactElement} from 'react';
 import './LoginPage.scss';
 
-// tslint:disable-next-line:no-empty-interface
-interface LoginPageState extends UserStoreState {
+export interface LoginPageProps extends UserState {
+    onLoginClick: (username: string, password: string) => void;
 }
 
-export default class LoginPage extends Component<typeof Store, {}, LoginPageState> {
+export default class LoginPage extends Component<LoginPageProps> {
+    public static defaultProps: LoginPageProps = {
+        ...DEFAULT_USER_STATE,
+        onLoginClick: noop
+    };
+
     private usernameInput: HTMLInputElement;
     private passwordInput: HTMLInputElement;
-
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            user: null
-        };
-        this.store = UserStore;
-    }
 
     public componentDidUpdate(): void {
         this.checkUser();
     }
 
     public checkUser(): void {
-        if (this.state.user) {
+        if (this.props.user) {
             history.push('/');
         }
     }
 
     public login(e: FormEvent<HTMLFormElement>): void {
         e.preventDefault();
-        UserActions.login(this.usernameInput.value, this.passwordInput.value);
+        this.props.onLoginClick(this.usernameInput.value, this.passwordInput.value);
     }
 
     public render(): ReactElement<{}> {
@@ -60,7 +55,7 @@ export default class LoginPage extends Component<typeof Store, {}, LoginPageStat
                                    type='password'
                                    ref={input => this.passwordInput = input}/>
                         </div>
-                        <button className='primary' formAction='submit'>Login</button>
+                        <button className='primary' formAction='submit' disabled={this.props.loginPending}>Login</button>
                     </form>
                 </div>
             </div>

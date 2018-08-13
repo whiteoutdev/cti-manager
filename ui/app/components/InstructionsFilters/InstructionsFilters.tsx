@@ -54,6 +54,7 @@ class InstructionsFilters extends AbstractRefluxComponent<InstructionsFiltersPro
     }
 
     private search(): void {
+        // TODO: Implement this
     }
 
     private renderSearchSection(): ReactNode {

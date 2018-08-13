@@ -7,8 +7,10 @@ import AbstractApi from './AbstractApi';
 const apiPath   = appConfig.api.path,
       mediaPath = `${apiPath}/media`;
 
-interface MediaResult {
+export interface MediaResult {
     media: Media[];
+    skip: number;
+    limit: number;
     count: number;
 }
 
@@ -16,10 +18,10 @@ class MediaApi extends AbstractApi {
     public findMedia(tags: string[], skip: number, limit: number): Promise<MediaResult> {
         let url = `${mediaPath}`;
         url += UrlService.createQueryString({
-            tags: tags instanceof Array ? tags.join() : null,
-            skip,
-            limit
-        });
+                                                tags: tags instanceof Array ? tags.join() : null,
+                                                skip,
+                                                limit
+                                            });
         return this.getData(url)
             .then(data => {
                 data.media = data.media || [];

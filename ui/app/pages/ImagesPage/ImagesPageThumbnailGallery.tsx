@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import appConfig from '../../config/app.config';
 
 import {ReactElement, ReactNode} from 'react';
-import {AbstractComponent} from '../AbstractComponent/AbstractComponent';
+import {AbstractComponent} from '../../components/AbstractComponent/AbstractComponent';
 import './ImagesPageThumbnailGallery.scss';
 
 const maxNavButtons = 11;

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import ImageSidebar from '../ImageSidebar/ImageSidebar';
-import NavbarredPage from '../NavbarredPage/NavbarredPage';
+import ImageSidebar from '../../components/ImageSidebar/ImageSidebar';
+import NavbarredPage from '../../components/NavbarredPage/NavbarredPage';
 
 import TagActions from '../../actions/TagActions';
 import MediaApi from '../../api/MediaApi';

@@ -30,3 +30,5 @@ export class InstructionTypeStore extends StoreWithUser<InstructionTypeStoreStat
             .then(instructionTypes => this.setState({instructionTypes}));
     }
 }
+
+export const instructionTypeStore = new InstructionTypeStore();

@@ -28,3 +28,5 @@ export class TagTypeStore extends StoreWithUser<TagTypeStoreState> {
             .then(tagTypes => this.setState({tagTypes}));
     }
 }
+
+export const tagTypeStore = new TagTypeStore();

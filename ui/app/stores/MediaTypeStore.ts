@@ -22,3 +22,5 @@ export class MediaTypeStore extends StoreWithUser<MediaTypeStoreState> {
             .then(mimeTypes => this.setState({mimeTypes}));
     }
 }
+
+export const mediaTypeStore = new MediaTypeStore();

@@ -1,7 +1,9 @@
+import {getPresetData} from './PresetData';
+
 const packageJson = require('../../package.json');
 
-export default {
-    appName: presetData.preset === 'sfw' ? 'App' : 'CTI Manager',
+export const appConfig = {
+    appName: getPresetData().preset === 'sfw' ? 'App' : 'CTI Manager',
     version: packageJson.version,
     api    : {
         host: 'localhost',
@@ -14,3 +16,5 @@ export default {
         defaultPageLimit: 40
     }
 };
+
+export default appConfig;

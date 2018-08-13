@@ -5,7 +5,7 @@ import {StoreWithUser} from './StoreWithUser';
 
 export interface TagStoreState {
     tags?: Tag[];
-    tagIndex?: { [id: string]: Tag };
+    tagIndex?: {[id: string]: Tag};
 }
 
 export class TagStore extends StoreWithUser<TagStoreState> {
@@ -23,8 +23,8 @@ export class TagStore extends StoreWithUser<TagStoreState> {
         return this.onUpdateTags();
     }
 
-    public buildTagIndex(tags: Tag[]): { [id: string]: Tag } {
-        const tagIndex: { [id: string]: Tag } = {};
+    public buildTagIndex(tags: Tag[]): {[id: string]: Tag} {
+        const tagIndex: {[id: string]: Tag} = {};
         tags.forEach(tag => tagIndex[tag.id] = tag);
         return tagIndex;
     }
@@ -57,3 +57,5 @@ export class TagStore extends StoreWithUser<TagStoreState> {
             });
     }
 }
+
+export const tagStore = new TagStore();

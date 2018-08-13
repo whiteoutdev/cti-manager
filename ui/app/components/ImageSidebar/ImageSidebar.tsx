@@ -245,7 +245,7 @@ class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSideb
                 }
             });
             return previous;
-        }, {} as { [tag: string]: number });
+        }, {} as {[tag: string]: number});
 
         const tagLimit = this.getProps().tagLimit;
 

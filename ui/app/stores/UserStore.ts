@@ -39,3 +39,5 @@ export class UserStore extends Store {
         this.setState({user});
     }
 }
+
+export const userStore = new UserStore();
