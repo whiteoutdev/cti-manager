@@ -1,0 +1,20 @@
+@import '../../scss/colours';
+@import '../../scss/mixins';
+
+.ImagesPageThumbnailGallery {
+    padding : 1rem;
+
+    .thumbnail-list {
+        @include flex-row-wrap;
+        align-items     : flex-start;
+        justify-content : space-between;
+
+        .thumbnail-list-item {
+            padding : 1rem;
+        }
+
+        .end-padding {
+            flex : 1;
+        }
+    }
+}

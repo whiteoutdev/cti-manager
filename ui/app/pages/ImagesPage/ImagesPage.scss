@@ -4,13 +4,22 @@
 
     .page-content {
         @include flex-row-nowrap;
+        align-items : flex-start;
 
         .ImageSidebar {
-            flex-shrink: 0;
+            flex-shrink : 0;
         }
 
         .ImagesPageThumbnailGallery {
-            flex: 1;
+            flex : 1;
+        }
+    }
+
+    .main-section {
+        padding : 1rem 0 4rem;
+
+        .Pagination {
+            margin : 1rem 0;
         }
     }
 

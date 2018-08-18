@@ -1,6 +1,7 @@
 import {isEqual, pick} from 'lodash';
 import {RouteComponentProps} from 'react-router';
 import {Dispatch} from 'redux';
+import {LinkInformation} from '../../components/Pagination/Pagination';
 import appConfig from '../../config/app.config';
 import {AppState} from '../../redux/AppState';
 import {connectWithLifecycle} from '../../redux/connectWithLifecycle';
@@ -47,11 +48,11 @@ function getSearchProps(ownProps: RouteComponentProps<{}>): Partial<ImagesPagePr
             .map(tag => tag.toLowerCase());
     }
 
-    const match     = ownProps.location.search.match(/tags=([^&]+)/),
-          tagsQuery = match ? match[0] : '';
+    const match       = ownProps.location.search.match(/tags=([^&]+)/),
+          tagsQuery   = match ? match[0] : '',
+          linkFactory = (info: LinkInformation) => `/media?${tagsQuery ? `${tagsQuery}&` : ''}skip=${info.next * limit}&limit=${limit}`;
 
-    return {skip, limit, tags, tagsQuery};
-
+    return {skip, limit, tags, tagsQuery, linkFactory};
 }
 
 function dispatchQuery(dispatch: Dispatch, ownProps: RouteComponentProps<{}>): void {
