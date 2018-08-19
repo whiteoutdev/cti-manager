@@ -10,24 +10,25 @@ import {LifecycleProps} from '../../redux/LifecycleComponent';
 import UrlService from '../../services/UrlService';
 import {ImagesPage, ImagesPageProps} from './ImagesPage';
 
-function mapStateToProps(state: AppState, ownProps: RouteComponentProps<{}>): Partial<ImagesPageProps> {
+export interface ImagesPageConnectorProps extends RouteComponentProps<{}> {
+}
+
+function mapStateToProps(state: AppState, ownProps: ImagesPageConnectorProps): Partial<ImagesPageProps> {
     return {
         ...state.imagesPage,
         ...getSearchProps(ownProps)
     };
 }
 
-function mapDispatchToProps(dispatch: Dispatch, ownProps: RouteComponentProps<{}>): Partial<ImagesPageProps & LifecycleProps> {
+function mapDispatchToProps(dispatch: Dispatch, ownProps: ImagesPageConnectorProps): Partial<ImagesPageProps & LifecycleProps> {
     return {
         componentDidMount(): void {
             dispatchQuery(dispatch, ownProps);
         },
-        componentDidUpdate(prevProps: RouteComponentProps<{}>): void {
-            if (isEqual(pick(ownProps, 'location', 'match'), pick(prevProps, 'location', 'match'))) {
-                return;
+        componentDidUpdate(prevProps: ImagesPageConnectorProps & ImagesPageProps): void {
+            if (!isEqual(pick(this.props, 'location', 'match'), pick(prevProps, 'location', 'match'))) {
+                dispatchQuery(dispatch, this.props);
             }
-
-            dispatchQuery(dispatch, ownProps);
         },
         onSidebarUploadComplete(): void {
             dispatchQuery(dispatch, ownProps);

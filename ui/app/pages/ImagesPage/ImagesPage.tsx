@@ -2,7 +2,6 @@ import {noop} from 'lodash';
 import * as React from 'react';
 import {Component, ReactNode} from 'react';
 import Gallery from '../../components/Gallery/Gallery';
-import ImageSidebar from '../../components/ImageSidebar/ImageSidebar';
 import {ImageSidebarConnector} from '../../components/ImageSidebar/ImageSidebarConnector';
 import NavbarredPage from '../../components/NavbarredPage/NavbarredPage';
 import {LinkInformation, Pagination} from '../../components/Pagination/Pagination';

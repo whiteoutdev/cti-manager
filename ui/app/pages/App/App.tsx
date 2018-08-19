@@ -1,21 +1,18 @@
 import * as React from 'react';
+import {ReactNode} from 'react';
 import {HotKeys} from 'react-hotkeys';
 import {Provider} from 'react-redux';
 import {Route, Switch} from 'react-router-dom';
-
 import {AbstractRefluxComponent} from '../../components/AbstractComponent/AbstractComponent';
 import keymap from '../../config/keymap.config';
 import {store} from '../../redux/store';
 import {UserStore} from '../../stores/UserStore';
-
-import ImagePage from '../ImagePage/ImagePage';
+import {ImagePageConnector} from '../ImagePage/ImagePageConnector';
 import {ImagesPageConnector} from '../ImagesPage/ImagesPageConnector';
 import InstructionsPage from '../InstructionsPage/InstructionsPage';
 import LandingPage from '../LandingPage/LandingPage';
 import {LoginPageConnector} from '../LoginPage/LoginPageConnector';
 import TagsPage from '../TagsPage/TagsPage';
-
-import {ReactNode} from 'react';
 import './App.scss';
 
 class App extends AbstractRefluxComponent<{}, {}> {
@@ -33,7 +30,7 @@ class App extends AbstractRefluxComponent<{}, {}> {
                             <Route exact path='/' component={LandingPage}/>
                             <Route path='/login' component={LoginPageConnector}/>
                             <Route exact path='/media' component={ImagesPageConnector}/>
-                            <Route path='/media/:imageID' component={ImagePage}/>
+                            <Route path='/media/:imageID' component={ImagePageConnector}/>
                             <Route exact path='/tags' component={TagsPage}/>
                             <Route path='/tags/:tagID' component={TagsPage}/>
                             <Route path='/instructions' component={InstructionsPage}/>

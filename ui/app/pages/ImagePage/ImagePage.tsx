@@ -1,57 +1,27 @@
 import * as React from 'react';
-import {ReactElement, ReactNode} from 'react';
-import {RouteComponentProps} from 'react-router';
-import TagActions from '../../actions/TagActions';
+import {Component, ReactElement, ReactNode} from 'react';
 import MediaApi from '../../api/MediaApi';
 import {ImageSidebarConnector} from '../../components/ImageSidebar/ImageSidebarConnector';
 import NavbarredPage from '../../components/NavbarredPage/NavbarredPage';
-import appConfig from '../../config/app.config';
-import Media from '../../model/media/Media';
+import {ImagePageState} from '../../redux/imagePage/ImagePageState';
 import './ImagePage.scss';
 
-interface ImagePageRouteParams {
-    imageID: string;
+export interface ImagePageProps extends ImagePageState {
+    onTagsChange: (tags: string[]) => void;
 }
 
-interface ImagePageProps extends RouteComponentProps<ImagePageRouteParams> {
-}
-
-interface ImagePageState {
-    media: Media;
+export interface ImagePageComponentState {
     maximized: boolean;
 }
 
-class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
+class ImagePage extends Component<ImagePageProps, ImagePageComponentState> {
     private videoPlayer: HTMLVideoElement;
 
     constructor(props: ImagePageProps) {
         super(props);
         this.state = {
-            media    : null,
             maximized: false
         };
-    }
-
-    public updateTags(tags: string[]): Promise<void> {
-        return MediaApi.setTags(this.getImageID(), tags)
-            .then(media => {
-                this.setState({media}, () => {
-                    TagActions.updateTags();
-                });
-            });
-    }
-
-    public getImage(props: ImagePageProps): Promise<void> {
-        const imageId = this.getImageID(props);
-        return MediaApi.getMedia(imageId)
-            .then(media => {
-                this.setState({media});
-            });
-    }
-
-    public getImageID(props?: ImagePageProps): string {
-        props = props || this.props;
-        return props.match.params.imageID;
     }
 
     public toggleMaximize(): void {
@@ -69,16 +39,12 @@ class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
         }
     }
 
-    public componentDidMount(): Promise<void> {
-        return this.getImage(this.props);
-    }
-
     public renderImage(): ReactNode {
-        const media = this.state.media;
+        const image = this.props.image;
 
-        if (media) {
-            const downloadUrl = `${appConfig.api.path}/media/${media.id}/download`;
-            if (media.type === 'video') {
+        if (image) {
+            const downloadUrl = MediaApi.getMediaDownloadUrl(image.id);
+            if (image.type === 'video') {
                 return (
                     <video ref={video => this.videoPlayer = video}
                            src={downloadUrl}
@@ -92,7 +58,7 @@ class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
                 return (
                     <img className={this.state.maximized ? 'max' : ''}
                          src={downloadUrl}
-                         alt={this.state.media.id}
+                         alt={this.props.image.id}
                          onClick={this.toggleMaximize.bind(this)}/>
                 );
             }
@@ -103,11 +69,11 @@ class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
         return (
             <div className='ImagePage'>
                 <NavbarredPage>
-                    <ImageSidebarConnector tagList={this.state.media ? this.state.media.tags : []}
+                    <ImageSidebarConnector tagList={this.props.image ? this.props.image.tags : []}
                                            tagsEditable
                                            uploadDisabled
                                            tagLimit={Infinity}
-                                           onTagsChange={this.updateTags.bind(this)}/>
+                                           onTagsChange={(tags: string[]) => this.props.onTagsChange(tags)}/>
                     <div className='image-section'>
                         <div className='image-container'>
                             {this.renderImage()}
