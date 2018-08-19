@@ -46,7 +46,15 @@ class MediaApi extends AbstractApi {
     }
 
     // TODO: Sort out typings on this
-    public uploadFiles(formData: FormData): Promise<any> {
+    public uploadFiles(files: FileList): Promise<any> {
+        const formData = new FormData();
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i < files.length; i++) {
+            const file   = files[i],
+                  reader = new FileReader();
+            reader.readAsDataURL(file);
+            formData.append('media', file);
+        }
         return this.postData(mediaPath, formData);
     }
 

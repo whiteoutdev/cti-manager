@@ -1,11 +1,15 @@
-// tslint:disable:max-classes-per-file
-
-import * as _ from 'lodash';
+import {find, noop} from 'lodash';
 import * as React from 'react';
+import {Component, ReactElement, ReactNode} from 'react';
 import {HotKeys} from 'react-hotkeys';
-import {Link, withRouter} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import * as uuid from 'uuid';
-
+import TagActions from '../../actions/TagActions';
+import appConfig from '../../config/app.config';
+import {DEFAULT_MEDIA_STATE, MediaState} from '../../redux/media/MediaState';
+import {DEFAULT_TAG_STATE, TagState} from '../../redux/tag/TagState';
+import {DEFAULT_UPLOAD_STATE, UploadState} from '../../redux/upload/UploadState';
+import TagService from '../../services/TagService';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput';
 import Panel from '../Panel/Panel';
 import PanelBody from '../Panel/PanelBody';
@@ -14,47 +18,34 @@ import PanelList from '../Panel/PanelList';
 import PanelListItem from '../Panel/PanelListItem';
 import Spinner from '../Spinner/Spinner';
 import TagEditor from '../TagEditor/TagEditor';
-
-import TagActions from '../../actions/TagActions';
-import MediaApi from '../../api/MediaApi';
-import TagService from '../../services/TagService';
-import {MediaTypeStore, MediaTypeStoreState} from '../../stores/MediaTypeStore';
-import {TagStore, TagStoreState} from '../../stores/TagStore';
-
-import {ReactElement, ReactNode} from 'react';
-import {RouteComponentProps} from 'react-router';
-import Media from '../../model/media/Media';
-import {AbstractRefluxComponent} from '../AbstractComponent/AbstractComponent';
 import './ImageSidebar.scss';
 
-interface ImageSidebarBaseProps {
-    onUploadComplete?: () => void;
-    onTagsChange?: (tags: string[]) => void;
-    uploadDisabled?: boolean;
+export interface ImageSidebarProps extends UploadState, TagState, MediaState {
     tagsEditable?: boolean;
-    images: Media[];
+    tagList: string[];
     tagLimit?: number;
+    uploadDisabled?: boolean;
+    onTagsChange?: (tags: string[]) => void;
+    onSearch?: (tags: string[]) => void;
+    onUpload: (files: FileList) => void;
 }
 
-interface ImageSidebarProps extends ImageSidebarBaseProps, RouteComponentProps<{}> {
-}
-
-interface ImageSidebarState extends TagStoreState, MediaTypeStoreState {
-    uploadPending: boolean;
+export interface ImageSidebarState {
     tagEditMode: boolean;
 }
 
-class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSidebarState> {
+export class ImageSidebar extends Component<ImageSidebarProps, ImageSidebarState> {
     public static defaultProps: ImageSidebarProps = {
-        onUploadComplete: _.noop,
-        onTagsChange    : _.noop,
-        uploadDisabled  : false,
-        tagsEditable    : false,
-        images          : [],
-        tagLimit        : Infinity,
-        match           : undefined,
-        location        : undefined,
-        history         : undefined
+        ...DEFAULT_UPLOAD_STATE,
+        ...DEFAULT_TAG_STATE,
+        ...DEFAULT_MEDIA_STATE,
+        tagsEditable  : false,
+        tagList       : [],
+        tagLimit      : appConfig.sidebar.tagDisplayLimit,
+        uploadDisabled: false,
+        onTagsChange  : noop,
+        onUpload      : noop,
+        onSearch      : noop
     };
 
     private id = `ImageSidebar-${uuid.v1()}`;
@@ -64,69 +55,36 @@ class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSideb
     constructor(props: ImageSidebarProps) {
         super(props);
         this.state = {
-            uploadPending: false,
-            tagEditMode  : false
+            tagEditMode: false
         };
-        this.stores = [TagStore, MediaTypeStore];
         TagActions.updateTags();
     }
 
+    public render(): ReactElement<ImageSidebarProps> {
+        return (
+            <div className='ImageSidebar'>
+                {this.renderSearchSection()}
+                {this.renderUploadSection()}
+                {this.renderTagsSection()}
+            </div>
+        );
+    }
+
     public getTagType(tag: string): string {
-        const tagData = _.find(this.state.tags, data => {
+        const tagData = find(this.props.tags, data => {
             return data.id === TagService.toTagId(tag);
         });
         return tagData ? tagData.type : '';
     }
 
-    public fireUploadComplete(): void {
-        this.getProps().onUploadComplete();
-    }
-
     public fireTagsChange(tags: string[]): void {
-        this.setState({
-            tagEditMode: false
-        }, () => {
-            this.getProps().onTagsChange(tags);
-        });
+        this.setState({tagEditMode: false}, () => this.props.onTagsChange(tags));
     }
 
     public search(): void {
         const searchText = this.searchInput.value.trim(),
-              tags       = searchText.split(/\s+/),
-              tagsString = tags.map(tag => {
-                  return encodeURIComponent(tag);
-              }).join();
-        this.getProps().history.push(`/media?tags=${tagsString}`);
-    }
-
-    public canUpload(): boolean {
-        return !this.fileInput || !this.fileInput.files.length;
-    }
-
-    public uploadImages(): void {
-        const files = this.fileInput.files;
-        const formData = new FormData();
-        // tslint:disable-next-line:prefer-for-of
-        for (let i = 0; i < files.length; i++) {
-            const file   = files[i],
-                  reader = new FileReader();
-            reader.readAsDataURL(file);
-            formData.append('media', file);
-        }
-        this.setState({uploadPending: true}, () => {
-            MediaApi.uploadFiles(formData)
-                .then(() => {
-                    this.setState({uploadPending: false}, () => {
-                        this.fireUploadComplete();
-                    });
-                });
-        });
-    }
-
-    public handleEditTags(): void {
-        this.setState({
-            tagEditMode: true
-        });
+              tags       = searchText.split(/\s+/);
+        this.props.onSearch(tags);
     }
 
     public renderSearchSection(): ReactNode {
@@ -140,7 +98,7 @@ class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSideb
                     <PanelBody>
                         <div className='search-form'>
                             <AutocompleteInput ref={input => this.searchInput = input} tokenize
-                                               items={this.state.tags.map(tag => tag.id)}
+                                               items={this.props.tags.map(tag => tag.id)}
                                                onEnter={this.search.bind(this)}/>
                             <button className='search-button accent' onClick={this.search.bind(this)}>
                                 <i className='material-icons'>search</i>
@@ -153,69 +111,70 @@ class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSideb
     }
 
     public renderUploadSection(): ReactNode {
-        if (!this.getProps().uploadDisabled) {
-            let uploadText = 'Choose a file...';
-            if (this.fileInput && this.fileInput.files.length) {
-                uploadText = `${this.fileInput.files.length} files selected`;
-            }
-            return (
-                <Panel className='upload-section'>
-                    <PanelHeader>
-                        <h2>Upload</h2>
-                    </PanelHeader>
-                    <PanelBody>
-                        <div className={`upload-form ${this.state.uploadPending ? 'upload-pending' : ''}`}>
-                            <div className='input-container'>
-                                <input id={`${this.id}-upload-input`}
-                                       ref={input => this.fileInput = input}
-                                       className='upload-input'
-                                       type='file'
-                                       multiple
-                                       accept={this.state.mimeTypes.join(', ')}
-                                       onChange={() => this.forceUpdate()}/>
-                                <label htmlFor={`${this.id}-upload-input`} className='button upload-input-label'>
-                                    <i className='material-icons'>file_upload</i>
-                                    {uploadText}
-                                </label>
-                            </div>
-                            <button className='upload-button accent'
-                                    onClick={this.uploadImages.bind(this)}
-                                    disabled={this.canUpload()}>
-                                Upload
-                            </button>
-                            <div className='upload-spinner'>
+        if (this.props.uploadDisabled) {
+            return;
+        }
+
+        let uploadText = 'Choose a file...';
+        if (this.fileInput && this.fileInput.files.length) {
+            uploadText = `${this.fileInput.files.length} files selected`;
+        }
+        return (
+            <Panel className='upload-section'>
+                <PanelHeader>
+                    <h2>Upload</h2>
+                </PanelHeader>
+                <PanelBody>
+                    <div className={`upload-form ${this.props.uploadPending ? 'upload-pending' : ''}`}>
+                        <div className='input-container'>
+                            <input id={`${this.id}-upload-input`}
+                                   ref={input => this.fileInput = input}
+                                   className='upload-input'
+                                   type='file'
+                                   multiple
+                                   accept={this.props.mimeTypes.join(', ')}
+                                   onChange={() => this.forceUpdate()}/>
+                            <label htmlFor={`${this.id}-upload-input`} className='button upload-input-label'>
+                                <i className='material-icons'>file_upload</i>
+                                {uploadText}
+                            </label>
+                        </div>
+                        <button className='upload-button accent'
+                                onClick={() => this.props.onUpload(this.fileInput.files)}
+                                disabled={!this.fileInput || !this.fileInput.files.length}>
+                            Upload
+                        </button>
+                        <div className='upload-spinner'>
                             <span className='uploading'>
                                 <Spinner/>
                                 Uploading...
                             </span>
-                            </div>
                         </div>
-                    </PanelBody>
-                </Panel>
-            );
-        }
+                    </div>
+                </PanelBody>
+            </Panel>
+        );
     }
 
     public renderTagsSection(): ReactNode {
-        const tagList = this.getTagList();
-        if ((!tagList || !tagList.length) && !this.getProps().tagsEditable) {
+        if ((!this.props.tagList || !this.props.tagList.length) && !this.props.tagsEditable) {
             return;
         }
 
         let editIcon = null;
-        if (this.getProps().tagsEditable && !this.state.tagEditMode) {
-            editIcon = <i className='material-icons' onClick={this.handleEditTags.bind(this)}>edit</i>;
+        if (this.props.tagsEditable && !this.state.tagEditMode) {
+            editIcon = <i className='material-icons' onClick={() => this.setState({tagEditMode: true})}>edit</i>;
         }
 
         let body = null;
         if (this.state.tagEditMode) {
             body = (
                 <PanelBody>
-                    <TagEditor tags={tagList} onSave={this.fireTagsChange.bind(this)}/>
+                    <TagEditor tags={this.props.tagList} onSave={this.fireTagsChange.bind(this)}/>
                 </PanelBody>
             );
         } else {
-            body = this.renderTagsList(tagList);
+            body = this.renderTagsList(this.props.tagList);
         }
 
         return (
@@ -229,51 +188,22 @@ class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSideb
         );
     }
 
-    public getTagList(): string[] {
-        const images = this.getProps().images;
-
-        if (!images) {
-            return null;
-        }
-
-        const tagCounts = images.reduce((previous, current) => {
-            current.tags.forEach(tag => {
-                if (previous[tag]) {
-                    previous[tag] = previous[tag] + 1;
-                } else {
-                    previous[tag] = 1;
-                }
-            });
-            return previous;
-        }, {} as {[tag: string]: number});
-
-        const tagLimit = this.getProps().tagLimit;
-
-        return Object.keys(tagCounts)
-            .sort((t1, t2) => {
-                const c1 = tagCounts[t1],
-                      c2 = tagCounts[t2];
-                return c1 > c2 ? -1 : c1 < c2 ? 1 : t1 < t2 ? -1 : t1 > t2 ? 1 : 0;
-            })
-            .filter((tag, index) => {
-                return index < tagLimit;
-            });
-    }
-
     public renderTagsList(tagList: string[]): ReactNode {
-        const tagListItems = tagList.map(tag => {
-            const tagType = this.getTagType(tag).toLowerCase();
-            return (
-                <PanelListItem key={tag} className={`tags-list-item ${tagType}`}>
-                    <Link className={`tag-name ${tagType}`} to={`/media?tags=${encodeURIComponent(tag)}`}>
-                        {TagService.toDisplayName(tag)}
-                    </Link>
-                    <Link className={tagType} to={`/tags/${encodeURIComponent(tag)}`}>
-                        <i className='tag-icon material-icons'>edit</i>
-                    </Link>
-                </PanelListItem>
-            );
-        });
+        const tagListItems = tagList
+            .slice(0, this.props.tagLimit)
+            .map(tag => {
+                const tagType = this.getTagType(tag).toLowerCase();
+                return (
+                    <PanelListItem key={tag} className={`tags-list-item ${tagType}`}>
+                        <Link className={`tag-name ${tagType}`} to={`/media?tags=${encodeURIComponent(tag)}`}>
+                            {TagService.toDisplayName(tag)}
+                        </Link>
+                        <Link className={tagType} to={`/tags/${encodeURIComponent(tag)}`}>
+                            <i className='tag-icon material-icons'>edit</i>
+                        </Link>
+                    </PanelListItem>
+                );
+            });
 
         return (
             <PanelList className='tags-list'>
@@ -281,29 +211,6 @@ class ImageSidebar extends AbstractRefluxComponent<ImageSidebarProps, ImageSideb
             </PanelList>
         );
     }
-
-    public render(): ReactElement<ImageSidebarProps> {
-        return (
-            <div className='ImageSidebar'>
-                {this.renderSearchSection()}
-                {this.renderUploadSection()}
-                {this.renderTagsSection()}
-            </div>
-        );
-    }
-
-    protected getBaseProps(): ImageSidebarProps {
-        return ImageSidebar.defaultProps;
-    }
 }
 
-const ImageSidebarComponent = withRouter(ImageSidebar);
-
-// Workaround to prevent having to pass in RouteComponentProps when using the ImageSidebar externally
-export default class extends React.Component<ImageSidebarBaseProps, {}> {
-    public render(): ReactElement<ImageSidebarBaseProps> {
-        return (
-            <ImageSidebarComponent {...this.props as any}/>
-        );
-    }
-}
+export default ImageSidebar;

@@ -17,6 +17,9 @@ export const appConfig = {
     },
     pagination: {
         maxPagesShown: 7
+    },
+    sidebar   : {
+        tagDisplayLimit: 30
     }
 };
 

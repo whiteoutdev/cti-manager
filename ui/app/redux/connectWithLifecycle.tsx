@@ -16,4 +16,5 @@ export function connectWithLifecycle(mapStateToProps?: any, mapDispatchToProps?:
         return connect(mapStateToProps, mapDispatchToProps, mergeLifecycleProps, options)(LifecycleComponent);
     };
 }
+
 /* tslint:enable:typedef */

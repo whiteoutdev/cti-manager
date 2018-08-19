@@ -1,16 +1,15 @@
 import {isEqual} from 'lodash';
 import * as React from 'react';
-import {ReactElement, ReactNode} from 'react';
+import {Component, ReactElement, ReactNode} from 'react';
 import {Link} from 'react-router-dom';
 import MediaApi from '../../api/MediaApi';
-import {AbstractComponent} from '../AbstractComponent/AbstractComponent';
 import './Gallery.scss';
 
 interface GalleryProps {
     ids: string[];
 }
 
-class Gallery extends AbstractComponent<GalleryProps, {}> {
+class Gallery extends Component<GalleryProps, {}> {
     public static defaultProps: GalleryProps = {
         ids: []
     };
@@ -20,8 +19,8 @@ class Gallery extends AbstractComponent<GalleryProps, {}> {
     }
 
     public renderThumbnails(): ReactNode {
-        if (this.getProps().ids) {
-            return this.getProps().ids.map(id => {
+        if (this.props.ids) {
+            return this.props.ids.map(id => {
                 return (
                     <li key={id} className='thumbnail-list-item'>
                         <Link to={`/media/${id}`}>
@@ -42,10 +41,6 @@ class Gallery extends AbstractComponent<GalleryProps, {}> {
                 </ul>
             </div>
         );
-    }
-
-    protected getBaseProps(): GalleryProps {
-        return Gallery.defaultProps;
     }
 }
 

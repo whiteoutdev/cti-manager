@@ -31,6 +31,9 @@ function mapDispatchToProps(dispatch: Dispatch, ownProps: RouteComponentProps<{}
         },
         onSidebarUploadComplete(): void {
             dispatchQuery(dispatch, ownProps);
+        },
+        onSidebarSearch(tags: string[]): void {
+            ownProps.history.push(`/media?tags=${tags.map(tag => encodeURIComponent(tag)).join()}`);
         }
     };
 }

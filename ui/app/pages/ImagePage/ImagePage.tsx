@@ -1,14 +1,11 @@
 import * as React from 'react';
-
-import ImageSidebar from '../../components/ImageSidebar/ImageSidebar';
-import NavbarredPage from '../../components/NavbarredPage/NavbarredPage';
-
-import TagActions from '../../actions/TagActions';
-import MediaApi from '../../api/MediaApi';
-import appConfig from '../../config/app.config';
-
 import {ReactElement, ReactNode} from 'react';
 import {RouteComponentProps} from 'react-router';
+import TagActions from '../../actions/TagActions';
+import MediaApi from '../../api/MediaApi';
+import {ImageSidebarConnector} from '../../components/ImageSidebar/ImageSidebarConnector';
+import NavbarredPage from '../../components/NavbarredPage/NavbarredPage';
+import appConfig from '../../config/app.config';
 import Media from '../../model/media/Media';
 import './ImagePage.scss';
 
@@ -16,7 +13,6 @@ interface ImagePageRouteParams {
     imageID: string;
 }
 
-// tslint:disable-next-line:no-empty-interface
 interface ImagePageProps extends RouteComponentProps<ImagePageRouteParams> {
 }
 
@@ -107,10 +103,11 @@ class ImagePage extends React.Component<ImagePageProps, ImagePageState> {
         return (
             <div className='ImagePage'>
                 <NavbarredPage>
-                    <ImageSidebar images={this.state.media ? [this.state.media] : []}
-                                  uploadDisabled
-                                  tagsEditable
-                                  onTagsChange={this.updateTags.bind(this)}/>
+                    <ImageSidebarConnector tagList={this.state.media ? this.state.media.tags : []}
+                                           tagsEditable
+                                           uploadDisabled
+                                           tagLimit={Infinity}
+                                           onTagsChange={this.updateTags.bind(this)}/>
                     <div className='image-section'>
                         <div className='image-container'>
                             {this.renderImage()}
