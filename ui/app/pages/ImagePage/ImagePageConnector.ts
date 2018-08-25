@@ -4,6 +4,7 @@ import {AppState} from '../../redux/AppState';
 import {connectWithLifecycle} from '../../redux/connectWithLifecycle';
 import {FetchImageAction, UpdateImageTagsAction} from '../../redux/imagePage/ImagePageActions';
 import {LifecycleProps} from '../../redux/LifecycleComponent';
+import {createMediaPageUrl} from '../../utils/url-utils';
 import ImagePage, {ImagePageProps} from './ImagePage';
 
 export interface ImagePageRouteParams {
@@ -29,6 +30,9 @@ function mapDispatchToProps(dispatch: Dispatch, ownProps: ImagePageConnectorProp
         },
         onTagsChange(tags: string[]): void {
             dispatch(new UpdateImageTagsAction(ownProps.match.params.imageID, tags));
+        },
+        onSidebarSearch(tags: string[]): void {
+            ownProps.history.push(createMediaPageUrl(tags));
         }
     };
 }

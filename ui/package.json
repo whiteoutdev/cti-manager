@@ -23,6 +23,7 @@
     "material-design-icons": "^2.2.3",
     "query-string": "^4.3.4",
     "react": "^16.4.1",
+    "react-attrs-filter": "^0.1.2",
     "react-dom": "^16.4.1",
     "react-hotkeys": "^1.1.0",
     "react-redux": "^5.0.7",

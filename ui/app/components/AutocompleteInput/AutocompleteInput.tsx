@@ -1,15 +1,12 @@
-import * as _ from 'lodash';
+import {noop} from 'lodash';
 import * as React from 'react';
+import {Component, FormEvent, HTMLProps, KeyboardEvent, ReactElement, ReactNode} from 'react';
+import {filterPropsFor} from 'react-attrs-filter';
 import {HotKeys} from 'react-hotkeys';
-
-import {FormEvent, HTMLProps, KeyboardEvent, ReactElement, ReactNode} from 'react';
-import {AbstractComponent} from '../AbstractComponent/AbstractComponent';
+import appConfig from '../../config/app.config';
 import './AutocompleteInput.scss';
 
-const propNames    = ['limit', 'items', 'onEnter', 'onAutocomplete', 'tokenize'],
-      defaultLimit = 10;
-
-interface AutocompleteInputProps extends HTMLProps<AutocompleteInput> {
+export interface AutocompleteInputProps extends HTMLProps<AutocompleteInput> {
     tokenize?: boolean;
     onAutocomplete?: (item: string) => void;
     onEnter?: (item: string) => void;
@@ -17,19 +14,18 @@ interface AutocompleteInputProps extends HTMLProps<AutocompleteInput> {
     items?: string[];
 }
 
-interface AutocompleteInputState {
+export interface AutocompleteInputState {
     suggestions: string[];
     suggestionIndex?: number;
 }
 
-class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, AutocompleteInputState> {
+export class AutocompleteInput extends Component<AutocompleteInputProps, AutocompleteInputState> {
     public static defaultProps: AutocompleteInputProps = {
         tokenize      : false,
-        onAutocomplete: _.noop,
-        onEnter       : _.noop,
-        limit         : defaultLimit,
-        items         : [],
-        onChange      : _.noop
+        onAutocomplete: noop,
+        onEnter       : noop,
+        limit         : appConfig.autocomplete.defaultSuggestionLimit,
+        items         : []
     };
 
     private input: HTMLInputElement;
@@ -67,6 +63,22 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
         this.input.focus();
     }
 
+    public render(): ReactElement<AutocompleteInputProps> {
+        return (
+            <div className='AutocompleteInput'>
+                <HotKeys handlers={this.keyHandlers}>
+                    <input {...filterPropsFor(this.props, 'input')}
+                           type='text'
+                           ref={input => this.input = input}
+                           onChange={this.onChange.bind(this)}/>
+                    <div className='dropdown-box'>
+                        {this.renderSuggestionList()}
+                    </div>
+                </HotKeys>
+            </div>
+        );
+    }
+
     public completeSuggestion(index: number): void {
         if (typeof index !== 'number') {
             index = this.state.suggestionIndex;
@@ -79,7 +91,7 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
 
         const suggestion = this.state.suggestions[index % this.state.suggestions.length];
 
-        if (this.getProps().tokenize) {
+        if (this.props.tokenize) {
 
             const cursorPosition      = this.input.selectionStart,
                   beforeCursor        = this.input.value.substring(0, cursorPosition),
@@ -93,9 +105,7 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
             this.input.value = suggestion;
         }
 
-        this.closeSuggestions().then(() => {
-            this.fireAutocomplete(suggestion);
-        });
+        this.closeSuggestions().then(() => this.props.onAutocomplete(suggestion));
     }
 
     public closeSuggestions(): Promise<void> {
@@ -110,31 +120,29 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
     }
 
     public nextSuggestion(e: KeyboardEvent<any>): void {
-        e.preventDefault();
-        this.setSuggestionIndex(this.state.suggestionIndex + 1);
+        this.setSuggestionIndex(this.state.suggestionIndex + 1, e);
     }
 
     public previousSuggestion(e: KeyboardEvent<any>): void {
-        e.preventDefault();
-        this.setSuggestionIndex(this.state.suggestionIndex - 1);
+        this.setSuggestionIndex(this.state.suggestionIndex - 1, e);
     }
 
-    public setSuggestionIndex(index: number): void {
+    public setSuggestionIndex(index: number, e?: KeyboardEvent<any>): void {
+        if (e) {
+            e.preventDefault();
+        }
+
         this.setState({
             suggestionIndex: index
         });
     }
 
-    public fireAutocomplete(item: string): void {
-        this.getProps().onAutocomplete(item);
-    }
-
     public fireEnter(): void {
-        this.getProps().onEnter(this.input.value);
+        this.props.onEnter(this.input.value);
     }
 
     public updateSuggestions(): void {
-        if (this.getProps().tokenize) {
+        if (this.props.tokenize) {
             const cursorPosition = this.input.selectionStart,
                   beforeCursor   = this.input.value.substring(0, cursorPosition),
                   afterCursor    = this.input.value.substr(cursorPosition);
@@ -158,10 +166,10 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
 
         query = query.toLowerCase();
         const suggestions = [],
-              limit       = Number(this.getProps().limit) || defaultLimit;
+              limit       = Number(this.props.limit) || appConfig.autocomplete.defaultSuggestionLimit;
 
-        for (let i = 0; i < this.getProps().items.length && suggestions.length < limit; i++) {
-            const item = this.getProps().items[i];
+        for (let i = 0; i < this.props.items.length && suggestions.length < limit; i++) {
+            const item = this.props.items[i];
             if (item.toLowerCase().indexOf(query) > -1) {
                 suggestions.push(item);
             }
@@ -174,20 +182,9 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
     }
 
     public onChange(e: FormEvent<AutocompleteInput>): void {
-        this.getProps().onChange(e);
         if (!e.defaultPrevented) {
             this.updateSuggestions();
         }
-    }
-
-    public trimProps(): { [key: string]: any } {
-        const trimmed: { [key: string]: any } = {};
-        _.each(this.getProps(), (value, key) => {
-            if (!~propNames.indexOf(key)) {
-                trimmed[key] = value;
-            }
-        });
-        return trimmed;
     }
 
     public renderSuggestionList(): ReactNode {
@@ -214,25 +211,6 @@ class AutocompleteInput extends AbstractComponent<AutocompleteInputProps, Autoco
         } else {
             return null;
         }
-    }
-
-    public render(): ReactElement<AutocompleteInputProps> {
-        return (
-            <div className='AutocompleteInput'>
-                <HotKeys handlers={this.keyHandlers}>
-                    <input type='text'
-                           ref={input => this.input = input} {...this.trimProps()}
-                           onChange={this.onChange.bind(this)}/>
-                    <div className='dropdown-box'>
-                        {this.renderSuggestionList()}
-                    </div>
-                </HotKeys>
-            </div>
-        );
-    }
-
-    protected getBaseProps(): AutocompleteInputProps {
-        return AutocompleteInput.defaultProps;
     }
 }
 

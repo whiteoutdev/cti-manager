@@ -1,31 +1,28 @@
-import * as _ from 'lodash';
+import {difference, noop} from 'lodash';
 import * as React from 'react';
-
-import AutocompleteInput from '../AutocompleteInput/AutocompleteInput';
-
-import TagActions from '../../actions/TagActions';
+import {Component, ReactElement, ReactNode} from 'react';
 import TagService from '../../services/TagService';
-import {TagStore, TagStoreState} from '../../stores/TagStore';
-
-import {ReactElement, ReactNode} from 'react';
-import {AbstractRefluxComponent} from '../AbstractComponent/AbstractComponent';
+import {extractConnected} from '../../utils/redux-utils';
+import AutocompleteInput from '../AutocompleteInput/AutocompleteInput';
+import {TagAutocompleteConnector} from '../AutocompleteInput/TagAutocompleteConnector';
 import './TagEditor.scss';
 
-interface TagEditorProps {
+export interface TagEditorProps {
+    tagPool: string[];
     tags?: string[];
     onSave?: (tagIds: string[]) => void;
 }
 
-interface TagEditorState {
+export interface TagEditorState {
     tags?: string[];
     deletedTags?: string[];
-    allTags?: string[];
 }
 
-class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> {
+export class TagEditor extends Component<TagEditorProps, TagEditorState> {
     public static defaultProps: TagEditorProps = {
-        tags  : [],
-        onSave: _.noop
+        tagPool: [],
+        tags   : [],
+        onSave : noop
     };
 
     private addTagInput: AutocompleteInput;
@@ -36,19 +33,21 @@ class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> 
             tags       : props.tags.slice(),
             deletedTags: []
         };
+    }
 
-        this.mapStoreToState(TagStore, (fromStore: TagStoreState) => {
-            return {
-                allTags: fromStore.tags.map(tag => TagService.toDisplayName(tag.id))
-            };
-        });
-
-        TagActions.updateTags();
+    public render(): ReactElement<TagEditorProps> {
+        return (
+            <div className='TagEditor'>
+                {this.renderAddTagInput()}
+                {this.renderTagList()}
+                <button className='save-button accent' onClick={this.fireSave.bind(this)}>Save</button>
+            </div>
+        );
     }
 
     public fireSave(): void {
-        const newTags = _.difference(this.state.tags.slice(), this.state.deletedTags);
-        this.getProps().onSave(newTags.map(newTag => TagService.toTagId(newTag)));
+        const newTags = difference(this.state.tags.slice(), this.state.deletedTags);
+        this.props.onSave(newTags.map(newTag => TagService.toTagId(newTag)));
     }
 
     public addTag(tag: string, callback?: () => void): void {
@@ -87,7 +86,7 @@ class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> 
 
     public deleteTag(tag: string): void {
         const currentTagIndex  = this.state.tags.indexOf(tag),
-              originalTagIndex = this.getProps().tags.indexOf(tag);
+              originalTagIndex = this.props.tags.indexOf(tag);
         const deletedTags = this.state.deletedTags.slice(),
               tags        = this.state.tags.slice();
         if (~currentTagIndex) {
@@ -101,20 +100,21 @@ class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> 
     }
 
     public componentDidMount(): void {
-        this.addTagInput.focus();
+        this.addTagInput && this.addTagInput.focus();
     }
 
     public componentDidUpdate(): void {
-        this.addTagInput.focus();
+        this.addTagInput && this.addTagInput.focus();
     }
 
     public renderAddTagInput(): ReactNode {
         return (
             <div className='add-tag-section'>
-                <AutocompleteInput ref={input => this.addTagInput = input}
-                                   items={this.state.allTags}
-                                   onAutocomplete={this.addTagAndClear.bind(this)}
-                                   onEnter={this.addTagFromInput.bind(this)}/>
+                <TagAutocompleteConnector
+                    ref={connector => this.addTagInput = extractConnected(connector)}
+                    items={this.props.tagPool}
+                    onAutocomplete={this.addTagAndClear.bind(this)}
+                    onEnter={this.addTagFromInput.bind(this)}/>
                 <button className='accent' onClick={this.addTagFromInput.bind(this)}>
                     <i className='material-icons'>add</i>
                 </button>
@@ -125,7 +125,7 @@ class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> 
     public calculateTagClass(tag: string): string {
         if (~this.state.deletedTags.indexOf(tag)) {
             return 'deleted';
-        } else if (this.getProps().tags.indexOf(tag) === -1) {
+        } else if (this.props.tags.indexOf(tag) === -1) {
             return 'added';
         } else {
             return '';
@@ -133,14 +133,15 @@ class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> 
     }
 
     public renderTagButton(tag: string): ReactNode {
+        let callback = () => this.deleteTag(tag),
+            icon     = 'delete';
         if (~this.state.deletedTags.indexOf(tag)) {
-            return (
-                <i className='material-icons' onClick={() => this.addTag(tag)}>undo</i>
-            );
+            callback = () => this.addTag(tag);
+            icon = 'undo';
         }
 
         return (
-            <i className='material-icons' onClick={() => this.deleteTag(tag)}>delete</i>
+            <i className='material-icons' onClick={callback}>{icon}</i>
         );
     }
 
@@ -150,34 +151,18 @@ class TagEditor extends AbstractRefluxComponent<TagEditorProps, TagEditorState> 
             return t1 < t2 ? -1 : t1 > t2 ? 1 : 0;
         });
 
-        const tagListItems = tags.map(tag => {
-            return (
-                <li key={tag} className='tag-editor-list-item'>
-                    <span className={`tag ${this.calculateTagClass(tag)}`}>{TagService.toDisplayName(tag)}</span>
-                    {this.renderTagButton(tag)}
-                </li>
-            );
-        });
+        const tagListItems = tags.map(tag => (
+            <li key={tag} className='tag-editor-list-item'>
+                <span className={`tag ${this.calculateTagClass(tag)}`}>{TagService.toDisplayName(tag)}</span>
+                {this.renderTagButton(tag)}
+            </li>
+        ));
 
         return (
             <ul className='tag-editor-list'>
                 {tagListItems}
             </ul>
         );
-    }
-
-    public render(): ReactElement<TagEditorProps> {
-        return (
-            <div className='TagEditor'>
-                {this.renderAddTagInput()}
-                {this.renderTagList()}
-                <button className='save-button accent' onClick={this.fireSave.bind(this)}>Save</button>
-            </div>
-        );
-    }
-
-    protected getBaseProps(): TagEditorProps {
-        return TagEditor.defaultProps;
     }
 }
 

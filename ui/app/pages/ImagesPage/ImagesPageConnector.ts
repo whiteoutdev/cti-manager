@@ -8,6 +8,7 @@ import {connectWithLifecycle} from '../../redux/connectWithLifecycle';
 import {FetchImagesAction} from '../../redux/imagesPage/ImagesPageActions';
 import {LifecycleProps} from '../../redux/LifecycleComponent';
 import UrlService from '../../services/UrlService';
+import {createMediaPageUrl} from '../../utils/url-utils';
 import {ImagesPage, ImagesPageProps} from './ImagesPage';
 
 export interface ImagesPageConnectorProps extends RouteComponentProps<{}> {
@@ -44,7 +45,7 @@ function getSearchProps(ownProps: RouteComponentProps<{}>): Partial<ImagesPagePr
           skip   = Number(search.skip) || 0,
           limit  = Number(search.limit) || appConfig.images.defaultPageLimit;
 
-    let tags = null;
+    let tags: string[] = [];
 
     if (search.tags) {
         tags = (search.tags as string)
@@ -54,7 +55,7 @@ function getSearchProps(ownProps: RouteComponentProps<{}>): Partial<ImagesPagePr
 
     const match       = ownProps.location.search.match(/tags=([^&]+)/),
           tagsQuery   = match ? match[0] : '',
-          linkFactory = (info: LinkInformation) => `/media?${tagsQuery ? `${tagsQuery}&` : ''}skip=${info.next * limit}&limit=${limit}`;
+          linkFactory = (info: LinkInformation) => createMediaPageUrl(tags, info.next * limit, limit);
 
     return {skip, limit, tags, tagsQuery, linkFactory};
 }

@@ -8,6 +8,7 @@ import './ImagePage.scss';
 
 export interface ImagePageProps extends ImagePageState {
     onTagsChange: (tags: string[]) => void;
+    onSidebarSearch: (tags: string[]) => void;
 }
 
 export interface ImagePageComponentState {
@@ -73,7 +74,8 @@ class ImagePage extends Component<ImagePageProps, ImagePageComponentState> {
                                            tagsEditable
                                            uploadDisabled
                                            tagLimit={Infinity}
-                                           onTagsChange={(tags: string[]) => this.props.onTagsChange(tags)}/>
+                                           onTagsChange={(tags: string[]) => this.props.onTagsChange(tags)}
+                                           onSearch={this.props.onSidebarSearch}/>
                     <div className='image-section'>
                         <div className='image-container'>
                             {this.renderImage()}

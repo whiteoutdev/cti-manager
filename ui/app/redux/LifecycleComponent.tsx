@@ -12,6 +12,8 @@ export interface LifecycleProps {
 }
 
 export class LifecycleComponent<S = {}, SS = any> extends Component<LifecycleProps, S, SS> {
+    public component: Component;
+
     public componentDidMount(): void {
         this.callLifecycleMethod(this.props.componentDidMount);
     }
@@ -38,7 +40,7 @@ export class LifecycleComponent<S = {}, SS = any> extends Component<LifecyclePro
 
     public render(): ReactNode {
         const Comp = this.props.component;
-        return <Comp {...this.props}/>;
+        return <Comp ref={comp => this.component = comp} {...this.props}/>;
     }
 
     private callLifecycleMethod(method: (...args: any[]) => any, ...args: any[]): any {

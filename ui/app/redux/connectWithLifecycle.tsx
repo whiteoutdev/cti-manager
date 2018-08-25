@@ -1,9 +1,9 @@
 import {Component} from 'react';
-import {connect} from 'react-redux';
+import {connect, ConnectOptions} from 'react-redux';
 import {LifecycleComponent, LifecycleProps} from './LifecycleComponent';
 
 /* tslint:disable:typedef */
-export function connectWithLifecycle(mapStateToProps?: any, mapDispatchToProps?: any, mergeProps?: any, options?: any) {
+export function connectWithLifecycle(mapStateToProps?: any, mapDispatchToProps?: any, mergeProps?: any, options?: ConnectOptions) {
     return function <P extends LifecycleProps, S = {}, SS = any>(component: typeof Component) {
         function mergeLifecycleProps(stateProps: any, dispatchProps: any, ownProps: any): LifecycleProps {
             if (mergeProps) {

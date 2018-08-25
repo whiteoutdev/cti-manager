@@ -11,6 +11,7 @@ import {DEFAULT_TAG_STATE, TagState} from '../../redux/tag/TagState';
 import {DEFAULT_UPLOAD_STATE, UploadState} from '../../redux/upload/UploadState';
 import TagService from '../../services/TagService';
 import AutocompleteInput from '../AutocompleteInput/AutocompleteInput';
+import {TagAutocompleteConnector} from '../AutocompleteInput/TagAutocompleteConnector';
 import Panel from '../Panel/Panel';
 import PanelBody from '../Panel/PanelBody';
 import PanelHeader from '../Panel/PanelHeader';
@@ -19,6 +20,7 @@ import PanelListItem from '../Panel/PanelListItem';
 import Spinner from '../Spinner/Spinner';
 import TagEditor from '../TagEditor/TagEditor';
 import './ImageSidebar.scss';
+import {TagEditorConnector} from '../TagEditor/TagEditorConnector';
 
 export interface ImageSidebarProps extends UploadState, TagState, MediaState {
     tagsEditable?: boolean;
@@ -70,24 +72,24 @@ export class ImageSidebar extends Component<ImageSidebarProps, ImageSidebarState
         );
     }
 
-    public getTagType(tag: string): string {
+    private getTagType(tag: string): string {
         const tagData = find(this.props.tags, data => {
             return data.id === TagService.toTagId(tag);
         });
         return tagData ? tagData.type : '';
     }
 
-    public fireTagsChange(tags: string[]): void {
+    private fireTagsChange(tags: string[]): void {
         this.setState({tagEditMode: false}, () => this.props.onTagsChange(tags));
     }
 
-    public search(): void {
-        const searchText = this.searchInput.value.trim(),
+    private search(value: string): void {
+        const searchText = value.trim(),
               tags       = searchText.split(/\s+/);
         this.props.onSearch(tags);
     }
 
-    public renderSearchSection(): ReactNode {
+    private renderSearchSection(): ReactNode {
         return (
             <Panel className='search-section'>
                 <HotKeys handlers={{enter: this.search.bind(this)}}>
@@ -97,9 +99,9 @@ export class ImageSidebar extends Component<ImageSidebarProps, ImageSidebarState
 
                     <PanelBody>
                         <div className='search-form'>
-                            <AutocompleteInput ref={input => this.searchInput = input} tokenize
-                                               items={this.props.tags.map(tag => tag.id)}
-                                               onEnter={this.search.bind(this)}/>
+                            <TagAutocompleteConnector tokenize
+                                                      items={this.props.tags.map(tag => tag.id)}
+                                                      onEnter={this.search.bind(this)}/>
                             <button className='search-button accent' onClick={this.search.bind(this)}>
                                 <i className='material-icons'>search</i>
                             </button>
@@ -110,7 +112,7 @@ export class ImageSidebar extends Component<ImageSidebarProps, ImageSidebarState
         );
     }
 
-    public renderUploadSection(): ReactNode {
+    private renderUploadSection(): ReactNode {
         if (this.props.uploadDisabled) {
             return;
         }
@@ -156,7 +158,7 @@ export class ImageSidebar extends Component<ImageSidebarProps, ImageSidebarState
         );
     }
 
-    public renderTagsSection(): ReactNode {
+    private renderTagsSection(): ReactNode {
         if ((!this.props.tagList || !this.props.tagList.length) && !this.props.tagsEditable) {
             return;
         }
@@ -170,7 +172,7 @@ export class ImageSidebar extends Component<ImageSidebarProps, ImageSidebarState
         if (this.state.tagEditMode) {
             body = (
                 <PanelBody>
-                    <TagEditor tags={this.props.tagList} onSave={this.fireTagsChange.bind(this)}/>
+                    <TagEditorConnector tags={this.props.tagList} onSave={this.fireTagsChange.bind(this)}/>
                 </PanelBody>
             );
         } else {
@@ -188,7 +190,7 @@ export class ImageSidebar extends Component<ImageSidebarProps, ImageSidebarState
         );
     }
 
-    public renderTagsList(tagList: string[]): ReactNode {
+    private renderTagsList(tagList: string[]): ReactNode {
         const tagListItems = tagList
             .slice(0, this.props.tagLimit)
             .map(tag => {
