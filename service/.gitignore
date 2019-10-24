@@ -1,6 +1,0 @@
-node_modules/**
-tmp/**
-lib/**
-/public/
-/appConfig.json
-/secrets.json

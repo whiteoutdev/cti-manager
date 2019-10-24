@@ -1,37 +1,11 @@
 {
   "name": "cti-manager",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Nothing here yet",
   "main": "index.js",
-  "scripts": {
-    "build": "concurrently \"cd service && yarn build\" \"cd ui && yarn build\"",
-    "lint": "concurrently \"cd service && yarn lint\" \"cd ui && yarn lint\"",
-    "db-dev": "cd service && yarn db-dev",
-    "db-sfw": "cd service && yarn db-sfw",
-    "dev": "concurrently \"cd service && yarn dev\" \"cd ui && yarn dev\"",
-    "sfw": "concurrently \"cd service && yarn sfw\" \"cd ui && yarn sfw\"",
-    "test": "concurrently \"yarn depcheck\" \"cd service && yarn test\" \"cd ui && yarn test\"",
-    "version": "node version",
-    "postinstall": "concurrently \"cd service && yarn\" \"cd ui && yarn\"",
-    "depcheck": "babel-node build/depcheck",
-    "start": "yarn build && cd service && yarn start",
-    "stop": "cd service && yarn stop",
-    "restart": "yarn build && cd service && yarn restart",
-    "uninstall": "rm -rf node_modules && rm -rf service/node_modules && rm -rf ui/node_modules"
-  },
+  "scripts": {},
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@types/reflux": "^6.4.1",
-    "babel-cli": "^6.24.1",
-    "babel-preset-es2015": "^6.24.1",
-    "bunyan": "^1.8.1",
-    "chalk": "^1.1.3",
-    "depcheck": "^0.6.7",
-    "tslint": "^5.11.0",
-    "typescript": "^2.9.2"
-  },
-  "dependencies": {
-    "concurrently": "^3.4.0"
-  }
+  "devDependencies": {},
+  "dependencies": {}
 }

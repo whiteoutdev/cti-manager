@@ -1,4 +1,0 @@
-node_modules/**
-dist/**
-server/config.js
-yarn-error.log
