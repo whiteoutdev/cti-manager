@@ -2,10 +2,22 @@
   "name": "cti-manager",
   "version": "2.1.0",
   "description": "Nothing here yet",
-  "main": "index.js",
-  "scripts": {},
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "dev": "concurrently \"tsc -w\" \"electron . --debug\"",
+    "start": "yarn build && electron ."
+  },
   "author": "",
   "license": "ISC",
-  "devDependencies": {},
-  "dependencies": {}
+  "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "@types/node": "^12.11.7",
+    "concurrently": "^5.0.0"
+  },
+  "dependencies": {
+    "electron": "^7.0.0",
+    "electron-reload": "^1.5.0",
+    "typescript": "^3.6.4"
+  }
 }

@@ -1,4 +1,6 @@
-.idea/**
+/.idea
+/dist
 npm-debug.log
-node_modules/**
-tmp/**
+yarn-error.log
+/node_modules
+
