@@ -10,22 +10,15 @@ const rules = [
         }]
     },
     {
-        test   : /\.jsx?$/,
-        exclude: /node_modules/,
-        use    : {
-            loader: 'babel-loader'
+        test: /\.tsx?$/,
+        use : {
+            loader: 'ts-loader'
         }
     },
     {
         test: /\.(png|jpg|jpeg|svg|eot|ttf|woff|woff2)$/,
         use : {
             loader: 'url-loader?limit=8192'
-        }
-    },
-    {
-        test: /\.json$/,
-        use : {
-            loader: 'json-loader'
         }
     }
 ];

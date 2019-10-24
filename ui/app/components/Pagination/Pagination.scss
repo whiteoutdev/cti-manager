@@ -1,0 +1,67 @@
+@import '../../scss/colours';
+@import '../../scss/mixins';
+
+.Pagination {
+    @include flex-row-wrap;
+    align-content   : center;
+    justify-content : center;
+
+    .nav-button {
+        margin     : .25em;
+        min-width  : 2em;
+        text-align : center;
+
+        &.current {
+            background-color : $brand-primary;
+            border           : 1px solid $brand-primary;
+            color            : $white;
+        }
+
+        &.link {
+            border     : 1px solid $brand-accent;
+            transition : all 100ms linear;
+            height     : 2.5em;
+
+            &.button-link {
+
+                a, button {
+                    background-color : transparent;
+                    padding          : 0;
+
+                    i {
+                        position  : relative;
+                        font-size : 2em;
+                        top       : .1em;
+                    }
+                }
+            }
+
+            &:hover {
+                background-color : $brand-accent;
+
+                a, button {
+                    color : $white;
+                }
+            }
+
+            a, button {
+                color           : $brand-accent;
+                text-decoration : none;
+            }
+        }
+
+        a, button, span {
+            display     : block;
+            padding     : 0 .5em;
+            font-size   : 1em;
+            font-weight : 500;
+            line-height : 2.5em;
+
+            &:active, &:focus {
+                background-color : transparent;
+                outline          : none;
+            }
+        }
+
+    }
+}

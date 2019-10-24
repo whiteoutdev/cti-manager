@@ -3,12 +3,15 @@ import rules from './rules';
 import plugins from './plugins';
 
 export default function(env) {
-    const prod = env === 'production';
+    const prod       = env === 'production',
+          preset     = env.preset || 'std',
+          presetData = require(`./preset.${preset}.json`);
 
     return {
+        mode   : prod ? 'production' : 'development',
         context: config.app.path,
         entry  : [
-            './index.jsx'
+            './index.tsx'
         ],
         output : {
             path    : config.dist.path,
@@ -17,9 +20,9 @@ export default function(env) {
         module : {
             rules
         },
-        plugins: plugins(prod),
+        plugins: plugins(prod, presetData),
         resolve: {
-            extensions: ['.js', '.jsx', '.json']
+            extensions: ['.json', '.ts', '.tsx', '.js']
         },
         devtool: prod ? 'source-map' : 'inline-source-map'
     };

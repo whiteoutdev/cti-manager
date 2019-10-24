@@ -1,16 +1,16 @@
 import AbstractModel from '../AbstractModel';
 import TagMetadata from './TagMetadata';
-import TagType from './TagType';
+import {TagType} from './TagType';
 
 export default class Tag extends AbstractModel {
     public static fromDatabase(doc: any): Tag {
-        return new Tag(doc._id, TagType.fromCode(doc.t), doc.d, TagMetadata.fromDatabase(doc.m));
+        return new Tag(doc._id, TagType.fromDatabase(doc.t), doc.d, TagMetadata.fromDatabase(doc.m));
     }
 
     public static fromApi(tagData: any): Tag {
         return new Tag(
             tagData.id,
-            TagType.fromName(tagData.type),
+            new TagType(tagData.type),
             tagData.derivedTags,
             TagMetadata.fromApi(tagData.metadata)
         );
@@ -28,7 +28,7 @@ export default class Tag extends AbstractModel {
         super({
             id: Tag.encode(name)
         });
-        this.type = type || TagType.GENERAL;
+        this.type = type || new TagType('General');
         this.derivedTags = (derivedTags || []).filter(Boolean);
         this.metadata = metadata || new TagMetadata(null, null, this.id, this.id);
     }
@@ -48,7 +48,7 @@ export default class Tag extends AbstractModel {
     public serialiseToDatabase(): any {
         return {
             _id: this.id,
-            t  : this.type.getCode(),
+            t  : this.type.serialiseToDatabase(),
             d  : this.derivedTags,
             m  : this.metadata.serialiseToDatabase()
         };
@@ -57,7 +57,7 @@ export default class Tag extends AbstractModel {
     public serialiseToApi(): any {
         return {
             id         : this.id,
-            type       : this.type.getName(),
+            type       : this.type.serialiseToApi(),
             derivedTags: this.derivedTags,
             metadata   : this.metadata
         };

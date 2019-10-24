@@ -1,8 +1,8 @@
 import appConfig from '../config/app.config';
 import Tag from '../model/tag/Tag';
-import TagType from '../model/tag/TagType';
 import logger from '../util/logger';
 import DBConnectionService from './DBConnectionService';
+import {TagTypeCollection} from './TagTypeCollection';
 
 export default class TagCollection {
     public static init(): Promise<any> {
@@ -45,8 +45,11 @@ export default class TagCollection {
         });
     }
 
-    public static getTagTypeNames(): string[] {
-        return TagType.values().map(type => type.getName());
+    public static getTagTypeNames(): Promise<string[]> {
+        return TagTypeCollection.getTagTypes()
+            .then(tagTypes => {
+                return tagTypes.map(tagType => tagType.id);
+            });
     }
 
     public static createTags(tags: string[]): Promise<string[]> {

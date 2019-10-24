@@ -1,5 +1,5 @@
-import {Slide, SlideSpec} from './Slide';
 import * as _ from 'lodash';
+import {Slide, SlideSpec} from './Slide';
 
 interface AbstractImageSlideSpec extends SlideSpec {
     imageId: string;

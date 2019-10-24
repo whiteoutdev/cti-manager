@@ -1,6 +1,6 @@
+import * as _ from 'lodash';
 import {AbstractModel, AbstractModelSpec} from '../AbstractModel';
 import FileType from './FileType';
-import * as _ from 'lodash';
 
 interface AbstractFileSpec extends AbstractModelSpec {
     id?: string;

@@ -1,5 +1,5 @@
-import {AbstractModel, AbstractModelSpec} from '../AbstractModel';
 import * as _ from 'lodash';
+import {AbstractModel, AbstractModelSpec} from '../AbstractModel';
 import SlideType from './SlideType';
 
 interface SlideSpec extends AbstractModelSpec {

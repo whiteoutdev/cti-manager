@@ -1,13 +1,17 @@
 import {RequestHandler, Router} from 'express';
+import InstructionsApi from './InstructionsApi';
 import MediaApi from './MediaApi';
 import RestApi from './RestApi';
 import TagsApi from './TagsApi';
+import TeaseApi from './TeaseApi';
 import UserApi from './UserApi';
 
 const apis: RestApi[] = [
     new MediaApi(),
     new TagsApi(),
-    new UserApi()
+    new UserApi(),
+    new TeaseApi(),
+    new InstructionsApi()
 ];
 
 export default class RestConfig {

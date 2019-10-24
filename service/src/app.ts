@@ -21,8 +21,8 @@ del([
     `${appConfig.tmpDir}/**`, `!${appConfig.tmpDir}`
 ]).then(paths => {
     if (paths.length) {
-        paths.forEach(path => {
-            logger.debug(`Removed temporary file: ${path}`);
+        paths.forEach(file => {
+            logger.debug(`Removed temporary file: ${file}`);
         });
         logger.info(`Cleaned up ${paths.length} temporary files`);
     }

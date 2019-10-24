@@ -1,0 +1,3 @@
+interface TeaseAction {
+    name: string;
+}
