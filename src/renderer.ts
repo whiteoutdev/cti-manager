@@ -1,1 +1,1 @@
-console.log('Renderer');
+import './app/index.tsx';

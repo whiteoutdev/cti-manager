@@ -1,9 +1,8 @@
+import {resolve} from 'path';
 import {app, BrowserWindow} from 'electron';
-import * as electronReload from 'electron-reload';
+import {client} from 'electron-connect';
 
 let mainWindow: BrowserWindow;
-
-electronReload(__dirname);
 
 app.on('ready', createMainWindow);
 
@@ -21,13 +20,20 @@ app.on('activate', () => {
 
 function createMainWindow(): void {
     mainWindow = new BrowserWindow({
-        width : 1600,
-        height: 1000,
+        width         : 1600,
+        height        : 1000,
+        webPreferences: {
+            nodeIntegration: true,
+        },
     });
 
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile(resolve(app.getAppPath(), 'index.html'));
 
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
+
+    if (process.env.NODE_ENV === 'development') {
+        client.create(mainWindow);
+    }
 }

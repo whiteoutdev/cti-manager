@@ -1,1 +1,1 @@
-declare module 'electron-reload';
+declare module 'electron-connect';
