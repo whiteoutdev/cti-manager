@@ -1,1 +1,1 @@
-import './app/index.tsx';
+import './ui/index.tsx';

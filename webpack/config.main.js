@@ -18,6 +18,9 @@ module.exports = function(env, argv) {
         plugins: [
             mode === 'development' && electronReloadPlugin
         ].filter(Boolean),
+        resolve: {
+            extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
+        },
         target : 'electron-main'
     };
 };

@@ -1,6 +1,9 @@
-import {resolve} from 'path';
 import {app, BrowserWindow} from 'electron';
 import {client} from 'electron-connect';
+import {resolve} from 'path';
+import {IpcRequest} from './common/types/ipc/IpcRequest';
+import {IpcResponse} from './common/types/ipc/IpcResponse';
+import {JsonIpcService} from './main/services/ipc/JsonIpcService';
 
 let mainWindow: BrowserWindow;
 
@@ -36,4 +39,12 @@ function createMainWindow(): void {
     if (process.env.NODE_ENV === 'development') {
         client.create(mainWindow);
     }
+
+    const jsonService = new JsonIpcService();
+
+    jsonService.on('/hello', (req: IpcRequest<void>, res: IpcResponse<{hello: string}>) => {
+        res.status(200).send({hello: 'world'});
+    });
+
+    jsonService.start();
 }
