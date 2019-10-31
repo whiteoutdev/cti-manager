@@ -1,6 +1,6 @@
-import {resolve} from 'path';
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, ipcMain, IpcMainEvent} from 'electron';
 import {client} from 'electron-connect';
+import {resolve} from 'path';
 
 let mainWindow: BrowserWindow;
 
@@ -36,4 +36,9 @@ function createMainWindow(): void {
     if (process.env.NODE_ENV === 'development') {
         client.create(mainWindow);
     }
+
+    ipcMain.on('is-alive', (event: IpcMainEvent, value: string) => {
+        console.log('is-alive request received');
+        event.sender.send('is-alive', true);
+    });
 }
