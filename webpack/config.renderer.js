@@ -11,7 +11,12 @@ module.exports = function(env, argv) {
         mode,
         entry  : paths.renderer,
         module : {
-            rules: commonRules
+            rules: commonRules.concat([
+                {
+                    test: /\.s?css$/,
+                    use : ['style-loader', 'css-loader', 'sass-loader']
+                }
+            ])
         },
         output : {
             path    : paths.dist,
