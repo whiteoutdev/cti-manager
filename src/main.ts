@@ -23,11 +23,12 @@ app.on('activate', () => {
 
 function createMainWindow(): void {
     mainWindow = new BrowserWindow({
-        width         : 1600,
-        height        : 1000,
-        webPreferences: {
+        width          : 1600,
+        height         : 1000,
+        webPreferences : {
             nodeIntegration: true,
         },
+        autoHideMenuBar: false,
     });
 
     mainWindow.loadFile(resolve(app.getAppPath(), 'index.html'));
