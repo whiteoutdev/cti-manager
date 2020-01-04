@@ -1,3 +1,4 @@
 export enum IpcChannel {
-    JSON = 'json'
+    JSON  = 'json',
+    IMAGE = 'image'
 }

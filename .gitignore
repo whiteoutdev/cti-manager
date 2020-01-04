@@ -3,4 +3,5 @@
 npm-debug.log
 yarn-error.log
 /node_modules
-
+/cti-manager-win32-x64/
+/data/

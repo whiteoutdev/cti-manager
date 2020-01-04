@@ -11,6 +11,9 @@ module.exports = function(env, argv) {
         module : {
             rules: commonRules
         },
+        node   : {
+            __dirname: false
+        },
         output : {
             path    : paths.dist,
             filename: 'main.js'

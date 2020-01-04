@@ -18,6 +18,9 @@ module.exports = function(env, argv) {
                 }
             ])
         },
+        node   : {
+            __dirname: false
+        },
         output : {
             path    : paths.dist,
             filename: 'renderer.js'

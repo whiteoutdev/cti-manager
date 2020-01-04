@@ -1,13 +1,23 @@
 import {app, BrowserWindow} from 'electron';
 import {client} from 'electron-connect';
+import * as unhandled from 'electron-unhandled';
+import * as mkdirp from 'mkdirp';
 import {resolve} from 'path';
-import {IpcRequest} from './common/types/ipc/IpcRequest';
-import {IpcResponse} from './common/types/ipc/IpcResponse';
-import {JsonIpcService} from './main/services/ipc/JsonIpcService';
+import {promisify} from 'util';
+import {DB_PATH} from './consts';
+import {ImageRouter} from './main/api/ImageRouter';
+import {IpcServiceManager} from './main/services/ipc/IpcServiceManager';
+
+const mkdirpAsync = promisify(mkdirp);
+
+unhandled();
 
 let mainWindow: BrowserWindow;
 
-app.on('ready', createMainWindow);
+app.on('ready', async() => {
+    await initApplication();
+    createMainWindow();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
@@ -27,11 +37,15 @@ function createMainWindow(): void {
         height         : 1000,
         webPreferences : {
             nodeIntegration: true,
+            webSecurity    : false,
         },
         autoHideMenuBar: false,
     });
 
-    mainWindow.loadFile(resolve(app.getAppPath(), 'index.html'));
+    console.log(app.getAppPath());
+    console.log(__dirname);
+
+    mainWindow.loadFile(resolve(__dirname, 'index.html'));
 
     mainWindow.on('closed', () => {
         mainWindow = null;
@@ -40,12 +54,15 @@ function createMainWindow(): void {
     if (process.env.NODE_ENV === 'development') {
         client.create(mainWindow);
     }
-
-    const jsonService = new JsonIpcService();
-
-    jsonService.on('/hello', (req: IpcRequest<void>, res: IpcResponse<{hello: string}>) => {
-        res.status(200).send({hello: 'world'});
-    });
-
-    jsonService.start();
 }
+
+async function initApplication(): Promise<void> {
+    await mkdirpAsync(DB_PATH);
+    IpcServiceManager.start();
+
+    const imageRouter = new ImageRouter();
+
+    imageRouter.init();
+}
+
+

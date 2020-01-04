@@ -1,4 +1,5 @@
 import {ipcMain, IpcMainEvent} from 'electron';
+import HTTPMethod from 'http-method-enum';
 import * as pathToRegexp from 'path-to-regexp';
 import {IpcChannel} from '../../../common/types/ipc/IpcChannel';
 import {IpcRequest} from '../../../common/types/ipc/IpcRequest';
@@ -6,7 +7,9 @@ import {IpcResponse} from '../../../common/types/ipc/IpcResponse';
 
 export type RequestHandler<Req, Res> = (req: IpcRequest<Req>, res: IpcResponse<Res>) => void;
 
-export type PathHandler = [RegExp, RequestHandler<any, any>];
+export type PathHandler = [HTTPMethod[], RegExp, RequestHandler<any, any>];
+
+const allHttpMethods = Object.values(HTTPMethod);
 
 export abstract class IpcMainService {
     private running = false;
@@ -15,8 +18,16 @@ export abstract class IpcMainService {
     public constructor(protected readonly channel: IpcChannel) {
     }
 
-    public on<Req, Res>(path: string | RegExp, handler: RequestHandler<Req, Res>): void {
-        this.handlers.push([this.parseRegex(path), handler]);
+    public on<Req, Res>(path: string | RegExp, handler: RequestHandler<Req, Res>, methods = allHttpMethods): void {
+        this.handlers.push([methods, this.parseRegex(path), handler]);
+    }
+
+    public get<Req, Res>(path: string | RegExp, handler: RequestHandler<Req, Res>): void {
+        this.on<Req, Res>(path, handler, [HTTPMethod.GET]);
+    }
+
+    public post<Req, Res>(path: string | RegExp, handler: RequestHandler<Req, Res>): void {
+        this.on<Req, Res>(path, handler, [HTTPMethod.POST]);
     }
 
     public start<Req, Res>(): void {
@@ -27,7 +38,13 @@ export abstract class IpcMainService {
         this.running = true;
 
         ipcMain.on(this.channel, (event: IpcMainEvent, req: IpcRequest<Req>) => {
-            this.handlers.some(([regex, handler]) => {
+            console.log(`[${req.channel}] ${req.method} ${req.path}`);
+
+            this.handlers.some(([methods, regex, handler]) => {
+                if (!methods.includes(req.method)) {
+                    return false;
+                }
+
                 const match = regex.exec(req.path);
 
                 if (match) {

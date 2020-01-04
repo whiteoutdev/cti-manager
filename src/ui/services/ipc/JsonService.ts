@@ -8,7 +8,7 @@ export class JsonService extends IpcRendererService {
     }
 
     public sendHello(): Promise<{hello: string}> {
-        return this.request('/hello');
+        return this.get('/hello');
     }
 
     protected parseResponse<Res>(res: IpcResponseData<Res>) {
