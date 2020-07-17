@@ -35,7 +35,7 @@
     "forever": "^0.15.3",
     "jimp": "^0.2.28",
     "jsonwebtoken": "^7.4.1",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.19",
     "moment": "^2.18.1",
     "mongodb": "^2.2.28",
     "morgan": "^1.7.0",
