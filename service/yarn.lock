@@ -522,9 +522,13 @@ broadway@~0.3.2, broadway@~0.3.6:
     utile "0.2.1"
     winston "0.8.0"
 
-bson@^1.0.4, bson@~1.0.4:
+bson@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/bson/-/bson-1.0.4.tgz#93c10d39eaa5b58415cbc4052f3e53e562b0b72c"
+
+bson@^1.1.0:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.5.tgz#2aaae98fcdf6750c0848b0cba1ddec3c73060a34"
 
 buffer-equal-constant-time@1.0.1:
   version "1.0.1"
@@ -947,7 +951,7 @@ error-ex@^1.2.0:
   dependencies:
     is-arrayish "^0.2.1"
 
-es6-promise@3.2.1, es6-promise@^3.0.2:
+es6-promise@^3.0.2:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-3.2.1.tgz#ec56233868032909207170c39448e24449dd1fc4"
 
@@ -1893,6 +1897,10 @@ mem@^1.1.0:
   dependencies:
     mimic-fn "^1.0.0"
 
+memory-pager@^1.0.2:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/memory-pager/-/memory-pager-1.5.0.tgz#d8751655d22d384682741c972f2c3d6dfa3e66b5"
+
 merge-descriptors@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
@@ -1971,20 +1979,22 @@ moment@*, moment@2.x.x, moment@^2.10.6, moment@^2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
-mongodb-core@2.1.12:
-  version "2.1.12"
-  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.12.tgz#1531192511bc16ef160ac6ae0cc46776ffd8451d"
+mongodb-core@3.1.11:
+  version "3.1.11"
+  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.1.11.tgz#b253038dbb4d7329f3d1c2ee5400bb0c9221fde5"
   dependencies:
-    bson "~1.0.4"
-    require_optional "~1.0.0"
+    bson "^1.1.0"
+    require_optional "^1.0.1"
+    safe-buffer "^5.1.2"
+  optionalDependencies:
+    saslprep "^1.0.0"
 
-mongodb@^2.2.28:
-  version "2.2.28"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-2.2.28.tgz#d8ff45754366e03973fa259bf4f11447858da657"
+mongodb@^3.1.13:
+  version "3.1.13"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.1.13.tgz#f8cdcbb36ad7a08b570bd1271c8525753f75f9f4"
   dependencies:
-    es6-promise "3.2.1"
-    mongodb-core "2.1.12"
-    readable-stream "2.2.7"
+    mongodb-core "3.1.11"
+    safe-buffer "^5.1.2"
 
 morgan@^1.7.0:
   version "1.8.2"
@@ -2550,7 +2560,7 @@ readable-stream@1.1.x:
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-readable-stream@2.2.7, readable-stream@^2.0.0, readable-stream@^2.0.2, readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.2.2:
+readable-stream@^2.0.0, readable-stream@^2.0.2, readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.2.2:
   version "2.2.7"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.7.tgz#07057acbe2467b22042d36f98c5ad507054e95b1"
   dependencies:
@@ -2651,9 +2661,9 @@ require-package-name@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/require-package-name/-/require-package-name-2.0.1.tgz#c11e97276b65b8e2923f75dabf5fb2ef0c3841b9"
 
-require_optional@~1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/require_optional/-/require_optional-1.0.0.tgz#52a86137a849728eb60a55533617f8f914f59abf"
+require_optional@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/require_optional/-/require_optional-1.0.1.tgz#4cf35a4247f64ca3df8c2ef208cc494b1ca8fc2e"
   dependencies:
     resolve-from "^2.0.0"
     semver "^5.1.0"
@@ -2688,13 +2698,19 @@ rx@2.3.24:
   version "2.3.24"
   resolved "https://registry.yarnpkg.com/rx/-/rx-2.3.24.tgz#14f950a4217d7e35daa71bbcbe58eff68ea4b2b7"
 
-safe-buffer@^5.0.1:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.0.tgz#fe4c8460397f9eaaaa58e73be46273408a45e223"
+safe-buffer@^5.0.1, safe-buffer@^5.1.2:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
 
 safe-json-stringify@~1:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/safe-json-stringify/-/safe-json-stringify-1.0.4.tgz#81a098f447e4bbc3ff3312a243521bc060ef5911"
+
+saslprep@^1.0.0:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/saslprep/-/saslprep-1.0.3.tgz#4c02f946b56cf54297e347ba1093e7acac4cf226"
+  dependencies:
+    sparse-bitfield "^3.0.3"
 
 sax@>=0.6.0:
   version "1.2.4"
@@ -2783,6 +2799,12 @@ source-map-support@^0.4.2:
 source-map@^0.5.0, source-map@^0.5.6:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.6.tgz#75ce38f52bf0733c5a7f0c118d81334a2bb5f412"
+
+sparse-bitfield@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/sparse-bitfield/-/sparse-bitfield-3.0.3.tgz#ff4ae6e68656056ba4b3e792ab3334d38273ca11"
+  dependencies:
+    memory-pager "^1.0.2"
 
 spawn-command@^0.0.2-1:
   version "0.0.2"
